@@ -19,11 +19,11 @@ def tag_models(modelID, tags, auth_token):
         "update": True,
         "rollForward": True
     }
-    response = requests.request(
-        "POST", url=URL_MODELING_MODEL_PROPERTIES, headers=headers, data=json.dumps(body))
+    response = requests.post(
+        url=URL_MODELING_MODEL_PROPERTIES, headers=headers, data=json.dumps(body))
 
 
-def share_model(modelID, userEmail, permission, permissions, auth_token):
+def share_model(modelID, userEmail, permission, auth_token):
     """Share models with the team"""
     # authenticated header
     headers = {
@@ -35,15 +35,15 @@ def share_model(modelID, userEmail, permission, permissions, auth_token):
 
     # make request
 
-    permissions = {
-        "edit": True,
-    }
-
     if permission == "view":
         permissions = {
             "view": True,
         }
+    else:
+        permissions = {
+            "edit": True,
+        }
 
-    response = requests.request(
-        "POST", url=URL_USERS_SHARE_MODEL, headers=headers, data=json.dumps(permissions))
+    response = requests.post(
+        url=URL_USERS_SHARE_MODEL, headers=headers, data=json.dumps(permissions))
     print("Shared model with:", userEmail)

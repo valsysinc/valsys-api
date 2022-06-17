@@ -1,6 +1,12 @@
 import json
 import websocket
-from valsys.config import URL_MODELING_CREATE 
+from valsys.config import URL_MODELING_CREATE
+
+
+class States:
+    IN_PROGRESS = 'INPROGRESS'
+    COMPLETE = 'COMPLETE'
+
 
 class SocketHandler:
     def __init__(self, config, auth_token) -> None:
@@ -8,16 +14,16 @@ class SocketHandler:
         self.error = None
         self.timeout = False
         self.resp = None
-        self.state = "INPROGRESS"
+        self.state = States.IN_PROGRESS
         # enable trace in dev for debugging
         websocket.enableTrace(False)
-        socketpath = f"{URL_MODELING_CREATE}" +auth_token
-        self.wsapp = websocket.WebSocketApp(socketpath, 
-            on_open=self.create_model,
-            on_message=self.msg_hanlder, 
-            on_close=self.on_close,
-        )
-  
+        socketpath = f"{URL_MODELING_CREATE}" + auth_token
+        self.wsapp = websocket.WebSocketApp(socketpath,
+                                            on_open=self.create_model,
+                                            on_message=self.msg_hanlder,
+                                            on_close=self.on_close,
+                                            )
+
     def create_model(self, ws):
         ws.send(json.dumps(self.config))
 
@@ -34,11 +40,11 @@ class SocketHandler:
             self.on_close(ws, 1000, message)
 
     def on_close(self, ws, close_status_code, close_msg):
-        self.state = "COMPLETE"
+        self.state = States.COMPLETE
         if close_status_code != 1000:
-          print(close_status_code, close_msg)
-          print("i/o network timeout, will retry")
-          self.timeout = True
+            print(close_status_code, close_msg)
+            print("i/o network timeout, will retry")
+            self.timeout = True
         elif close_status_code or close_msg:
             print("close status code: " + str(close_status_code))
         ws.close()
@@ -47,5 +53,5 @@ class SocketHandler:
         # ping and pong period to keep socket connection
         pong = 30
         ping = (pong * 9) / 10
-        self.wsapp.run_forever(ping_interval=pong, ping_timeout=ping, ping_payload="ping")
-    
+        self.wsapp.run_forever(
+            ping_interval=pong, ping_timeout=ping, ping_payload="ping")

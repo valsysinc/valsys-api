@@ -1,4 +1,5 @@
 import json
+
 import websocket
 from valsys.config import URL_MODELING_CREATE
 

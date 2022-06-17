@@ -1,15 +1,16 @@
 import json
-from typing import List, Dict, Any
-import requests
-
-from valsys.auth.service import authenticate
-from valsys.config import URL_USERS_MODELS, API_USERNAME, API_PASSWORD, API_DEL_USERNAME, API_DEL_PASSWORD, SPARK, S3_MODEL_INFO
-from valsys.modeling.service import tag_models, share_model
-from valsys.spawn.socket_handler import SocketHandler, States
+import time
 from collections import namedtuple
+from typing import Any, Dict, List
 
-from valsys.auth.service import auth_headers
+import requests
+from valsys.auth.service import auth_headers, authenticate
+from valsys.config import (API_DEL_PASSWORD, API_DEL_USERNAME, API_PASSWORD,
+                           API_USERNAME, S3_MODEL_INFO, SPARK,
+                           URL_USERS_MODELS)
+from valsys.modeling.service import share_model, tag_models
 from valsys.spawn.models import ModelSeedConfigurationData, SeedDataFrameRow
+from valsys.spawn.socket_handler import SocketHandler, States
 
 
 def get_model_ids_list():
@@ -81,7 +82,9 @@ def save_model_info_to_spark(spawn_model_info, tbl_info):
                                            path=tbl_info["s3_path"])
 
 
-def generate_model_configurations_from_seeds(model_seeds: List[SeedDataFrameRow], proj_period, hist_period) -> List[ModelSeedConfigurationData]:
+def generate_model_configurations_from_seeds(
+        model_seeds: List[SeedDataFrameRow],
+        proj_period, hist_period) -> List[ModelSeedConfigurationData]:
     model_configurations: List[ModelSeedConfigurationData] = []
     for row in model_seeds:
         model_configurations.append(ModelSeedConfigurationData.from_row(row, proj_period,
@@ -116,13 +119,13 @@ def spawn_models(model_configurations: List[ModelSeedConfigurationData], model_t
         while True:
             if handler.state != States.COMPLETE:
                 continue
-            if handler.error != None:
+            if handler.error is not None:
                 print("error building model:", handler.error)
-                if handler.timeout == True and config.get(
-                        "retry") != True:
+                if handler.timeout and config.get(
+                        "retry") is not True:
                     config["retry"] = True
                     model_configurations.append(config)
-            elif handler.resp != None:
+            elif handler.resp is not None:
                 model_id = handler.resp["data"]["uid"]
 
                 config_dict["model_id"] = model_id

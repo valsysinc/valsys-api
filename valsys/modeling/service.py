@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 from valsys.config import URL_MODELING_MODEL_PROPERTIES, URL_USERS_SHARE_MODEL
 
 

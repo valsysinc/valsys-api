@@ -20,6 +20,9 @@ API_DEL_PASSWORD = "DDIOverlord!23"
 class SPARK:
     CATALOG_MODEL_ENGINE = "model_engine"
     TB_VALSYS_MACHINE_MODELS = "valsys_machine_models"
+    TB_KEY_DRIVERS = 'key_drivers'
+    TB_LATEST_PERIOD = 'latest_period'
+    TB_BBG_MAP = 'bbg_ciq_map'
     SQL_DROP_VMM = "DROP TABLE if exists model_engine.valsys_machine_models"
 
 

@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict, Any
 import requests
+
 from valsys.auth.service import authenticate
 from valsys.config import URL_USERS_MODELS, API_USERNAME, API_PASSWORD, API_DEL_USERNAME, API_DEL_PASSWORD, SPARK, S3_MODEL_INFO
 from valsys.modeling.service import tag_models, share_model
@@ -47,24 +48,23 @@ def delete_machine_models_delta():
 
 
 def get_model_seeds_from_spark() -> List[SeedDataFrameRow]:
+    # TODO: should these be run every time?
     drop_existing_models()
     drop_machine_models_table()
     delete_machine_models_delta()
 
-    df = spark.read.table("model_engine.key_drivers").filter(
+    df = spark.read.table(f"{SPARK.CATALOG_MODEL_ENGINE}.{SPARK.TB_KEY_DRIVERS}").filter(
         "type = 'machine'")
     df = df.select(df.ticker, df.source, df.template_id).drop_duplicates()
 
-    df1 = spark.read.table("model_engine.latest_period").filter(
+    df1 = spark.read.table(f"{SPARK.CATALOG_MODEL_ENGINE}.{SPARK.TB_LATEST_PERIOD}").filter(
         'periodTypeId=1').drop("companyName")
-    bbg_ciq_map = spark.read.table("model_engine.bbg_ciq_map")
-    # ciqcompany = spark.read.table("xpressfeed.ciqCompany").select("companyId", "simpleIndustryId").distinct()
-    # ciqindustry = spark.read.table("xpressfeed.ciq_industry_mapping").select("simpleIndustryId", "IndustryGroup")
+    bbg_ciq_map = spark.read.table(
+        f"{SPARK.CATALOG_MODEL_ENGINE}.{SPARK.TB_BBG_MAP}")
 
     df_final = df.join(df1, [df.ticker == df1.ticker],
                        how="left").select(df.ticker, df.source, df.template_id,
-                                          df1.fiscalYear).distinct()
-    df_final = df_final.join(bbg_ciq_map, ["ticker"])
+                                          df1.fiscalYear).distinct().join(bbg_ciq_map, ["ticker"])
 
     return [
         namedtuple('X', df_final.columns)(*row) for row in df_final.collect()
@@ -84,9 +84,8 @@ def save_model_info_to_spark(spawn_model_info, tbl_info):
 def generate_model_configurations_from_seeds(model_seeds: List[SeedDataFrameRow], proj_period, hist_period) -> List[ModelSeedConfigurationData]:
     model_configurations: List[ModelSeedConfigurationData] = []
     for row in model_seeds:
-        configuration = ModelSeedConfigurationData.from_row(row, proj_period,
-                                                            hist_period)
-        model_configurations.append(configuration)
+        model_configurations.append(ModelSeedConfigurationData.from_row(row, proj_period,
+                                                                        hist_period))
     return model_configurations
 
 

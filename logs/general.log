@@ -10,3 +10,4 @@
 [23-06-22 14:26:25] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/create/
 [23-06-22 14:27:26] SPAWN ERROR - Invalid WebSocket Header URL=ws://localhost:5200/modeling/create/
 [23-06-22 14:27:26] SPAWN ERROR - closing; status=None msg=None
+[23-06-22 14:36:16] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/create/

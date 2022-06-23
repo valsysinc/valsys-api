@@ -1,5 +1,9 @@
 import logging
+from valsys.utils.service import ensure_dir
+
 LOGS_DIR = "logs"
+
+ensure_dir(LOGS_DIR)
 
 LOG_FILE = f"{LOGS_DIR}/general.log"
 LOG_FILE_ERR = f"{LOGS_DIR}/error.log"

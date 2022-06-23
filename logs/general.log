@@ -1,0 +1,12 @@
+[23-06-22 14:22:25] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/create/
+[23-06-22 14:23:26] SPAWN ERROR - Invalid WebSocket Header URL=ws://localhost:5200/modeling/create/
+[23-06-22 14:23:26] SPAWN ERROR - closing; status=None msg=None
+[23-06-22 14:25:33] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/create/
+[23-06-22 14:26:04] SPAWN ERROR -  URL=ws://localhost:5200/modeling/create/
+[23-06-22 14:26:04] SPAWN ERROR - closing; status=None msg=None
+[23-06-22 14:26:18] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/creat/
+[23-06-22 14:26:18] SPAWN ERROR - Handshake status 404 Not Found URL=ws://localhost:5200/modeling/creat/
+[23-06-22 14:26:18] SPAWN ERROR - closing; status=None msg=None
+[23-06-22 14:26:25] SPAWN INFO - connecting to socket ws://localhost:5200/modeling/create/
+[23-06-22 14:27:26] SPAWN ERROR - Invalid WebSocket Header URL=ws://localhost:5200/modeling/create/
+[23-06-22 14:27:26] SPAWN ERROR - closing; status=None msg=None

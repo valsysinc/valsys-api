@@ -1,7 +1,7 @@
 import json
 from typing import Dict
 import websocket
-from valsys.config import URL_MODELING_CREATE
+from valsys.config import SCK_MODELING_CREATE
 from valsys.utils import logger
 
 
@@ -11,18 +11,25 @@ class States:
     ERROR = "ERROR"
 
 
+class Status:
+    UNKNOWN = "unknown"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
 class SocketHandler:
     def __init__(self, config: Dict[str, str], auth_token: str, trace=False) -> None:
 
         self.config = config
         self.error = None
-        # self.timeout = False
+        self.status = Status.UNKNOWN
         self.resp = None
+        self.exception = None
         self.state = States.IN_PROGRESS
         # enable trace in dev for debugging
         websocket.enableTrace(trace)
-        logger.info(f"connecting to socket {URL_MODELING_CREATE}")
-        socketpath = f"{URL_MODELING_CREATE}" + auth_token
+        logger.debug(f"connecting to socket {SCK_MODELING_CREATE}")
+        socketpath = f"{SCK_MODELING_CREATE}" + auth_token
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
             on_open=self.create_model,
@@ -36,7 +43,8 @@ class SocketHandler:
 
     def on_error(self, ws: websocket.WebSocketApp, err: Exception):
         self.state = States.ERROR
-        logger.error(f"{str(err)} URL={URL_MODELING_CREATE}")
+        self.exception = err
+        logger.error(f"{str(err)} URL={SCK_MODELING_CREATE}")
 
     def msg_handler(self, ws, message):
         # Statuses: success, failed
@@ -46,13 +54,15 @@ class SocketHandler:
         err = response.get("error")
         close = response.get("Close")
         step = response.get("step")
-        print(status, step, err)
+        self.status = status
 
-        if status != "success":
+        if status != Status.SUCCESS:
             self.error = response["error"]
-
+            self.status = Status.FAILED
+            logger.error(f"from {SCK_MODELING_CREATE} {message}")
         if err != "":
             self.error = response["error"]
+            self.status = Status.FAILED
             self.on_close(ws, websocket.STATUS_NORMAL, message)
         elif close is True:
             self.resp = response
@@ -61,10 +71,9 @@ class SocketHandler:
     def on_close(self, ws, close_status_code, close_msg):
         self.state = States.COMPLETE
         if close_status_code != websocket.STATUS_NORMAL:
-            logger.error(f"closing; status={close_status_code} msg={close_msg}")
-            # self.timeout = True
+            logger.error(f"close status={close_status_code} msg={close_msg}")
         elif close_status_code or close_msg:
-            print(f"close status code: {close_status_code}")
+            logger.debug(f"close status={close_status_code} ")
         ws.close()
 
     def run(self):
@@ -73,5 +82,13 @@ class SocketHandler:
         ping = (pong * 9) / 10
 
         self.wsapp.run_forever(
-            ping_interval=pong, ping_timeout=ping, ping_payload="ping"
+            ping_interval=pong, ping_timeout=ping, ping_payload="0x9"
         )
+
+    @property
+    def succesful(self):
+        return self.status == Status.SUCCESS
+
+    @property
+    def complete(self):
+        return self.state == States.COMPLETE

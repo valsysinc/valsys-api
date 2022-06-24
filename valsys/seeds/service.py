@@ -1,12 +1,21 @@
-from typing import List
-from valsys.spawn.models import ModelSeedConfigurationData, SeedDataFrameRow
+from typing import List, Dict
+
+import json
+import requests
+from valsys.config import URL_CONFIGS, URL_TEMPLATES
 
 
-def generate_model_configurations(
-        model_seeds: List[SeedDataFrameRow],
-        proj_period, hist_period) -> List[ModelSeedConfigurationData]:
-    model_configurations: List[ModelSeedConfigurationData] = []
-    for row in model_seeds:
-        model_configurations.append(ModelSeedConfigurationData.from_row(row, proj_period,
-                                                                        hist_period))
-    return model_configurations
+def load_company_configs(count: int = 5) -> List[Dict[str, str]]:
+    """Load and return `n` company configurations from the Valsys
+    `uploader` API."""
+    resp = requests.post(url=URL_CONFIGS, data=json.dumps({}))
+    return json.loads(resp.content).get("data").get("data")[:count]
+
+
+def load_templates(auth_token):
+    headers = {
+        "content-type": "application/json",
+        "Authorization": "Bearer " + auth_token,
+    }
+    resp = requests.get(url=URL_TEMPLATES, headers=headers)
+    return json.loads(resp.content).get("data")

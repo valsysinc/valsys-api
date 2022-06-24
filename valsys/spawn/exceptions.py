@@ -1,0 +1,2 @@
+class ModelSpawnException(Exception):
+    pass

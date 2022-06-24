@@ -1,6 +1,5 @@
-import datetime
 from dataclasses import dataclass, field
-from typing import List, Any, Dict
+from typing import List, Tuple, Optional
 
 
 @dataclass
@@ -13,7 +12,7 @@ class ModelSeedConfigurationData:
     industry_group: str
     start_period: int
     start_date: str
-    data_source: str
+    action: str = ""
     model_type: str = "DEFAULT"
     period_type: str = "ANNUAL"
     cash_flow_type: str = "FCFF"
@@ -21,47 +20,14 @@ class ModelSeedConfigurationData:
     company_type: str = "Public"
     target_variable: str = "Implied share price"
 
-    @classmethod
-    def from_row(cls, row, proj_period, hist_period):
-        return cls(
-            company_name=row.companyName,
-            ticker=row.ticker,
-            template_id=row.template_id,
-            industry_group=row.IndustryGroup,
-            start_period=row.fiscalYear,
-            start_date=datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            data_source=row.source,
-            proj_period=proj_period,
-            hist_period=hist_period,
-        )
-
-    @classmethod
-    def from_api(cls, ij, proj_period, hist_period):
-        ys = ij.get("startYears")
-        ys.reverse()
-        return cls(
-            company_name=ij.get("companyName"),
-            ticker=ij.get("ticker"),
-            template_id=ij.get("templateID"),
-            industry_group=ij.get("industry"),
-            proj_period=proj_period,
-            hist_period=hist_period,
-            start_period=ys[0],
-            start_date=datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            data_source="",
-        )
-
     def jsonify(self):
         return {
-            "action": "CREATE_MODEL",
-        }
-        return {
-            "action": "CREATE_MODEL",
+            "action": self.action,
             "companyName": self.company_name,
             "ticker": self.ticker,
             "templateID": self.template_id,
-            "projectionPeriod": self.proj_period,
-            "historicalPeriod": self.hist_period,
+            "numForecastYears": self.proj_period,
+            "numHistoricalYears": self.hist_period,
             "industry": self.industry_group,
             "startPeriod": self.start_period,
             "startDate": self.start_date,
@@ -71,49 +37,71 @@ class ModelSeedConfigurationData:
             "valuationType": self.valuation_type,
             "companyType": self.company_type,
             "targetVariable": self.target_variable,
-            "variables": {"INTERNAL_SOURCE": self.data_source},
             "historicalMax": self.start_period - self.hist_period + 1,
             "historicalMin": self.start_period + self.proj_period,
         }
 
-    def pp(self):
-        print("params:")
-        [print(f"{k}={v}") for k, v in self.jsonify().items()]
+    def validate(self):
+        nexpected_fields = 17
+        assert len(self.jsonify()) == nexpected_fields
 
 
 @dataclass
-class SpawnerError:
-    name: str
-    exception: Exception = None
-    info: Dict[str, Any] = field(default_factory=dict)
-
-    def jsonify(self):
-        return {
-            "name": self.name,
-            "info": self.info,
-            "exception_msg": str(self.exception),
-        }
-
-
-@dataclass
-class SpawnerErrors:
-    errors: List[SpawnerError] = field(default_factory=SpawnerError)
-
-    def append(self, error: SpawnerError):
-        self.errors.append(error)
-
-    def jsonify(self):
-        return [e.jsonify() for e in self.errors]
-
-    def __len__(self):
-        return len(self.errors)
-
-
-@dataclass
-class SpawnerReport:
-    configs: List[Dict[str, Any]] = field(default_factory=dict)
-    errors: SpawnerErrors = field(default_factory=SpawnerErrors)
+class SpawnProgress:
+    model_id: str = ""
+    ticker: str = ""
+    spawned: bool = False
+    tagged: bool = False
+    shared: bool = False
+    spawn_error: Exception = None
+    tag_error: Exception = None
+    share_error: Exception = None
+    shared_to: List[Tuple[str, Optional[Exception]]] = field(default_factory=list)
 
     @property
-    def has_errors(self):
-        return len(self.errors) > 0
+    def all_complete(self):
+        return self.spawned and self.tagged and self.shared
+
+    def mark_tagged(self, err=None):
+        if err is None:
+            self.tagged = True
+        self.tag_error = err
+
+    def mark_shared(self, email: str, permission: str, err=None):
+        if err is None:
+            self.shared = True
+        self.shared_to.append((email, permission, err))
+
+    def mark_spawned(self, model_id: str = None, err=None):
+        if err is None:
+            self.spawned = True
+            self.model_id = model_id
+        else:
+            self.spawn_error = err
+
+    def jsonify(self, detail=False):
+        """Returns a json representation of the progress;
+
+        If `detail=True`, then any error messages are returned as well.
+
+        `detail=False` by default.
+        """
+        j = {
+            "modelID": self.model_id,
+            "ticker": self.ticker,
+            "spawned": self.spawned,
+            "tagged": self.tagged,
+            "shared": self.shared,
+        }
+        if detail:
+            j.update(
+                {
+                    "spawnError": str(self.spawn_error or ""),
+                    "tagError": str(self.tag_error or ""),
+                    "sharedTo": [
+                        {"email": e, "permission": p, "error": str(err or "")}
+                        for e, p, err in self.shared_to
+                    ],
+                }
+            )
+        return j

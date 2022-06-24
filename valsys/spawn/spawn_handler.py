@@ -3,7 +3,11 @@ from typing import List
 from tqdm import tqdm
 import pyfiglet
 from valsys.utils import logger
-from valsys.spawn.models import ModelSeedConfigurationData, SpawnProgress
+from valsys.spawn.models import (
+    ModelSeedConfigurationData,
+    SpawnProgress,
+    SpawnerProgress,
+)
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.modeling.service import tag_model, share_model, spawn_model
@@ -68,14 +72,15 @@ class SpawnHandler:
         configs: List[ModelSeedConfigurationData],
         tags: List[str],
         emails: List[str],
-    ) -> List[SpawnProgress]:
+        options={"verbose": True},
+    ) -> SpawnerProgress:
         """Build and spawn models from the provided model configurations."""
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
 
-        user, password = API_PASSWORD, API_USERNAME
+        user, password = API_USERNAME, API_PASSWORD
 
-        progress: List[SpawnProgress] = []
-        for config in tqdm(configs):
+        progress: SpawnerProgress = SpawnerProgress(options=options)
+        for config in configs:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)
             handler.progress.ticker = config.ticker

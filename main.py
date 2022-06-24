@@ -1,14 +1,11 @@
 import datetime
 
-from valsys.config import API_PASSWORD, API_USERNAME
-
 from valsys.seeds import (
     load_template_id_by_name,
     load_company_configs_by_ticker,
 )
 from valsys.spawn import ModelSeedConfigurationData
 from valsys.spawn import SpawnHandler
-from valsys.utils import logger
 
 
 configs_json = load_company_configs_by_ticker(["BLIN", "BWXT"])
@@ -40,5 +37,3 @@ spawner_report = SpawnHandler.build_and_spawn_models(
     tags=tags,
     emails=emails,
 )
-
-[logger.info(sr.jsonify(detail=True)) for sr in spawner_report]

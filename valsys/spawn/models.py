@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, Any
+from valsys.utils import logger
 
 
 @dataclass
@@ -105,3 +106,18 @@ class SpawnProgress:
                 }
             )
         return j
+
+
+@dataclass
+class SpawnerProgress:
+    options: Dict[str, Any] = field(default_factory=dict)
+    processes: List[SpawnProgress] = field(default_factory=list)
+    verbose: bool = False
+
+    def __post_init__(self):
+        self.verbose = self.options.get("verbose", False)
+
+    def append(self, process: SpawnProgress):
+        self.processes.append(process)
+        if self.verbose:
+            logger.info(process.jsonify())

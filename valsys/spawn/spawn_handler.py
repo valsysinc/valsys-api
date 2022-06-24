@@ -9,6 +9,7 @@ from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.modeling.service import tag_model, share_model, spawn_model
 from valsys.version import VERSION, NAME
 from valsys.auth import authenticate
+from valsys.config import API_PASSWORD, API_USERNAME
 
 
 @dataclass
@@ -65,13 +66,14 @@ class SpawnHandler:
     def build_and_spawn_models(
         cls,
         configs: List[ModelSeedConfigurationData],
-        user: str,
-        password: str,
         tags: List[str],
         emails: List[str],
     ) -> List[SpawnProgress]:
         """Build and spawn models from the provided model configurations."""
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
+
+        user, password = API_PASSWORD, API_USERNAME
+
         progress: List[SpawnProgress] = []
         for config in tqdm(configs):
             auth_token = authenticate(username=user, password=password)

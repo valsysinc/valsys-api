@@ -5,6 +5,16 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class CaseInformation:
+    uid: str
+    case: str
+
+    @classmethod
+    def from_json(cls, input_json):
+        return cls(uid=input_json.get("uid"), case=input_json.get("case"))
+
+
+@dataclass
 class Case:
     uid: str
     start_period: float

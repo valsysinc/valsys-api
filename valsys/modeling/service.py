@@ -1,6 +1,7 @@
 import json
+
 from typing import List
-import requests
+
 from valsys.config import (
     URL_MODELING_MODEL_PROPERTIES,
     URL_USERS_SHARE_MODEL,
@@ -13,14 +14,25 @@ from valsys.config import (
     URL_EDIT_FORMAT,
     URL_EDIT_FORMULA,
 )
-from valsys.auth.service import auth_headers
 
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.spawn.socket_handler import SocketHandler
 from valsys.spawn.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
+from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case
+from valsys.modeling.client.service import new_client
+
+from valsys.modeling.headers import (
+    CASE_ID,
+    MODEL_ID,
+    UID,
+    PARENT_MODULE_ID,
+    NAME,
+    ORDER,
+    MODULE_ID,
+)
 
 CODE_POST_SUCCESS = 200
 
@@ -43,7 +55,7 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
         if handler.error is not None:
             raise ModelSpawnException(f"error building model: {handler.error}")
         elif handler.resp is not None:
-            model_id = handler.resp["data"]["uid"]
+            model_id = handler.resp["data"][UID]
         break
 
     if handler.succesful:
@@ -57,13 +69,16 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
 def tag_model(model_id: str, tags: List[str], auth_token: str):
     """Tag the machine models"""
 
-    # make request
+    client = new_client(auth_token)
 
-    body = {"modelID": model_id, "modelTags": tags, "update": True, "rollForward": True}
-    response = requests.post(
+    response = client.post(
         url=URL_MODELING_MODEL_PROPERTIES,
-        headers=auth_headers(auth_token),
-        data=json.dumps(body),
+        data={
+            MODEL_ID: model_id,
+            "modelTags": tags,
+            "update": True,
+            "rollForward": True,
+        },
     )
     if response.status_code != CODE_POST_SUCCESS:
         raise TagModelException(
@@ -74,16 +89,8 @@ def tag_model(model_id: str, tags: List[str], auth_token: str):
 
 def share_model(model_id: str, email: str, permission: str, auth_token: str):
     """Share models with the team"""
-    # authenticated header
-    headers = {
-        "content-type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-        "email": email,
-        "modelID": model_id,
-    }
 
-    # make request
-
+    client = new_client(auth_token)
     if permission == Permissions.VIEW:
         permissions = {
             "view": True,
@@ -93,8 +100,13 @@ def share_model(model_id: str, email: str, permission: str, auth_token: str):
             "edit": True,
         }
 
-    response = requests.post(
-        url=URL_USERS_SHARE_MODEL, headers=headers, data=json.dumps(permissions)
+    response = client.post(
+        url=URL_USERS_SHARE_MODEL,
+        headers={
+            "email": email,
+            MODEL_ID: model_id,
+        },
+        data=permissions,
     )
 
     if response.status_code != CODE_POST_SUCCESS:
@@ -104,149 +116,132 @@ def share_model(model_id: str, email: str, permission: str, auth_token: str):
         )
 
 
-def pull_model_information(auth_token: str, uid: str) -> str:
-    """Pulls the first case uid in a model"""
-    path = URL_MODEL_INFO
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-        "modelID": uid,
-    }
-    resp = requests.get(url=path, headers=headers)
-    if resp.status_code != 200:
-        print(resp.json())
-    return resp.json()["data"]["model"]["cases"][0]["uid"]
+def pull_model_information(uid: str) -> ModelInformation:
+    """Pulls the model information for the UID."""
+    client = new_client()
+    resp = client.get(
+        url=URL_MODEL_INFO,
+        headers={
+            MODEL_ID: uid,
+        },
+    )
+    cases = resp["data"]["model"]
+    return ModelInformation.from_json(uid, cases)
 
 
-def recalculate_model(auth_token: str, uid: str):
+def pull_case(uid: str) -> Case:
+    """Retreive a `Case` by its uid."""
+    client = new_client()
+    resp = client.get(
+        url=URL_CASE,
+        headers={
+            CASE_ID: uid,
+        },
+    )
+    return Case.from_json(resp["data"]["case"])
+
+
+def recalculate_model(uid: str):
     """Recalculates the model"""
-    path = URL_RECALC_MODEL
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-        "uid": uid,
-    }
-    resp = requests.get(url=path, headers=headers)
+    client = new_client()
+
+    resp = client.get(
+        url=URL_RECALC_MODEL,
+        headers={
+            UID: uid,
+        },
+    )
     if resp.status_code != 200:
         print(resp.json())
 
 
-def pull_case(auth_token, uid: str) -> Case:
-    path = URL_CASE
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-        "caseID": uid,
-    }
-    resp = requests.get(url=path, headers=headers)
-    if resp.status_code != 200:
-        print(resp.json())
-    case = Case.from_json(resp.json()["data"]["case"])
-    return case
+def remove_module(model_id, case_id, module_id, parent_module_id):
 
-
-def remove_module(auth_token, modelID, caseID, moduleID, parentModuleID, module_name):
-    path = URL_DELETE_MODULE
-    body = {
-        "token": auth_token,
-        "caseID": caseID,
-        "modelID": modelID,
-        "parentModuleID": parentModuleID,
-        "uid": moduleID,
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-    }
-    resp = requests.post(url=path, headers=headers, data=json.dumps(body))
+    client = new_client()
+    resp = client.post(
+        url=URL_DELETE_MODULE,
+        data={
+            CASE_ID: case_id,
+            MODEL_ID: model_id,
+            PARENT_MODULE_ID: parent_module_id,
+            UID: module_id,
+        },
+    )
     if resp.status_code != 200:
         print(resp.json())
     else:
         print("removed module")
 
 
-def add_child_module(parent_module_id, name, modelID, caseID):
-    auth_token = None
-    path = URL_ADD_MODULE
-    body = {
-        "token": auth_token,
-        "caseID": caseID,
-        "modelID": modelID,
-        "name": name,
-        #             "unlinked": True,
-        "parentModuleID": parent_module_id,
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-    }
-    resp = requests.post(url=path, headers=headers, data=json.dumps(body))
+def add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str):
+
+    client = new_client()
+    resp = client.post(
+        url=URL_ADD_MODULE,
+        data={
+            CASE_ID: case_id,
+            MODEL_ID: model_id,
+            NAME: name,
+            PARENT_MODULE_ID: parent_module_id,
+        },
+    )
     if resp.status_code != 200:
-        print(resp.json())
+
+        raise ValueError(
+            f"error adding new child module {resp.json()} code={resp.status_code}"
+        )
     child_modules = resp.json()["data"]["module"]["childModules"]
-    print("Created New Module: {}".format(name))
     for module in child_modules:
         if module["name"] == name:
             return module
 
 
 def add_item(case_id, model_id, name, order, module_id):
-    auth_token = None
-    path = URL_ADD_ITEM
-    body = {
-        "token": auth_token,
-        "caseID": case_id,
-        "modelID": model_id,
-        "name": name,
-        "order": order,
-        "moduleID": module_id,
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-    }
-    resp = requests.post(url=path, headers=headers, data=json.dumps(body))
+    client = new_client()
+
+    resp = client.post(
+        url=URL_ADD_ITEM,
+        data={
+            CASE_ID: case_id,
+            MODEL_ID: model_id,
+            NAME: name,
+            ORDER: order,
+            MODULE_ID: module_id,
+        },
+    )
     if resp.status_code != 200:
-        print(resp.json())
-    print("Added item:", name)
+        raise ValueError(f"Error adding item {resp.json()} code={resp.status_code}")
+
     return resp.json()["data"]
 
 
 def edit_format(case_id, model_id, facts):
-    auth_token = None
-    path = URL_EDIT_FORMAT
-    body = {
-        "token": auth_token,
-        "caseID": case_id,
-        "modelID": model_id,
-        "forecastIncrement": 1,
-        "facts": facts,
-    }
+    client = new_client()
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-    }
-    resp = requests.post(url=path, headers=headers, data=json.dumps(body))
+    resp = client.post(
+        url=URL_EDIT_FORMAT,
+        data={
+            CASE_ID: case_id,
+            MODEL_ID: model_id,
+            "forecastIncrement": 1,
+            "facts": facts,
+        },
+    )
     if resp.status_code != 200:
         print(resp.json())
 
 
 def edit_formula(case_id, model_id, facts):
-    auth_token = None
-    path = URL_EDIT_FORMULA
-    body = {
-        "token": auth_token,
-        "caseID": case_id,
-        "modelID": model_id,
-        "forecastIncrement": 1,
-        "facts": facts,
-    }
+    client = new_client()
 
-    params = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {auth_token}",
-    }
-    resp = requests.post(url=path, headers=params, data=json.dumps(body))
+    resp = client.post(
+        url=URL_EDIT_FORMULA,
+        data={
+            CASE_ID: case_id,
+            MODEL_ID: model_id,
+            "forecastIncrement": 1,
+            "facts": facts,
+        },
+    )
     if resp.status_code != 200:
         print(resp.json())

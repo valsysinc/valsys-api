@@ -79,7 +79,7 @@ class SpawnHandler:
 
         user, password = API_USERNAME, API_PASSWORD
 
-        progress: SpawnerProgress = SpawnerProgress(options=options)
+        progress: SpawnerProgress = SpawnerProgress(options)
         for config in configs:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)

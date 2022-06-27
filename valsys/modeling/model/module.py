@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass, field
 
-from valsys.modeling.service import add_child_module, add_item
+# from valsys.modeling.service import add_item
 from .line_item import LineItem
 
 
@@ -24,13 +24,12 @@ class Module:
                 return target
         return None
 
-    def add_item(self, name, order, modelID, caseID):
-        module = Module.from_json(
-            add_item(caseID, modelID, name, order, self.uid)["data"]["module"]
-        )
-        for l in module.line_items:
-            if l.name == name:
-                return l
+    # def add_item(self, name, order, modelID, caseID):
+    #    module_json = add_item(caseID, modelID, name, order, self.uid)
+    #    module = Module.from_json(module_json["module"])
+    #    for l in module.line_items:
+    #        if l.name == name:
+    #            return l
 
     def pull_items_from_tags(self, tags: List[str]) -> List[LineItem]:
         items = []
@@ -58,8 +57,8 @@ class Module:
                     return item
         return None
 
-    def add_child_module(self, name, modelID, caseID):
-        return Module.from_json(add_child_module(self.uid, name, modelID, caseID))
+    # def add_child_module(self, name, modelID, caseID):
+    #    return Module.from_json(add_child_module(self.uid, name, modelID, caseID))
 
     @classmethod
     def from_json(cls, data):

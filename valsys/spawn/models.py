@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional, Dict, Any
+from typing import Iterable, List, Tuple, Optional, Dict, Any
 from valsys.utils import logger
 
 
@@ -121,3 +121,7 @@ class SpawnerProgress:
         self.processes.append(process)
         if self.verbose:
             logger.info(process.jsonify())
+
+    def __iter__(self) -> Iterable[SpawnProgress]:
+        for p in self.processes:
+            yield p

@@ -1,5 +1,5 @@
 from typing import List
-from .case import Case
+from .case import Case, CaseInformation
 from dataclasses import dataclass, field
 
 
@@ -16,3 +16,22 @@ class Model(object):
         for case in self.cases:
             if case.case == name:
                 return case
+
+
+@dataclass
+class ModelInformation:
+    uid: str
+    cases: List[CaseInformation] = field(default_factory=list)
+
+    @property
+    def first(self):
+        if len(self.cases) == 0:
+            raise ValueError("there are no cases in the model.")
+        return self.cases[0]
+
+    @classmethod
+    def from_json(cls, uid, input_json):
+        return cls(
+            uid=uid,
+            cases=list(map(CaseInformation.from_json, input_json.get("cases"))),
+        )

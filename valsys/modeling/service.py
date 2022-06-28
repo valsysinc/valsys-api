@@ -2,18 +2,8 @@ import json
 
 from typing import List
 
-from valsys.config import (
-    URL_MODELING_MODEL_PROPERTIES,
-    URL_USERS_SHARE_MODEL,
-    URL_MODEL_INFO,
-    URL_RECALC_MODEL,
-    URL_CASE,
-    URL_DELETE_MODULE,
-    URL_ADD_ITEM,
-    URL_ADD_MODULE,
-    URL_EDIT_FORMAT,
-    URL_EDIT_FORMULA,
-)
+
+from valsys.modeling.client.urls import VSURL
 
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
@@ -23,7 +13,7 @@ from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case
 from valsys.modeling.client.service import new_client
-
+from valsys.modeling.client.exceptions import ModelingServicePostException
 from valsys.modeling.headers import (
     CASE_ID,
     MODEL_ID,
@@ -66,13 +56,13 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     raise ModelSpawnException("unknown spawn error")
 
 
-def tag_model(model_id: str, tags: List[str], auth_token: str):
+def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     """Tag the machine models"""
 
     client = new_client(auth_token)
 
     response = client.post(
-        url=URL_MODELING_MODEL_PROPERTIES,
+        url=VSURL.MODELING_MODEL_PROPERTIES,
         data={
             MODEL_ID: model_id,
             "modelTags": tags,
@@ -82,12 +72,12 @@ def tag_model(model_id: str, tags: List[str], auth_token: str):
     )
     if response.status_code != CODE_POST_SUCCESS:
         raise TagModelException(
-            f'failed to tag models via call {URL_MODELING_MODEL_PROPERTIES}; got {response.status_code} expected {CODE_POST_SUCCESS}; message={json.loads(response.content).get("message")}'
+            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {response.status_code} expected {CODE_POST_SUCCESS}; message={json.loads(response.content).get("message")}'
         )
     return response
 
 
-def share_model(model_id: str, email: str, permission: str, auth_token: str):
+def share_model(model_id: str, email: str, permission: str, auth_token: str = None):
     """Share models with the team"""
 
     client = new_client(auth_token)
@@ -100,27 +90,24 @@ def share_model(model_id: str, email: str, permission: str, auth_token: str):
             "edit": True,
         }
 
-    response = client.post(
-        url=URL_USERS_SHARE_MODEL,
-        headers={
-            "email": email,
-            MODEL_ID: model_id,
-        },
-        data=permissions,
-    )
-
-    if response.status_code != CODE_POST_SUCCESS:
-
-        raise ShareModelException(
-            f'failed to share models via call {URL_USERS_SHARE_MODEL}; expected={CODE_POST_SUCCESS} got={response.status_code}; message={json.loads(response.content).get("message")}'
+    try:
+        client.post(
+            url=VSURL.USERS_SHARE_MODEL,
+            headers={
+                "email": email,
+                MODEL_ID: model_id,
+            },
+            data=permissions,
         )
+    except ModelingServicePostException as err:
+        raise ShareModelException(f"failed to share models {str(err)}")
 
 
 def pull_model_information(uid: str) -> ModelInformation:
     """Pulls the model information for the UID."""
     client = new_client()
     resp = client.get(
-        url=URL_MODEL_INFO,
+        url=VSURL.MODEL_INFO,
         headers={
             MODEL_ID: uid,
         },
@@ -133,7 +120,7 @@ def pull_case(uid: str) -> Case:
     """Retreive a `Case` by its uid."""
     client = new_client()
     resp = client.get(
-        url=URL_CASE,
+        url=VSURL.CASE,
         headers={
             CASE_ID: uid,
         },
@@ -146,7 +133,7 @@ def recalculate_model(uid: str):
     client = new_client()
 
     resp = client.get(
-        url=URL_RECALC_MODEL,
+        url=VSURL.RECALC_MODEL,
         headers={
             UID: uid,
         },
@@ -159,7 +146,7 @@ def remove_module(model_id, case_id, module_id, parent_module_id):
 
     client = new_client()
     resp = client.post(
-        url=URL_DELETE_MODULE,
+        url=VSURL.DELETE_MODULE,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,
@@ -177,7 +164,7 @@ def add_child_module(parent_module_id: str, name: str, model_id: str, case_id: s
 
     client = new_client()
     resp = client.post(
-        url=URL_ADD_MODULE,
+        url=VSURL.ADD_MODULE,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,
@@ -200,7 +187,7 @@ def add_item(case_id, model_id, name, order, module_id):
     client = new_client()
 
     resp = client.post(
-        url=URL_ADD_ITEM,
+        url=VSURL.ADD_ITEM,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,
@@ -219,7 +206,7 @@ def edit_format(case_id, model_id, facts):
     client = new_client()
 
     resp = client.post(
-        url=URL_EDIT_FORMAT,
+        url=VSURL.EDIT_FORMAT,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,
@@ -235,7 +222,7 @@ def edit_formula(case_id, model_id, facts):
     client = new_client()
 
     resp = client.post(
-        url=URL_EDIT_FORMULA,
+        url=VSURL.EDIT_FORMULA,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,

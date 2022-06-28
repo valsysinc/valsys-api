@@ -1,4 +1,3 @@
-from valsys.spawn import SpawnHandler
 from valsys.modeling.service import pull_model_information, pull_case
 
 

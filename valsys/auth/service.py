@@ -3,7 +3,7 @@ from collections import namedtuple
 from http import HTTPStatus
 
 import requests
-from valsys.config import URL_LOGIN_USERS
+from valsys.modeling.client.urls import VSURL
 
 
 def authenticate(username: str, password: str) -> str:
@@ -14,7 +14,7 @@ def authenticate(username: str, password: str) -> str:
     headers = {"username": username, "password": password}
 
     # decode into an object and validate
-    response = requests.get(url=URL_LOGIN_USERS, headers=headers, data=None)
+    response = requests.get(url=VSURL.LOGIN_USERS, headers=headers, data=None)
     if response.status_code != HTTPStatus.OK:
         raise ValueError(f"cannot send auth request; code={response.status_code}")
     auth_response = json.loads(

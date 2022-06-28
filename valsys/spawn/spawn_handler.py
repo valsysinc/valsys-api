@@ -1,8 +1,7 @@
 from dataclasses import field, dataclass
-from typing import List
-from tqdm import tqdm
+from typing import List, Dict, Any
 import pyfiglet
-from valsys.utils import logger
+
 from valsys.spawn.models import (
     ModelSeedConfigurationData,
     SpawnProgress,
@@ -72,11 +71,12 @@ class SpawnHandler:
         configs: List[ModelSeedConfigurationData],
         tags: List[str],
         emails: List[str],
-        options={"verbose": True},
+        options: Dict[str, Any] = None,
     ) -> SpawnerProgress:
         """Build and spawn models from the provided model configurations."""
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
 
+        options = options or {"verbose": True}
         user, password = API_USERNAME, API_PASSWORD
 
         progress: SpawnerProgress = SpawnerProgress(options)

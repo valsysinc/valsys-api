@@ -5,6 +5,9 @@ from valsys.utils import logger
 
 @dataclass
 class ModelSeedConfigurationData:
+    """ModelSeedConfigurationData is the required data structure
+    for spawning models."""
+
     company_name: str
     ticker: str
     template_id: str
@@ -20,6 +23,16 @@ class ModelSeedConfigurationData:
     valuation_type: str = "Perpetual Growth"
     company_type: str = "Public"
     target_variable: str = "Implied share price"
+
+    @property
+    def hist_max(self):
+        """Compute the historical max."""
+        return self.start_period - self.hist_period + 1
+
+    @property
+    def hist_min(self):
+        """Compute the historical min."""
+        return self.start_period + self.proj_period
 
     def jsonify(self):
         return {
@@ -38,8 +51,8 @@ class ModelSeedConfigurationData:
             "valuationType": self.valuation_type,
             "companyType": self.company_type,
             "targetVariable": self.target_variable,
-            "historicalMax": self.start_period - self.hist_period + 1,
-            "historicalMin": self.start_period + self.proj_period,
+            "historicalMax": self.hist_max,
+            "historicalMin": self.hist_min,
         }
 
     def validate(self):

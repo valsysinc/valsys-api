@@ -1,16 +1,13 @@
 """Driver example for spawning models"""
 import datetime
 
-from valsys.seeds import (
-    load_template_id_by_name,
-    load_company_configs_by_ticker,
-)
-from valsys.spawn import ModelSeedConfigurationData
-from valsys.spawn import SpawnHandler
+from valsys.seeds.loader import SeedsLoader
+from valsys.spawn.models import ModelSeedConfigurationData
+from valsys.spawn.spawn_handler import SpawnHandler
 
-
-configs_json = load_company_configs_by_ticker(["BLIN", "BWXT"])
-template_id = load_template_id_by_name(template_name="dcf-standard")
+loader = SeedsLoader()
+configs_json = loader.company_configs_by_ticker(["BLIN", "BWXT"])
+template_id = loader.template_id_by_name(template_name="dcf-standard")
 
 hist_period = 2
 proj_period = 3
@@ -22,10 +19,10 @@ for config in configs_json:
             company_name=config.get("companyName"),
             ticker=config.get("ticker"),
             industry_group=config.get("industry"),
-            proj_period=proj_period,
-            hist_period=hist_period,
             start_period=config.get("startYears")[-1],
             start_date=datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            proj_period=proj_period,
+            hist_period=hist_period,
             template_id=template_id,
         )
     )

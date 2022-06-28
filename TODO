@@ -6,6 +6,7 @@ FEATURES
 --------
 - module spawn
 - module configuration
+- after spawn, also load models into object
 
 BUGS
 ----

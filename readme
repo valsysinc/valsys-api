@@ -1,6 +1,2 @@
 spawning & sharing models
 
-getting company configs
-POST /uploader/configuration
-- pick 10
-curl -X POST http://localhost:8080/configuration 

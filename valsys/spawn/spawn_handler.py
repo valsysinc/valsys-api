@@ -68,7 +68,7 @@ class SpawnHandler:
     @classmethod
     def build_and_spawn_models(
         cls,
-        configs: List[ModelSeedConfigurationData],
+        seeds: List[ModelSeedConfigurationData],
         tags: List[str],
         emails: List[str],
         options: Dict[str, Any] = None,
@@ -80,7 +80,7 @@ class SpawnHandler:
         user, password = API_USERNAME, API_PASSWORD
 
         progress: SpawnerProgress = SpawnerProgress(options)
-        for config in configs:
+        for config in seeds:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)
             handler.progress.ticker = config.ticker

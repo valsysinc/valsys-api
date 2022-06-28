@@ -9,7 +9,8 @@ class SeedsLoader:
     and IDs for use in the Spawner."""
 
     def company_configs_by_ticker(self, tickers: List[str]) -> List[CompanyConfig]:
-        """Load a list of company configs by ticker."""
+        """Load a list of company configs by ticker from
+        the valsys modeling service API."""
 
         ret = []
         for cfg in load_company_configs():

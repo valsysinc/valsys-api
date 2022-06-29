@@ -6,6 +6,6 @@ pipelines:
         services:
           - docker
         script:
-          - docker build -t import .
-          - docker run -t import pytest
-          - docker run -t import /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report"
+          - docker build -t apilib .
+          - docker run -t apilib pytest
+          - docker run -t apilib /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report"

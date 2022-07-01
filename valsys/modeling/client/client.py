@@ -19,6 +19,7 @@ class ModelingServiceClient:
     """
 
     auth_token: str = ""
+    status_code: int = 0
 
     def _add_auth_headers(self, hdrs=None):
         hdrs = hdrs or {}
@@ -45,6 +46,7 @@ class ModelingServiceClient:
             url=url,
             headers=self._add_auth_headers(headers),
         )
+        self.status_code = resp.status_code
         if resp.status_code != expected_status:
             raise ModelingServiceGetException(
                 data=resp.json(),
@@ -70,6 +72,7 @@ class ModelingServiceClient:
         resp = requests.post(
             url=url, headers=self._add_auth_headers(headers), data=json.dumps(data)
         )
+        self.status_code = resp.status_code
         if resp.status_code != expected_status:
             raise ModelingServicePostException(
                 data=resp.json(),

@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 import json
 from typing import Dict
 import websocket
-from valsys.config import SCK_MODELING_CREATE
+from valsys.modeling.client.urls import VSURL
 from valsys.utils import logger
 
 
@@ -17,8 +18,29 @@ class Status:
     FAILED = "failed"
 
 
+@dataclass
+class Message:
+    status: str
+    err: str
+    close: bool
+    step: str
+
+    @classmethod
+    def from_json(cls, response):
+        return cls(
+            status=response.get("status"),
+            err=response.get("error"),
+            close=response.get("Close"),
+            step=response.get("step")
+        )
+
+    @classmethod
+    def from_response(cls, response):
+        return cls.from_json(json.loads(response))
+
+
 class SocketHandler:
-    def __init__(self, config: Dict[str, str], auth_token: str, trace=False) -> None:
+    def __init__(self, config: Dict[str, str], auth_token: str, trace: bool = False) -> None:
 
         self.config = config
         self.error = None
@@ -28,8 +50,9 @@ class SocketHandler:
         self.state = States.IN_PROGRESS
         # enable trace in dev for debugging
         websocket.enableTrace(trace)
-        logger.debug(f"connecting to socket {SCK_MODELING_CREATE}")
-        socketpath = f"{SCK_MODELING_CREATE}" + auth_token
+        self.url = VSURL.SCK_MODELING_CREATE
+        logger.debug(f"connecting to socket {self.url}")
+        socketpath = f"{self.url}" + auth_token
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
             on_open=self.create_model,
@@ -44,7 +67,7 @@ class SocketHandler:
     def on_error(self, ws: websocket.WebSocketApp, err: Exception):
         self.state = States.ERROR
         self.exception = err
-        logger.error(f"{str(err)} URL={SCK_MODELING_CREATE}")
+        logger.error(f"{str(err)} URL={self.url}")
 
     def msg_handler(self, ws, message):
         # Statuses: success, failed
@@ -56,12 +79,12 @@ class SocketHandler:
         step = response.get("step")
         self.status = status
 
-        if status != Status.SUCCESS:
-            self.error = response["error"]
+        if not self.succesful:
+            self.error = err
             self.status = Status.FAILED
-            logger.error(f"from {SCK_MODELING_CREATE} {message}")
+            logger.error(f"from {self.url} {message}")
         if err != "":
-            self.error = response["error"]
+            self.error = err
             self.status = Status.FAILED
             self.on_close(ws, websocket.STATUS_NORMAL, message)
         elif close is True:

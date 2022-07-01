@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing import Optional, List
+
 
 @dataclass
 class Fact:
@@ -10,13 +12,36 @@ class Fact:
     value: float
     fmt: str
 
+    class fields:
+        UID = 'uid'
+        FORMULA = 'formula'
+        PERIOD = 'period'
+        IDENTIFIER = 'identifier'
+        FMT = 'fmt'
+        VALUE = 'value'
+        FORMAT = 'format'
+
+    def jsonify(self, fields: Optional[List[str]] = None):
+        all_fields = {
+            self.fields.UID: self.uid,
+            self.fields.FORMULA: self.formula,
+            self.fields.PERIOD: self.period,
+            self.fields.IDENTIFIER: self.identifier,
+            self.fields.FMT: self.fmt,
+            self.fields.FORMAT: self.fmt
+        }
+        if fields is None:
+            return all_fields
+        else:
+            return {f: all_fields[f] for f in fields}
+
     @classmethod
     def from_json(cls, data):
         return cls(
-            uid=data["uid"],
-            identifier=data.get("identifier", ""),
-            formula=data.get("formula", ""),
-            period=data.get("period", 0),
-            value=data.get("value", 0),
-            fmt=data.get("fmt", ""),
+            uid=data[cls.fields.UID],
+            identifier=data.get(cls.fields.IDENTIFIER, ""),
+            formula=data.get(cls.fields.FORMULA, ""),
+            period=data.get(cls.fields.PERIOD, 0),
+            value=data.get(cls.fields.VALUE, 0),
+            fmt=data.get(cls.fields.FMT, ""),
         )

@@ -24,13 +24,6 @@ class Module:
                 return target
         return None
 
-    # def add_item(self, name, order, modelID, caseID):
-    #    module_json = add_item(caseID, modelID, name, order, self.uid)
-    #    module = Module.from_json(module_json["module"])
-    #    for l in module.line_items:
-    #        if l.name == name:
-    #            return l
-
     def pull_items_from_tags(self, tags: List[str]) -> List[LineItem]:
         items = []
         if self.line_items is not None:
@@ -57,21 +50,17 @@ class Module:
                     return item
         return None
 
-    # def add_child_module(self, name, modelID, caseID):
-    #    return Module.from_json(add_child_module(self.uid, name, modelID, caseID))
-
     @classmethod
     def from_json(cls, data):
-        line_items = []
-        if data.get("lineItems"):
-            line_items = list(map(LineItem.from_json, data["lineItems"]))
         if data.get("childModules") is not None:
             child_modules = list(map(Module.from_json, data["childModules"]))
-            return cls(
-                data["uid"],
-                data["name"],
-                data["moduleStart"],
-                line_items,
-                child_modules,
-            )
-        return cls(data["uid"], data["name"], data["moduleStart"], line_items, None)
+        else:
+            child_modules = None
+        return cls(
+            uid=data["uid"],
+            name=data["name"],
+            module_start=data["moduleStart"],
+            line_items=list(map(LineItem.from_json, data.get("lineItems",
+                                                             []))),
+            child_modules=child_modules,
+        )

@@ -12,39 +12,30 @@ class LineItem:
     facts: List[Fact] = field(default_factory=list)
     tags: List[str] = None
 
+    def jsonify_facts(self, fields=None):
+        return [f.jsonify(fields) for f in self.facts]
+
     # def add_item(self, name, modelID, caseID):
     #    module = add_child_module(self.uid, name, modelID, caseID)
     #    return Module.from_json(module)
 
-    # def apply_edits(self, modelID, caseID):
-    #    facts = []
-    #    for cell in self.facts:
-    #        facts.append(
-    #            {
-    #                "uid": cell.uid,
-    #                "formula": cell.formula,
-    #                "period": cell.period,
-    #                "identifier": cell.identifier,
-    #            }
-    #        )
-    #    edit_formula(caseID, modelID, facts)
+    def facts_for_formula_edit(self):
+        return self.jsonify_facts(fields=[
+            Fact.fields.UID, Fact.fields.FORMULA, Fact.fields.PERIOD,
+            Fact.fields.IDENTIFIER
+        ])
 
-    #    print("Edit applied to:", self.name)
-
-    # def edit_format(self, modelID, caseID):
-    #    facts = []
-    #    for cell in self.facts:
-    #        facts.append(
-    #            {"uid": cell.uid, "format": cell.fmt, "identifier": cell.identifier}
-    #        )
-    #    edit_format(caseID, modelID, facts)
-    #    print("Format edit applied to:", self.name)
+    def facts_for_format_edit(self):
+        return self.jsonify_facts(fields=[
+            Fact.fields.UID, Fact.fields.IDENTIFIER, Fact.fields.FORMAT
+        ])
 
     @classmethod
     def from_json(cls, data):
         facts = []
         if data.get("facts"):
             facts = list(map(Fact.from_json, data["facts"]))
-        return cls(
-            uid=data["uid"], name=data["name"], facts=facts, tags=data.get("tags", None)
-        )
+        return cls(uid=data["uid"],
+                   name=data["name"],
+                   facts=facts,
+                   tags=data.get("tags", None))

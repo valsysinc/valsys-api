@@ -1,4 +1,4 @@
-from valsys.config import BASE_URL
+from valsys.config import BASE_URL, BASE_SCK
 
 
 class VSURL:
@@ -18,3 +18,5 @@ class VSURL:
     EDIT_FORMULA = f"{BASE_URL}/modeling/edit-formula"
     USERS_SHARE_MODEL = f"{BASE_URL}/users/share-model"
     USERS_MODELS = f"{BASE_URL}/users/models"
+
+    SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"

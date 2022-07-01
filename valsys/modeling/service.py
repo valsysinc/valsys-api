@@ -2,8 +2,8 @@ import json
 
 from typing import List
 
-
 from valsys.modeling.client.urls import VSURL
+from valsys.modeling.model.fact import Fact
 
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
@@ -12,6 +12,8 @@ from valsys.spawn.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case
+from valsys.modeling.model.module import Module
+from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.client.service import new_client
 from valsys.modeling.client.exceptions import ModelingServicePostException
 from valsys.modeling.headers import (
@@ -36,7 +38,9 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     """
     config.action = "CREATE_MODEL"
     config.validate()
-    handler = SocketHandler(config=config.jsonify(), auth_token=auth_token, trace=False)
+    handler = SocketHandler(config=config.jsonify(),
+                            auth_token=auth_token,
+                            trace=False)
     handler.run()
 
     while True:
@@ -77,7 +81,10 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     return response
 
 
-def share_model(model_id: str, email: str, permission: str, auth_token: str = None):
+def share_model(model_id: str,
+                email: str,
+                permission: str,
+                auth_token: str = None):
     """Share models with the team"""
 
     client = new_client(auth_token)
@@ -160,8 +167,11 @@ def remove_module(model_id, case_id, module_id, parent_module_id):
         print("removed module")
 
 
-def add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str):
-
+def add_child_module(parent_module_id: str, name: str, model_id: str,
+                     case_id: str) -> Module:
+    """Add a new module to the parent module.
+    
+    Returns the newly constructed `Module` object."""
     client = new_client()
     resp = client.post(
         url=VSURL.ADD_MODULE,
@@ -180,10 +190,11 @@ def add_child_module(parent_module_id: str, name: str, model_id: str, case_id: s
     child_modules = resp.json()["data"]["module"]["childModules"]
     for module in child_modules:
         if module["name"] == name:
-            return module
+            return Module.from_json(module)
+    raise ValueError(f"Error adding child module")
 
 
-def add_item(case_id, model_id, name, order, module_id):
+def add_item(case_id, model_id, name, order, module_id) -> LineItem:
     client = new_client()
 
     resp = client.post(
@@ -197,16 +208,21 @@ def add_item(case_id, model_id, name, order, module_id):
         },
     )
     if resp.status_code != 200:
-        raise ValueError(f"Error adding item {resp.json()} code={resp.status_code}")
+        raise ValueError(
+            f"Error adding item {resp.json()} code={resp.status_code}")
 
-    return resp.json()["data"]
+    module = Module.from_json(resp["data"]["module"])
+    for l in module.line_items:
+        if l.name == name:
+            return l
+    raise ValueError(f"cannot find module with name {name}")
 
 
-def edit_format(case_id, model_id, facts):
+def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
     client = new_client()
 
     resp = client.post(
-        url=VSURL.EDIT_FORMAT,
+        url=url,
         data={
             CASE_ID: case_id,
             MODEL_ID: model_id,
@@ -218,17 +234,17 @@ def edit_format(case_id, model_id, facts):
         print(resp.json())
 
 
-def edit_formula(case_id, model_id, facts):
-    client = new_client()
+def edit_format(case_id: str, model_id: str, facts: List[Fact]):
+    """Edit the format on the supplied facts."""
+    return edit_facts(url=VSURL.EDIT_FORMAT,
+                      case_id=case_id,
+                      model_id=model_id,
+                      facts=facts)
 
-    resp = client.post(
-        url=VSURL.EDIT_FORMULA,
-        data={
-            CASE_ID: case_id,
-            MODEL_ID: model_id,
-            "forecastIncrement": 1,
-            "facts": facts,
-        },
-    )
-    if resp.status_code != 200:
-        print(resp.json())
+
+def edit_formula(case_id: str, model_id: str, facts: List[Fact]):
+    """Edit the formula on the supplied facts."""
+    return edit_facts(url=VSURL.EDIT_FORMULA,
+                      case_id=case_id,
+                      model_id=model_id,
+                      facts=facts)

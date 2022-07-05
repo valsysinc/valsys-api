@@ -3,3 +3,5 @@
 logs/
 .coverage
 .vscode/*
+*.swp
+.env

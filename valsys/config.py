@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 from pathlib import Path
 from valsys.utils.utils import read_env
 
-BUILD = os.getenv("VALSYS_API_BUILD", 'local')
+BUILD = os.getenv("VALSYS_API_BUILD", 'test')
 if BUILD == 'test':
+    print('VALSYS_API_BUILD=test')
     load_dotenv(dotenv_path=Path('env/.env.test'))
 else:
     load_dotenv(dotenv_path=Path('env/.env'))

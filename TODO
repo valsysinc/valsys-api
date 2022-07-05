@@ -4,6 +4,7 @@
 
 FEATURES
 --------
+
 - module spawn
 - module configuration
 - after spawn, also load models into object
@@ -17,6 +18,7 @@ BUGS
 ==============================
 FEATURES
 --------
+- load env file (DONE 5/7/22)
 - bitbucket pipelines (DONE 29/6/22)
 - model spawn (DONE 28/6/22)
 - modeling service client class (DONE 28/6/22)

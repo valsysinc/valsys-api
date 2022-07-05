@@ -10,17 +10,17 @@ Purpose: spawning & sharing models
 - start a venv
 ```
 python3 -m venv .venv
-source .venv activate
+source .venv/bin/activate
 ```
 - install dependencies
 ```
 pip install -r requirements.txt
 ```
-
-- Have environment variables set
+- set environment variables in a `.env` file
 ```
-export VALSYS_USER=<USERNAME>
-export VALSYS_PASSWORD=<PASSWORD>
+VALSYS_API_SERVER="http://localhost:5200"
+VALSYS_API_USER=<USERNAME>
+VALSYS_API_PASSWORD=<PASSWORD>
 ```
 
 ## Usage

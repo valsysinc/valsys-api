@@ -5,3 +5,4 @@ logs/
 .vscode/*
 *.swp
 .env
+htmlcov/

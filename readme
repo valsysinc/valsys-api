@@ -2,3 +2,28 @@
 
 Purpose: spawning & sharing models
 
+
+
+## Installation
+- have the valsys stack running locally
+- have a system python
+- start a venv
+```
+python3 -m venv .venv
+source .venv activate
+```
+- install dependencies
+```
+pip install -r requirements.txt
+```
+
+- Have environment variables set
+```
+export VALSYS_USER=<USERNAME>
+export VALSYS_PASSWORD=<PASSWORD>
+```
+
+## Usage
+```
+python main.py assets/example_input.json
+```

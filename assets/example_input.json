@@ -1,0 +1,15 @@
+{
+    "tickers": [
+        "BLIN",
+        "BWXT"
+    ],
+    "templateName": "dcf-standard",
+    "histPeriod": 2,
+    "projPeriod": 3,
+    "tags": [
+        "t1"
+    ],
+    "emails": [
+        "j@me.com"
+    ]
+}

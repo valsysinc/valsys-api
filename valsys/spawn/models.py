@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterable, List, Tuple, Optional, Dict, Any
+from typing import Iterator, List, Tuple, Optional, Dict, Any
 from valsys.utils import logger
 
 
@@ -70,7 +70,8 @@ class SpawnProgress:
     spawn_error: Exception = None
     tag_error: Exception = None
     share_error: Exception = None
-    shared_to: List[Tuple[str, Optional[Exception]]] = field(default_factory=list)
+    shared_to: List[Tuple[str,
+                          Optional[Exception]]] = field(default_factory=list)
 
     @property
     def all_complete(self):
@@ -108,16 +109,17 @@ class SpawnProgress:
             "shared": self.shared,
         }
         if detail:
-            j.update(
-                {
-                    "spawnError": str(self.spawn_error or ""),
-                    "tagError": str(self.tag_error or ""),
-                    "sharedTo": [
-                        {"email": e, "permission": p, "error": str(err or "")}
-                        for e, p, err in self.shared_to
-                    ],
-                }
-            )
+            j.update({
+                "spawnError":
+                str(self.spawn_error or ""),
+                "tagError":
+                str(self.tag_error or ""),
+                "sharedTo": [{
+                    "email": e,
+                    "permission": p,
+                    "error": str(err or "")
+                } for e, p, err in self.shared_to],
+            })
         return j
 
 
@@ -135,6 +137,10 @@ class SpawnerProgress:
         if self.verbose:
             logger.info(process.jsonify())
 
-    def __iter__(self) -> Iterable[SpawnProgress]:
+    def __iter__(self) -> Iterator[SpawnProgress]:
         for p in self.processes:
             yield p
+
+    @property
+    def spawned_model_ids(self):
+        return [p.model_id for p in self if p.spawned]

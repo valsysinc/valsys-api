@@ -1,6 +1,5 @@
 from dataclasses import field, dataclass
 from typing import List, Dict, Any
-import pyfiglet
 
 from valsys.spawn.models import (
     ModelSeedConfigurationData,
@@ -10,7 +9,7 @@ from valsys.spawn.models import (
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.modeling.service import tag_model, share_model, spawn_model
-from valsys.version import VERSION, NAME
+
 from valsys.auth import authenticate
 from valsys.config import API_PASSWORD, API_USERNAME
 
@@ -32,7 +31,8 @@ class SpawnHandler:
     def spawn(self, config: ModelSeedConfigurationData):
         """Use the provided configuration to spawn a model."""
         try:
-            self.model_id = spawn_model(config=config, auth_token=self.auth_token)
+            self.model_id = spawn_model(config=config,
+                                        auth_token=self.auth_token)
             self.progress.mark_spawned(model_id=self.model_id)
         except ModelSpawnException as err:
             self.progress.mark_spawned(err=err)
@@ -40,6 +40,8 @@ class SpawnHandler:
     def tag(self, tags: List[str]):
         """Tag the spawned model."""
         if self.model_id is None:
+            return
+        if len(tags) == 0:
             return
         try:
             tag_model(self.model_id, tags, self.auth_token)
@@ -52,6 +54,8 @@ class SpawnHandler:
 
         All users will be given the same permissions."""
         if self.model_id is None:
+            return
+        if len(emails) == 0:
             return
         for email in emails:
             try:
@@ -69,13 +73,14 @@ class SpawnHandler:
     def build_and_spawn_models(
         cls,
         seeds: List[ModelSeedConfigurationData],
-        tags: List[str],
-        emails: List[str],
+        tags: List[str] = None,
+        emails: List[str] = None,
         options: Dict[str, Any] = None,
     ) -> SpawnerProgress:
         """Build and spawn models from the provided model configurations."""
-        print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
 
+        tags = tags or []
+        emails = emails or []
         options = options or {"verbose": True}
         user, password = API_USERNAME, API_PASSWORD
 

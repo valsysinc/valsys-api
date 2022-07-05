@@ -1,7 +1,12 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+BUILD = os.getenv("VALSYS_API_BUILD", 'local')
+if BUILD == 'test':
+    load_dotenv(dotenv_path=Path('env/.env.test'))
+else:
+    load_dotenv(dotenv_path=Path('env/.env'))
 
 BASE_SCK = "ws://localhost:5100"
 BASE_URL = os.getenv("VALSYS_API_SERVER")

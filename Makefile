@@ -1,5 +1,5 @@
 test:
-	pytest . --disable-warnings
+	export VALSYS_API_BUILD=test; pytest . --disable-warnings
 
 coverage:
 	coverage run --source=. -m pytest . 

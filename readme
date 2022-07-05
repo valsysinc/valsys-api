@@ -16,7 +16,7 @@ source .venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
-- set environment variables in a `.env` file
+- set environment variables in a `env/.env` file
 ```
 VALSYS_API_SERVER="http://localhost:5200"
 VALSYS_API_USER=<USERNAME>

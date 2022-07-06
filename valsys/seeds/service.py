@@ -8,7 +8,7 @@ def load_company_configs() -> List[Dict[str, str]]:
     `uploader` API."""
     client = new_client()
     resp = client.post(url=VSURL.CONFIGS)
-    return resp.json().get("data").get("data")
+    return resp.get("data").get("data")
 
 
 def load_templates():

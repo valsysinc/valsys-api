@@ -1,6 +1,114 @@
+import json
 from dataclasses import dataclass, field
 from typing import Iterator, List, Tuple, Optional, Dict, Any
+
+from tomlkit import value
 from valsys.utils import logger
+
+
+@dataclass
+class FormulaEditConfig:
+    period_name: str
+    period_year: str
+    formula: str
+
+    @classmethod
+    def from_json(cls, config):
+        return cls(
+            period_name=config.get('periodName'),
+            period_year=config.get('periodYear'),
+            formula=config.get('formula')
+        )
+
+
+@dataclass
+class LineItemConfig:
+    name: str
+    order: str
+    formula_edits: List[FormulaEditConfig] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, config):
+        return cls(name=config.get('name'), order=config.get('order'),
+                   formula_edits=[FormulaEditConfig.from_json(fec) for fec in config.get('formulaEdits')])
+
+
+@dataclass
+class PopulateModulesConfig:
+    model_ids: List[str]
+    parent_module_name: str
+    module_name: str
+    key_metrics_config: Dict[str, Any]
+    line_item_data: List[LineItemConfig] = field(default_factory=list)
+
+    def validate(self):
+        if self.parent_module_name == "":
+            raise ValueError(f"need parentModuleName")
+        if self.module_name == "":
+            raise ValueError(f"need moduleName")
+
+    def get_line_item_config(self, line_item_name: str) -> LineItemConfig:
+        for li in self.line_item_data:
+            if li.name == line_item_name:
+                return li
+        raise ValueError(f"line item with name {line_item_name} not found in config")
+
+    def __post__init__(self):
+        self.validate()
+
+    @classmethod
+    def from_json(cls, model_ids: List[str], config: Dict[str, Any]):
+        return cls(
+            model_ids=model_ids,
+            parent_module_name=config.get('parentModuleName', ''),
+            module_name=config.get('moduleName', ''),
+            key_metrics_config=config.get('keyMetricsConfig'),
+            line_item_data=[LineItemConfig.from_json(li) for li in config.get('lineItems')]
+        )
+
+
+@dataclass
+class ModelSpawnConfig:
+    tickers: List[str]
+    template_name: str
+    hist_period: int
+    proj_period: int
+    tags: List[str] = field(default_factory=list)
+    emails: List[str] = field(default_factory=list)
+
+    def validate(self):
+        if len(self.tickers) == 0:
+            raise ValueError('need tickers')
+        if self.template_name == "":
+            raise ValueError('need a templateName')
+        if self.hist_period is None:
+            raise ValueError('need histPeriod')
+        if self.proj_period is None:
+            raise ValueError('need projPeriod')
+
+    def __post__init__(self):
+        self.validate()
+
+    @classmethod
+    def from_json(cls, spawn_config):
+        return cls(
+            tickers=spawn_config.get('tickers'),
+            template_name=spawn_config.get('templateName'),
+            hist_period=spawn_config.get('histPeriod', None),
+            proj_period=spawn_config.get('projPeriod', None),
+            tags=spawn_config.get('tags', []),
+            emails=spawn_config.get('emails', []),
+        )
+
+    def jsonify(self):
+        return {
+            'tickers': self.tickers,
+            'templateName': self.templateName,
+            'histPeriod': self.hist_period,
+            'projPeriod': self.projPeriod,
+            'tags': self.tags,
+            'emails': self.emails
+        }
 
 
 @dataclass
@@ -135,7 +243,7 @@ class SpawnerProgress:
     def append(self, process: SpawnProgress):
         self.processes.append(process)
         if self.verbose:
-            logger.info(process.jsonify())
+            logger.info(process.jsonify(detail=True))
 
     def __iter__(self) -> Iterator[SpawnProgress]:
         for p in self.processes:
@@ -144,3 +252,7 @@ class SpawnerProgress:
     @property
     def spawned_model_ids(self):
         return [p.model_id for p in self if p.spawned]
+
+    @property
+    def has_errors(self):
+        return len(self.spawned_model_ids) == 0

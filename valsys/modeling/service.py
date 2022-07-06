@@ -4,7 +4,8 @@ from typing import List
 
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.model.fact import Fact
-
+from valsys.utils import logger
+from valsys.utils.utils import timeit
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.spawn.socket_handler import SocketHandler
@@ -29,6 +30,7 @@ from valsys.modeling.headers import (
 CODE_POST_SUCCESS = 200
 
 
+@timeit
 def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     """
     Given a model config and authentication token, spawn a model.
@@ -64,21 +66,20 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     """Tag the machine models"""
 
     client = new_client(auth_token)
-
-    response = client.post(
-        url=VSURL.MODELING_MODEL_PROPERTIES,
-        data={
-            MODEL_ID: model_id,
-            "modelTags": tags,
-            "update": True,
-            "rollForward": True,
-        },
-    )
-    if response.status_code != CODE_POST_SUCCESS:
-        raise TagModelException(
-            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {response.status_code} expected {CODE_POST_SUCCESS}; message={json.loads(response.content).get("message")}'
+    try:
+        return client.post(
+            url=VSURL.MODELING_MODEL_PROPERTIES,
+            data={
+                MODEL_ID: model_id,
+                "modelTags": tags,
+                "update": True,
+                "rollForward": True,
+            },
         )
-    return response
+    except ModelingServicePostException as err:
+        raise TagModelException(
+            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {err.status_code} expected {CODE_POST_SUCCESS}; message={err.data}'
+        )
 
 
 def share_model(model_id: str,
@@ -110,6 +111,7 @@ def share_model(model_id: str,
         raise ShareModelException(f"failed to share models {str(err)}")
 
 
+@timeit
 def pull_model_information(uid: str) -> ModelInformation:
     """Pulls the model information for the UID."""
     client = new_client()
@@ -123,6 +125,7 @@ def pull_model_information(uid: str) -> ModelInformation:
     return ModelInformation.from_json(uid, cases)
 
 
+@timeit
 def pull_case(uid: str) -> Case:
     """Retreive a `Case` by its uid."""
     client = new_client()
@@ -167,11 +170,13 @@ def remove_module(model_id, case_id, module_id, parent_module_id):
         print("removed module")
 
 
+@timeit
 def add_child_module(parent_module_id: str, name: str, model_id: str,
                      case_id: str) -> Module:
     """Add a new module to the parent module.
-    
+
     Returns the newly constructed `Module` object."""
+    logger.info(f"adding child module {name} to parent {parent_module_id} for model {model_id}")
     client = new_client()
     resp = client.post(
         url=VSURL.ADD_MODULE,
@@ -182,19 +187,17 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
             PARENT_MODULE_ID: parent_module_id,
         },
     )
-    if resp.status_code != 200:
 
-        raise ValueError(
-            f"error adding new child module {resp.json()} code={resp.status_code}"
-        )
-    child_modules = resp.json()["data"]["module"]["childModules"]
+    child_modules = resp["data"]["module"]["childModules"]
     for module in child_modules:
         if module["name"] == name:
             return Module.from_json(module)
     raise ValueError(f"Error adding child module")
 
 
+@timeit
 def add_item(case_id, model_id, name, order, module_id) -> LineItem:
+    logger.info(f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
     client = new_client()
 
     resp = client.post(
@@ -207,9 +210,6 @@ def add_item(case_id, model_id, name, order, module_id) -> LineItem:
             MODULE_ID: module_id,
         },
     )
-    if resp.status_code != 200:
-        raise ValueError(
-            f"Error adding item {resp.json()} code={resp.status_code}")
 
     module = Module.from_json(resp["data"]["module"])
     for l in module.line_items:
@@ -230,8 +230,6 @@ def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
             "facts": facts,
         },
     )
-    if resp.status_code != 200:
-        print(resp.json())
 
 
 def edit_format(case_id: str, model_id: str, facts: List[Fact]):

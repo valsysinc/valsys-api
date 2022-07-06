@@ -1,15 +1,69 @@
 {
-    "tickers": [
-        "BLIN",
-        "BWXT"
+    "actions": [
+        "spawnModels",
+        "populateModules"
     ],
-    "templateName": "dcf-standard",
-    "histPeriod": 2,
-    "projPeriod": 3,
-    "tags": [
-        "t1"
-    ],
-    "emails": [
-        "j@me.com"
+    "spawnModelsConfig": {
+        "tickers": [
+            "SBUX",
+            "BYND"
+        ],
+        "templateName": "dcf-standard",
+        "histPeriod": 2,
+        "projPeriod": 3,
+        "tags": [
+            "t1"
+        ],
+        "emails": [
+            "jack.fuller@valsys.io"
+        ]
+    },
+    "populateModulesConfig": [
+        {
+            "parentModuleName": "Income Statement",
+            "moduleName": "Operating Model",
+            "keyMetricsConfig": {
+                "metrics": [
+                    "Revenue Growth, %",
+                    "Gross Margin, %",
+                    "SG&A / sales",
+                    "R&D / sales",
+                    "Capex / sales"
+                ],
+                "format": {
+                    "fontWeight": "bold",
+                    "fontStyle": "normal",
+                    "textAlign": "right",
+                    "textDecoration": "none",
+                    "valFormat": "Percentage",
+                    "unit": "Raw",
+                    "decimalPlaces": 1
+                }
+            },
+            "lineItems": [
+                {
+                    "name": "Revenue Growth, %",
+                    "order": 1,
+                    "formulaEdits": [
+                        {
+                            "periodName": "",
+                            "periodYear": "",
+                            "formula": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "line item 2",
+                    "order": 2,
+                    "formulaEdits": [
+                        {
+                            "periodName": "",
+                            "periodYear": "",
+                            "formula": ""
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 }

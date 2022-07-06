@@ -79,4 +79,4 @@ class ModelingServiceClient:
                 url=url,
                 status_code=resp.status_code,
             )
-        return resp
+        return resp.json()

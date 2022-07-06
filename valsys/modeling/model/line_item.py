@@ -15,9 +15,8 @@ class LineItem:
     def jsonify_facts(self, fields=None):
         return [f.jsonify(fields) for f in self.facts]
 
-    # def add_item(self, name, modelID, caseID):
-    #    module = add_child_module(self.uid, name, modelID, caseID)
-    #    return Module.from_json(module)
+    def replace_fact(self, idx, new_fact: Fact):
+        self.facts[idx] = new_fact
 
     def facts_for_formula_edit(self):
         return self.jsonify_facts(fields=[
@@ -32,10 +31,7 @@ class LineItem:
 
     @classmethod
     def from_json(cls, data):
-        facts = []
-        if data.get("facts"):
-            facts = list(map(Fact.from_json, data["facts"]))
         return cls(uid=data["uid"],
                    name=data["name"],
-                   facts=facts,
+                   facts=list(map(Fact.from_json, data.get("facts", []))),
                    tags=data.get("tags", None))

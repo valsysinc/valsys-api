@@ -34,7 +34,8 @@ class Case:
             target = module.find_module(name)
             if target is not None:
                 return target
-        return None
+        raise ValueError(f"cannot find module with name {name}")
+        # return None
 
     def pull_items_from_tags(self, tags: List[str]) -> List[LineItem]:
         items = []

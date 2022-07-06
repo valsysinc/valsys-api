@@ -1,28 +1,33 @@
-from typing import Dict, Any
 import datetime
 from valsys.utils import logger
 from valsys.seeds.loader import SeedsLoader
-from valsys.spawn.models import ModelSeedConfigurationData
+from valsys.spawn.models import ModelSeedConfigurationData, ModelSpawnConfig
 from valsys.spawn.spawn_handler import SpawnHandler
+from typing import List, Tuple
+import json
+import time
+from valsys.modeling.service import edit_format, edit_formula, pull_case, pull_model_information, add_item, add_child_module
+from valsys.modeling.model.line_item import LineItem
+from valsys.spawn.models import PopulateModulesConfig
 
 
-def spawn(config: Dict[str, Any]):
+def spawn_models(config: ModelSpawnConfig):
 
-    tickers = config.get('tickers')
-    template_name = config.get('template_name')
-    proj_period = config.get('proj_period')
-    hist_period = config.get('hist_period')
-    tags = config.get('tags')
-    emails = config.get('emails')
+    tickers = config.tickers
+    template_name = config.template_name
+    proj_period = config.proj_period
+    hist_period = config.hist_period
+    tags = config.tags
+    emails = config.emails
 
-    logger.info(f"running spawn with {config}")
+    logger.info(f"running spawn with {config.jsonify()}")
 
     loader = SeedsLoader()
-    configs = loader.company_configs_by_ticker(tickers)
+    company_configs = loader.company_configs_by_ticker(tickers)
     template_id = loader.template_id_by_name(template_name=template_name)
 
-    seeds = []
-    for config in configs:
+    seeds: List[ModelSeedConfigurationData] = []
+    for config in company_configs:
         seeds.append(
             ModelSeedConfigurationData(
                 company_name=config.company_name,
@@ -41,3 +46,57 @@ def spawn(config: Dict[str, Any]):
         tags=tags,
         emails=emails,
     )
+
+
+def populate_modules(config: PopulateModulesConfig):
+
+    model_ids = config.model_ids
+    parent_module_name = config.parent_module_name
+    module_name = config.module_name
+    key_metrics_config = config.key_metrics_config
+    line_item_data = config.line_item_data
+
+    key_metrics = key_metrics_config.get('metrics')
+    key_metrics_format = json.dumps(key_metrics_config.get('format'))
+
+    for model_id in model_ids:
+
+        # Pull the first case uid
+        model_info = pull_model_information(model_id)
+        # Pull the case data, the case returned holds the model data packaged as a Case object
+        case_id = model_info.first.uid
+        case = pull_case(case_id)
+        # Select the income statement module as we want to add a new module as a revenue driver
+        root_module = case.pull_module(parent_module_name)
+
+        # Create module
+        new_module = add_child_module(parent_module_id=root_module.uid,
+                                      name=module_name,
+                                      model_id=model_id,
+                                      case_id=case_id)
+
+        for li in line_item_data:
+            item_name = li.name,
+            line_item = add_item(case_id=case_id,
+                                 model_id=model_id,
+                                 name=item_name,
+                                 order=li.order,
+                                 module_id=new_module.uid)
+            if item_name in key_metrics:
+                for idx, cell in enumerate(line_item.facts):
+                    cell.fmt = key_metrics_format
+                    line_item.facts[idx] = cell
+                edit_format(case_id=case_id,
+                            model_id=model_id,
+                            facts=line_item.facts_for_format_edit())
+
+            formula_edits = config.get_line_item_config(line_item.name).formula_edits
+            if len(formula_edits) == 0:
+                continue
+            for idx, cell in enumerate(line_item.facts):
+                for e in formula_edits:
+                    if cell.period == int(e.period_year):
+                        cell.formula = e.formula
+                line_item.replace_fact(idx, cell)
+
+            edit_formula(case_id, model_id, line_item.facts_for_formula_edit())

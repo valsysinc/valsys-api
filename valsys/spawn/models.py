@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass, field
+from tkinter import N
 from typing import Iterator, List, Tuple, Optional, Dict, Any
 
 from tomlkit import value
@@ -12,12 +13,24 @@ class FormulaEditConfig:
     period_year: str
     formula: str
 
+    def validate(self):
+        needs = []
+        if self.period_year is None:
+            needs.append('periodYear')
+        if self.formula is None:
+            needs.append('formula')
+        if len(needs) > 0:
+            raise ValueError(f'need {" ".join(needs)}')
+
+    def __post_init__(self):
+        self.validate()
+
     @classmethod
     def from_json(cls, config):
         return cls(
             period_name=config.get('periodName'),
-            period_year=config.get('periodYear'),
-            formula=config.get('formula')
+            period_year=config.get('periodYear', None),
+            formula=config.get('formula', None)
         )
 
 
@@ -53,7 +66,7 @@ class PopulateModulesConfig:
                 return li
         raise ValueError(f"line item with name {line_item_name} not found in config")
 
-    def __post__init__(self):
+    def __post_init__(self):
         self.validate()
 
     @classmethod
@@ -86,7 +99,7 @@ class ModelSpawnConfig:
         if self.proj_period is None:
             raise ValueError('need projPeriod')
 
-    def __post__init__(self):
+    def __post_init__(self):
         self.validate()
 
     @classmethod
@@ -103,69 +116,12 @@ class ModelSpawnConfig:
     def jsonify(self):
         return {
             'tickers': self.tickers,
-            'templateName': self.templateName,
+            'templateName': self.template_name,
             'histPeriod': self.hist_period,
-            'projPeriod': self.projPeriod,
+            'projPeriod': self.proj_period,
             'tags': self.tags,
             'emails': self.emails
         }
-
-
-@dataclass
-class ModelSeedConfigurationData:
-    """ModelSeedConfigurationData is the required data structure
-    for spawning models."""
-
-    company_name: str
-    ticker: str
-    template_id: str
-    proj_period: int
-    hist_period: int
-    industry_group: str
-    start_period: int
-    start_date: str
-    action: str = ""
-    model_type: str = "DEFAULT"
-    period_type: str = "ANNUAL"
-    cash_flow_type: str = "FCFF"
-    valuation_type: str = "Perpetual Growth"
-    company_type: str = "Public"
-    target_variable: str = "Implied share price"
-
-    @property
-    def hist_max(self):
-        """Compute the historical max."""
-        return self.start_period - self.hist_period + 1
-
-    @property
-    def hist_min(self):
-        """Compute the historical min."""
-        return self.start_period + self.proj_period
-
-    def jsonify(self):
-        return {
-            "action": self.action,
-            "companyName": self.company_name,
-            "ticker": self.ticker,
-            "templateID": self.template_id,
-            "numForecastYears": self.proj_period,
-            "numHistoricalYears": self.hist_period,
-            "industry": self.industry_group,
-            "startPeriod": self.start_period,
-            "startDate": self.start_date,
-            "type": self.model_type,
-            "periodType": self.period_type,
-            "cashFlowType": self.cash_flow_type,
-            "valuationType": self.valuation_type,
-            "companyType": self.company_type,
-            "targetVariable": self.target_variable,
-            "historicalMax": self.hist_max,
-            "historicalMin": self.hist_min,
-        }
-
-    def validate(self):
-        nexpected_fields = 17
-        assert len(self.jsonify()) == nexpected_fields
 
 
 @dataclass

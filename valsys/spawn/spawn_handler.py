@@ -1,8 +1,7 @@
 from dataclasses import field, dataclass
 from typing import List, Dict, Any
-
+from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.models import (
-    ModelSeedConfigurationData,
     SpawnProgress,
     SpawnerProgress,
 )

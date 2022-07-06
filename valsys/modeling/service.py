@@ -9,7 +9,7 @@ from valsys.utils.utils import timeit
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.spawn.socket_handler import SocketHandler
-from valsys.spawn.models import ModelSeedConfigurationData
+from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case

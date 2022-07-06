@@ -3,7 +3,7 @@ from valsys.spawn.modules import populate_modules
 import datetime
 
 from valsys.seeds.loader import SeedsLoader
-from valsys.spawn.models import ModelSeedConfigurationData
+from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.spawn_handler import SpawnHandler
 
 loader = SeedsLoader()

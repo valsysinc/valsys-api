@@ -11,7 +11,8 @@ class SeedsLoader:
     def company_configs_by_ticker(self, tickers: List[str]) -> List[CompanyConfig]:
         """Load a list of company configs by ticker from
         the valsys modeling service API."""
-
+        if len(tickers) == 0:
+            return []
         ret = []
         for cfg in load_company_configs():
             if cfg.get("ticker") in tickers:

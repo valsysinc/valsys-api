@@ -1,7 +1,8 @@
 import datetime
 from valsys.utils import logger
 from valsys.seeds.loader import SeedsLoader
-from valsys.spawn.models import ModelSeedConfigurationData, ModelSpawnConfig
+from valsys.seeds.models import ModelSeedConfigurationData
+from valsys.spawn.models import ModelSpawnConfig
 from valsys.spawn.spawn_handler import SpawnHandler
 from typing import List, Tuple
 import json
@@ -63,10 +64,10 @@ def populate_modules(config: PopulateModulesConfig):
 
         # Pull the first case uid
         model_info = pull_model_information(model_id)
-        # Pull the case data, the case returned holds the model data packaged as a Case object
+
         case_id = model_info.first.uid
-        case = pull_case(case_id)
-        # Select the income statement module as we want to add a new module as a revenue driver
+        case = pull_case(uid=case_id)
+
         root_module = case.pull_module(parent_module_name)
 
         # Create module
@@ -74,14 +75,14 @@ def populate_modules(config: PopulateModulesConfig):
                                       name=module_name,
                                       model_id=model_id,
                                       case_id=case_id)
-
+        new_module_id = new_module.uid
         for li in line_item_data:
-            item_name = li.name,
+            item_name = li.name
             line_item = add_item(case_id=case_id,
                                  model_id=model_id,
                                  name=item_name,
                                  order=li.order,
-                                 module_id=new_module.uid)
+                                 module_id=new_module_id)
             if item_name in key_metrics:
                 for idx, cell in enumerate(line_item.facts):
                     cell.fmt = key_metrics_format
@@ -98,5 +99,6 @@ def populate_modules(config: PopulateModulesConfig):
                     if cell.period == int(e.period_year):
                         cell.formula = e.formula
                 line_item.replace_fact(idx, cell)
-
-            edit_formula(case_id, model_id, line_item.facts_for_formula_edit())
+                # this appears to require a token in the req body... not something
+                # SB told me was needed... comment out for now.
+#            edit_formula(case_id, model_id, line_item.facts_for_formula_edit())

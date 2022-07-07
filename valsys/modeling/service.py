@@ -199,17 +199,20 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
 def add_item(case_id, model_id, name, order, module_id) -> LineItem:
     logger.info(f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
     client = new_client()
-
-    resp = client.post(
-        url=VSURL.ADD_ITEM,
-        data={
-            CASE_ID: case_id,
-            MODEL_ID: model_id,
-            NAME: name,
-            ORDER: order,
-            MODULE_ID: module_id,
-        },
-    )
+    try:
+        resp = client.post(
+            url=VSURL.ADD_ITEM,
+            data={
+                CASE_ID: case_id,
+                MODEL_ID: model_id,
+                NAME: name,
+                ORDER: order,
+                MODULE_ID: module_id,
+            },
+        )
+    except ModelingServicePostException as err:
+        logger.exception(err)
+        raise
 
     module = Module.from_json(resp["data"]["module"])
     for l in module.line_items:

@@ -8,7 +8,8 @@ class SeedsLoader:
     """SeedsLoader is responsible for loading configs
     and IDs for use in the Spawner."""
 
-    def company_configs_by_ticker(self, tickers: List[str]) -> List[CompanyConfig]:
+    @classmethod
+    def company_configs_by_ticker(cls, tickers: List[str]) -> List[CompanyConfig]:
         """Load a list of company configs by ticker from
         the valsys modeling service API."""
         if len(tickers) == 0:
@@ -19,7 +20,8 @@ class SeedsLoader:
                 ret.append(CompanyConfig.from_json_modeling(cfg))
         return ret
 
-    def template_id_by_name(self, template_name: str) -> str:
+    @classmethod
+    def template_id_by_name(cls, template_name: str) -> str:
         """Load the template ID by the template name.
 
         Raises a ValueError if the template cannot be found."""

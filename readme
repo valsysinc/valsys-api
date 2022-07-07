@@ -24,6 +24,8 @@ VALSYS_API_PASSWORD=<PASSWORD>
 ```
 
 ## Usage
+### CLI
+The valsys library can be used from source via a CLI
 ```
 python main.py assets/example_input.json
 ```

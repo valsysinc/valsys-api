@@ -1,15 +1,27 @@
 import datetime
+from typing import List
+import json
 from valsys.utils import logger
 from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.models import ModelSeedConfigurationData
-from valsys.spawn.models import ModelSpawnConfig
 from valsys.spawn.spawn_handler import SpawnHandler
-from typing import List, Tuple
-import json
-import time
+from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig
 from valsys.modeling.service import edit_format, edit_formula, pull_case, pull_model_information, add_item, add_child_module
-from valsys.modeling.model.line_item import LineItem
-from valsys.spawn.models import PopulateModulesConfig
+
+
+class ValsysSpawn:
+    """ValsysSpawn is the interface to the spawning service of models
+    into the Valsys platform."""
+    @staticmethod
+    def spawn_models(config: ModelSpawnConfig):
+        try:
+            return spawn_models(config)
+        except Exception as err:
+            logger.exception(err)
+
+    @staticmethod
+    def populate_modules(config: PopulateModulesConfig):
+        return populate_modules(config)
 
 
 def spawn_models(config: ModelSpawnConfig):
@@ -23,9 +35,8 @@ def spawn_models(config: ModelSpawnConfig):
 
     logger.info(f"running spawn with {config.jsonify()}")
 
-    loader = SeedsLoader()
-    company_configs = loader.company_configs_by_ticker(tickers)
-    template_id = loader.template_id_by_name(template_name=template_name)
+    company_configs = SeedsLoader.company_configs_by_ticker(tickers)
+    template_id = SeedsLoader.template_id_by_name(template_name=template_name)
 
     seeds: List[ModelSeedConfigurationData] = []
     for config in company_configs:

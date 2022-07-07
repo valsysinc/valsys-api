@@ -43,7 +43,7 @@ class LineItemConfig:
     @classmethod
     def from_json(cls, config):
         return cls(name=config.get('name'), order=config.get('order'),
-                   formula_edits=[FormulaEditConfig.from_json(fec) for fec in config.get('formulaEdits')])
+                   formula_edits=[FormulaEditConfig.from_json(fec) for fec in config.get('formulaEdits', [])])
 
 
 @dataclass

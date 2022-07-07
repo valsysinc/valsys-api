@@ -48,7 +48,7 @@
                         {
                             "periodName": "",
                             "periodYear": "2019",
-                            "formula": ""
+                            "formula": "5*2"
                         }
                     ]
                 },
@@ -59,7 +59,7 @@
                         {
                             "periodName": "",
                             "periodYear": "2018",
-                            "formula": ""
+                            "formula": "1+2"
                         }
                     ]
                 }

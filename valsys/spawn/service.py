@@ -110,6 +110,4 @@ def populate_modules(config: PopulateModulesConfig):
                     if cell.period == int(e.period_year):
                         cell.formula = e.formula
                 line_item.replace_fact(idx, cell)
-                # this appears to require a token in the req body... not something
-                # SB told me was needed... comment out for now.
-#            edit_formula(case_id, model_id, line_item.facts_for_formula_edit())
+            edit_formula(case_id, model_id, line_item.facts_for_formula_edit())

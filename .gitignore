@@ -6,3 +6,4 @@ logs/
 *.swp
 .env
 htmlcov/
+docs/

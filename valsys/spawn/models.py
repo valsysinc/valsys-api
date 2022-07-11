@@ -52,7 +52,7 @@ class PopulateModulesConfig:
     tickers: List[str]
     parent_module_name: str
     module_name: str
-    key_metrics_config: Dict[str, Any]
+    key_metrics_config: Dict[str, Any] = field(default_factory=dict)
     model_ids: List[str] = field(default_factory=list)
     line_item_data: List[LineItemConfig] = field(default_factory=list)
 
@@ -88,7 +88,7 @@ class PopulateModulesConfig:
             parent_module_name=config.get(cls.fields.PARENT_MODULE_NAME, ''),
             module_name=config.get(cls.fields.MODULE_NAME, ''),
             key_metrics_config=config.get(cls.fields.KEY_METRICS_CONFIG),
-            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS)],
+            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS, [])],
             model_ids=model_ids or []
         )
 
@@ -98,7 +98,9 @@ class MasterPopulateModulesConfig:
     modules_config: List[PopulateModulesConfig] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls,  config: List[Dict[str, Any]]):
+    def from_json(cls, config: List[Dict[str, Any]]):
+        if config is None:
+            return cls()
         return cls(modules_config=[PopulateModulesConfig.from_json(j) for j in config])
 
     def __iter__(self):

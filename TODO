@@ -4,6 +4,8 @@
 
 FEATURES
 --------
+- pip-able license
+- publish to github
 - queries executed via sockets and HTTP for certain requests
 - module spawn
 - module configuration

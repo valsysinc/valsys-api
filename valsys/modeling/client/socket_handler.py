@@ -95,6 +95,8 @@ class SocketHandler:
         self.state = States.COMPLETE
         if close_status_code != websocket.STATUS_NORMAL:
             logger.error(f"close status={close_status_code} msg={close_msg}")
+            self.error = 'unknown'
+            self.status = Status.FAILED
         elif close_status_code or close_msg:
             logger.debug(f"close status={close_status_code} ")
         ws.close()

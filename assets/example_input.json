@@ -20,6 +20,9 @@
     },
     "populateModulesConfig": [
         {
+            "tickers": [
+                "SBUX"
+            ],
             "parentModuleName": "Income Statement",
             "moduleName": "Operating Model",
             "keyMetricsConfig": {

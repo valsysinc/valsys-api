@@ -4,7 +4,7 @@ import pyfiglet
 from valsys.spawn.service import spawn_models, populate_modules
 from valsys.version import VERSION, NAME
 from valsys.utils import logger
-from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig
+from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig, MasterPopulateModulesConfig
 
 
 def run_spawn_models(args):
@@ -13,10 +13,15 @@ def run_spawn_models(args):
         config_file = json.loads(file.read())
     spawn_config = ModelSpawnConfig.from_json(config_file.get('spawnModelsConfig'))
     spawner_report = spawn_models(spawn_config)
+    spawned_models = spawner_report.spawned_models
 
-    pmc = PopulateModulesConfig.from_json(model_ids=spawner_report.spawned_model_ids,
-                                          config=config_file.get('populateModulesConfig')[0])
-    populate_modules(pmc)
+    if len(spawned_models) == 0:
+        raise ValueError(f"no models spawned")
+    mpmc = MasterPopulateModulesConfig.from_json(config_file.get('populateModulesConfig'))
+    for pmc in mpmc:
+        model_ids_for_ticker = spawner_report.spawned_model_ids_for_tickers(pmc.tickers)
+        pmc.set_model_ids(model_ids_for_ticker)
+        populate_modules(pmc)
     return spawner_report
 
 

@@ -48,10 +48,11 @@ class LineItemConfig:
 
 @dataclass
 class PopulateModulesConfig:
-    model_ids: List[str]
+    tickers: List[str]
     parent_module_name: str
     module_name: str
     key_metrics_config: Dict[str, Any]
+    model_ids: List[str] = field(default_factory=list)
     line_item_data: List[LineItemConfig] = field(default_factory=list)
 
     def validate(self):
@@ -69,15 +70,31 @@ class PopulateModulesConfig:
     def __post_init__(self):
         self.validate()
 
+    def set_model_ids(self, model_ids: List[str]):
+        self.model_ids = model_ids
+
     @classmethod
-    def from_json(cls, model_ids: List[str], config: Dict[str, Any]):
+    def from_json(cls,  config: Dict[str, Any]):
         return cls(
-            model_ids=model_ids,
+            tickers=config.get('tickers'),
             parent_module_name=config.get('parentModuleName', ''),
             module_name=config.get('moduleName', ''),
             key_metrics_config=config.get('keyMetricsConfig'),
             line_item_data=[LineItemConfig.from_json(li) for li in config.get('lineItems')]
         )
+
+
+@dataclass
+class MasterPopulateModulesConfig:
+    modules_config: List[PopulateModulesConfig] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls,  config: List[Dict[str, Any]]):
+        return cls(modules_config=[PopulateModulesConfig.from_json(j) for j in config])
+
+    def __iter__(self):
+        for cfg in self.modules_config:
+            yield cfg
 
 
 @dataclass
@@ -206,9 +223,12 @@ class SpawnerProgress:
             yield p
 
     @property
-    def spawned_model_ids(self):
-        return [p.model_id for p in self if p.spawned]
+    def spawned_models(self):
+        return [p for p in self if p.spawned]
 
     @property
     def has_errors(self):
-        return len(self.spawned_model_ids) == 0
+        return len(self.spawned_models) == 0
+
+    def spawned_model_ids_for_tickers(self, tickers: List[str]):
+        return [m.model_id for m in self.spawned_models if m.ticker in tickers]

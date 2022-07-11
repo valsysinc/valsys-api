@@ -10,7 +10,7 @@ if BUILD == 'test':
 else:
     load_dotenv(dotenv_path=Path('env/.env'))
 
-BASE_SCK = "ws://localhost:5100"
+BASE_SCK = read_env("VALSYS_API_SOCKET")
 BASE_URL = read_env("VALSYS_API_SERVER")
 API_USERNAME = read_env("VALSYS_API_USER")
 API_PASSWORD = read_env("VALSYS_API_PASSWORD")

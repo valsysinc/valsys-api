@@ -1,28 +1,28 @@
 import pytest
 from http import HTTPStatus
 from unittest import mock
-from valsys.modeling.client.client import ModelingServiceClient
+from valsys.modeling.client.http import ModelingServiceHttpClient
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
 
-MODULE_PREFIX = "valsys.modeling.client.client"
+MODULE_PREFIX = "valsys.modeling.client.http"
 
 
-class TestModelingServiceClient:
+class TestModelingServiceHttpClient:
     def test_init_ok(self):
-        msc = ModelingServiceClient()
+        msc = ModelingServiceHttpClient()
         assert msc.auth_token == ""
 
     def test_init_ok_give_auth_token(self):
         token = "Tok3n"
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         assert msc.auth_token == token
 
     def test_add_headers_with_nothing(self):
         token = "Tok3n"
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         hdrs = msc._add_auth_headers()
         assert "Content-Type" in hdrs
         assert "Authorization" in hdrs
@@ -31,7 +31,7 @@ class TestModelingServiceClient:
     def test_add_headers_with_existing_headers(self):
         token = "Tok3n"
         headers = {"info": 42, "li": [1, 2, 3]}
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         hdrs = msc._add_auth_headers(headers)
         assert "Content-Type" in hdrs
         assert "Authorization" in hdrs
@@ -51,7 +51,7 @@ class TestModelingServiceClient:
 
         token = "Tok3n"
 
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         url = "me"
         reply = msc.get(url)
         mock_get.assert_called_with(
@@ -76,7 +76,7 @@ class TestModelingServiceClient:
 
         token = "Tok3n"
 
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         url = "me"
         headers = {"you": 1}
         reply = msc.get(url, headers=headers)
@@ -106,7 +106,7 @@ class TestModelingServiceClient:
 
         token = "Tok3n"
 
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         url = "me"
         headers = {"you": 1}
         with pytest.raises(ModelingServiceGetException) as err:
@@ -135,7 +135,7 @@ class TestModelingServiceClient:
 
         token = "Tok3n"
 
-        msc = ModelingServiceClient(token)
+        msc = ModelingServiceHttpClient(token)
         url = "me"
         headers = {"you": 1}
 

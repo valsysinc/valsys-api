@@ -9,7 +9,7 @@ from .exceptions import ModelingServiceGetException, ModelingServicePostExceptio
 
 
 @dataclass
-class ModelingServiceClient:
+class ModelingServiceHttpClient:
     """
     ModelingServiceClient takes care of
     interfacing to the requests library.
@@ -73,6 +73,7 @@ class ModelingServiceClient:
             url=url, headers=self._add_auth_headers(headers), data=json.dumps(data)
         )
         self.status_code = resp.status_code
+
         if resp.status_code != expected_status:
             raise ModelingServicePostException(
                 data=resp.json(),

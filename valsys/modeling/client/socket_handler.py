@@ -40,7 +40,7 @@ class Message:
 
 
 class SocketHandler:
-    def __init__(self, config: Dict[str, str], auth_token: str, trace: bool = False) -> None:
+    def __init__(self, url: str, config: Dict[str, str], auth_token: str, trace: bool = False) -> None:
 
         self.config = config
         self.error = None
@@ -50,7 +50,7 @@ class SocketHandler:
         self.state = States.IN_PROGRESS
         # enable trace in dev for debugging
         websocket.enableTrace(trace)
-        self.url = VSURL.SCK_MODELING_CREATE
+        self.url = url
         logger.debug(f"connecting to socket {self.url}")
         socketpath = f"{self.url}" + auth_token
         self.wsapp = websocket.WebSocketApp(

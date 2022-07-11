@@ -8,15 +8,15 @@ from valsys.utils import logger
 from valsys.utils.utils import timeit
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
-from valsys.spawn.socket_handler import SocketHandler
+from valsys.modeling.client.socket_handler import SocketHandler
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.module import Module
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.client.service import new_client
-from valsys.modeling.client.exceptions import ModelingServicePostException
+from valsys.modeling.client.service import new_client, ModelingClientTypes
+from valsys.modeling.client.exceptions import ModelingServicePostException, ModelingServiceGetException
 from valsys.modeling.headers import (
     CASE_ID,
     MODEL_ID,
@@ -30,7 +30,6 @@ from valsys.modeling.headers import (
 CODE_POST_SUCCESS = 200
 
 
-@timeit
 def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     """
     Given a model config and authentication token, spawn a model.
@@ -40,26 +39,13 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     """
     config.action = "CREATE_MODEL"
     config.validate()
-    handler = SocketHandler(config=config.jsonify(),
-                            auth_token=auth_token,
-                            trace=False)
-    handler.run()
 
-    while True:
-        if not handler.complete:
-            continue
-        if handler.error is not None:
-            raise ModelSpawnException(f"error building model: {handler.error}")
-        elif handler.resp is not None:
-            model_id = handler.resp["data"][UID]
-        break
-
-    if handler.succesful:
-        return model_id
-
-    if handler.exception is not None:
-        raise ModelSpawnException(str(handler.exception))
-    raise ModelSpawnException("unknown spawn error")
+    client = new_client(auth_token=auth_token, client=ModelingClientTypes.SOCKET)
+    try:
+        resp = client.get(url=VSURL.SCK_MODELING_CREATE, data=config.jsonify())
+        return resp["data"][UID]
+    except (ModelingServiceGetException, Exception):
+        ModelSpawnException(f"error building model: {client.error}")
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
@@ -111,7 +97,6 @@ def share_model(model_id: str,
         raise ShareModelException(f"failed to share models {str(err)}")
 
 
-@timeit
 def pull_model_information(uid: str) -> ModelInformation:
     """Pulls the model information for the UID."""
     client = new_client()
@@ -125,7 +110,6 @@ def pull_model_information(uid: str) -> ModelInformation:
     return ModelInformation.from_json(uid, cases)
 
 
-@timeit
 def pull_case(uid: str) -> Case:
     """Retreive a `Case` by its uid."""
     client = new_client()
@@ -164,13 +148,8 @@ def remove_module(model_id, case_id, module_id, parent_module_id):
             UID: module_id,
         },
     )
-    if resp.status_code != 200:
-        print(resp.json())
-    else:
-        print("removed module")
 
 
-@timeit
 def add_child_module(parent_module_id: str, name: str, model_id: str,
                      case_id: str) -> Module:
     """Add a new module to the parent module.
@@ -195,7 +174,6 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     raise ValueError(f"Error adding child module")
 
 
-@timeit
 def add_item(case_id, model_id, name, order, module_id) -> LineItem:
     logger.info(f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
     client = new_client()

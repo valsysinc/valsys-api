@@ -4,7 +4,7 @@ import pyfiglet
 from valsys.spawn.service import spawn_models, populate_modules
 from valsys.version import VERSION, NAME
 from valsys.utils import logger
-from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig, MasterPopulateModulesConfig
+from valsys.spawn.models import ModelSpawnConfig, MasterPopulateModulesConfig
 
 
 def run_spawn_models(args):

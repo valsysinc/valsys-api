@@ -5,10 +5,8 @@
 FEATURES
 --------
 - pip-able license
-- publish to github
 - queries executed via sockets and HTTP for certain requests
-- module spawn
-- module configuration
+
 - after spawn, also load models into object
 
 BUGS
@@ -20,6 +18,10 @@ BUGS
 ==============================
 FEATURES
 --------
+- module spawn (DONE 11/7/22)
+- module configuration (DONE 11/7/22)
+- test pipelines run on github (DONE 11/7/22)
+- publish to github (DONE 11/7/22)
 - load env file (DONE 5/7/22)
 - bitbucket pipelines (DONE 29/6/22)
 - model spawn (DONE 28/6/22)

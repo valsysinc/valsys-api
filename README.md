@@ -42,4 +42,4 @@ The workflow is as follows:
 
     List of tickers which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails with whom the models are shared).
 
-2) Populate the spawned models with modules, each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.
+2) Populate the spawned models with modules. Each model can be populated with different modules (based off a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.

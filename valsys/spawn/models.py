@@ -82,13 +82,14 @@ class PopulateModulesConfig:
         self.model_ids = model_ids
 
     @classmethod
-    def from_json(cls,  config: Dict[str, Any]):
+    def from_json(cls, config: Dict[str, Any], model_ids: Optional[List[str]] = None):
         return cls(
             tickers=config.get(cls.fields.TICKERS),
             parent_module_name=config.get(cls.fields.PARENT_MODULE_NAME, ''),
             module_name=config.get(cls.fields.MODULE_NAME, ''),
             key_metrics_config=config.get(cls.fields.KEY_METRICS_CONFIG),
-            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS)]
+            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS)],
+            model_ids=model_ids or []
         )
 
 
@@ -254,6 +255,10 @@ class SpawnerProgress:
     @property
     def spawned_models(self):
         return [p for p in self if p.spawned]
+
+    @property
+    def spawned_tickers(self):
+        return [p.ticker for p in self.spawned_models]
 
     @property
     def has_errors(self):

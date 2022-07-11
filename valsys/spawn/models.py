@@ -55,11 +55,18 @@ class PopulateModulesConfig:
     model_ids: List[str] = field(default_factory=list)
     line_item_data: List[LineItemConfig] = field(default_factory=list)
 
+    class fields:
+        TICKERS = 'tickers'
+        PARENT_MODULE_NAME = 'parentModuleName'
+        MODULE_NAME = 'moduleName'
+        KEY_METRICS_CONFIG = 'keyMetricsConfig'
+        LINE_ITEMS = 'lineItems'
+
     def validate(self):
         if self.parent_module_name == "":
-            raise ValueError(f"need parentModuleName")
+            raise ValueError(f"need {self.fields.PARENT_MODULE_NAME}")
         if self.module_name == "":
-            raise ValueError(f"need moduleName")
+            raise ValueError(f"need {self.fields.MODULE_NAME}")
 
     def get_line_item_config(self, line_item_name: str) -> LineItemConfig:
         for li in self.line_item_data:
@@ -76,11 +83,11 @@ class PopulateModulesConfig:
     @classmethod
     def from_json(cls,  config: Dict[str, Any]):
         return cls(
-            tickers=config.get('tickers'),
-            parent_module_name=config.get('parentModuleName', ''),
-            module_name=config.get('moduleName', ''),
-            key_metrics_config=config.get('keyMetricsConfig'),
-            line_item_data=[LineItemConfig.from_json(li) for li in config.get('lineItems')]
+            tickers=config.get(cls.fields.TICKERS),
+            parent_module_name=config.get(cls.fields.PARENT_MODULE_NAME, ''),
+            module_name=config.get(cls.fields.MODULE_NAME, ''),
+            key_metrics_config=config.get(cls.fields.KEY_METRICS_CONFIG),
+            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS)]
         )
 
 
@@ -106,15 +113,23 @@ class ModelSpawnConfig:
     tags: List[str] = field(default_factory=list)
     emails: List[str] = field(default_factory=list)
 
+    class fields:
+        TICKERS = 'tickers'
+        TEMPLATE_NAME = 'templateName'
+        HIST_PERIOD = 'histPeriod'
+        PROJ_PERIOD = 'projPeriod'
+        TAGS = 'tags'
+        EMAILS = 'emails'
+
     def validate(self):
         if len(self.tickers) == 0:
-            raise ValueError('need tickers')
+            raise ValueError(f'need {self.fields.TICKERS}')
         if self.template_name == "":
-            raise ValueError('need a templateName')
+            raise ValueError(f'need a {self.fields.TEMPLATE_NAME}')
         if self.hist_period is None:
-            raise ValueError('need histPeriod')
+            raise ValueError(f'need {self.fields.HIST_PERIOD}')
         if self.proj_period is None:
-            raise ValueError('need projPeriod')
+            raise ValueError(f'need {self.fields.PROJ_PERIOD}')
 
     def __post_init__(self):
         self.validate()
@@ -122,22 +137,22 @@ class ModelSpawnConfig:
     @classmethod
     def from_json(cls, spawn_config):
         return cls(
-            tickers=spawn_config.get('tickers'),
-            template_name=spawn_config.get('templateName'),
-            hist_period=spawn_config.get('histPeriod', None),
-            proj_period=spawn_config.get('projPeriod', None),
-            tags=spawn_config.get('tags', []),
-            emails=spawn_config.get('emails', []),
+            tickers=spawn_config.get(cls.fields.TICKERS, []),
+            template_name=spawn_config.get(cls.fields.TEMPLATE_NAME),
+            hist_period=spawn_config.get(cls.fields.HIST_PERIOD, None),
+            proj_period=spawn_config.get(cls.fields.PROJ_PERIOD, None),
+            tags=spawn_config.get(cls.fields.TAGS, []),
+            emails=spawn_config.get(cls.fields.EMAILS, []),
         )
 
     def jsonify(self):
         return {
-            'tickers': self.tickers,
-            'templateName': self.template_name,
-            'histPeriod': self.hist_period,
-            'projPeriod': self.proj_period,
-            'tags': self.tags,
-            'emails': self.emails
+            self.fields.TICKERS: self.tickers,
+            self.fields.TEMPLATE_NAME: self.template_name,
+            self.fields.HIST_PERIOD: self.hist_period,
+            self.fields.PROJ_PERIOD: self.proj_period,
+            self.fields.TAGS: self.tags,
+            self.fields.EMAILS: self.emails
         }
 
 

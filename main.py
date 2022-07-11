@@ -4,14 +4,14 @@ import pyfiglet
 from valsys.spawn.service import spawn_models, populate_modules
 from valsys.version import VERSION, NAME
 from valsys.utils import logger
-from valsys.spawn.models import ModelSpawnConfig, MasterPopulateModulesConfig
+from valsys.spawn.models import ModelSpawnConfigs, MasterPopulateModulesConfig
 
 
 def run_spawn_models(args):
     config_filename = args[0]
     with open(config_filename, "r") as file:
         config_file = json.loads(file.read())
-    spawn_config = ModelSpawnConfig.from_json(config_file.get('spawnModelsConfig'))
+    spawn_config = ModelSpawnConfigs.from_json(config_file.get('spawnModelsConfig'))
     spawner_report = spawn_models(spawn_config)
     spawned_models = spawner_report.spawned_models
 

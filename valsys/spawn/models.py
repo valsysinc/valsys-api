@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass, field
+from re import L
 from tkinter import N
 from typing import Iterator, List, Tuple, Optional, Dict, Any
 
@@ -154,6 +155,19 @@ class ModelSpawnConfig:
             self.fields.TAGS: self.tags,
             self.fields.EMAILS: self.emails
         }
+
+
+@dataclass
+class ModelSpawnConfigs:
+    configs: List[ModelSpawnConfig] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, data: List[Dict[str, Any]]):
+        return cls(configs=[ModelSpawnConfig.from_json(cfg) for cfg in data])
+
+    def __iter__(self):
+        for cfg in self.configs:
+            yield cfg
 
 
 @dataclass

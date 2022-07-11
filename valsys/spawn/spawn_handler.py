@@ -75,7 +75,7 @@ class SpawnHandler:
         tags: List[str] = None,
         emails: List[str] = None,
         options: Dict[str, Any] = None,
-    ) -> SpawnerProgress:
+    ) -> List[SpawnProgress]:
         """Build and spawn models from the provided model configurations."""
 
         tags = tags or []
@@ -83,7 +83,7 @@ class SpawnHandler:
         options = options or {"verbose": True}
         user, password = API_USERNAME, API_PASSWORD
 
-        progress: SpawnerProgress = SpawnerProgress(options)
+        progress = []
         for config in seeds:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)

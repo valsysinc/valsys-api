@@ -1,12 +1,16 @@
 import datetime
+from multiprocessing.context import SpawnProcess
 from typing import List
 import json
 from valsys.utils import logger
 from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.spawn_handler import SpawnHandler
-from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig
+from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig, ModelSpawnConfigs
 from valsys.modeling.service import edit_format, edit_formula, pull_case, pull_model_information, add_item, add_child_module
+from valsys.spawn.models import (
+    SpawnerProgress, SpawnProgress
+)
 
 
 class ValsysSpawn:
@@ -24,7 +28,7 @@ class ValsysSpawn:
         return populate_modules(config)
 
 
-def spawn_models(config: ModelSpawnConfig):
+def spawn_models_same_dcf_periods(config: ModelSpawnConfig) -> List[SpawnProgress]:
 
     tickers = config.tickers
     template_name = config.template_name
@@ -58,6 +62,13 @@ def spawn_models(config: ModelSpawnConfig):
         tags=tags,
         emails=emails,
     )
+
+
+def spawn_models(configs: ModelSpawnConfigs) -> SpawnerProgress:
+    rep = SpawnerProgress()
+    for cfg in configs:
+        [rep.append(proc) for proc in spawn_models_same_dcf_periods(cfg)]
+    return rep
 
 
 def populate_modules(config: PopulateModulesConfig):

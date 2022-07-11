@@ -1,23 +1,32 @@
 {
-    "actions": [
-        "spawnModels",
-        "populateModules"
+    "spawnModelsConfig": [
+        {
+            "tickers": [
+                "SBUX"
+            ],
+            "templateName": "dcf-standard",
+            "histPeriod": 2,
+            "projPeriod": 3,
+            "tags": [
+                "t1"
+            ],
+            "emails": [
+                "jack.fuller@valsys.io"
+            ]
+        },
+        {
+            "tickers": [
+                "BYND"
+            ],
+            "templateName": "dcf-standard",
+            "histPeriod": 2,
+            "projPeriod": 3,
+            "tags": [
+                "t2"
+            ],
+            "emails": []
+        }
     ],
-    "spawnModelsConfig": {
-        "tickers": [
-            "SBUX",
-            "BYND"
-        ],
-        "templateName": "dcf-standard",
-        "histPeriod": 2,
-        "projPeriod": 3,
-        "tags": [
-            "t1"
-        ],
-        "emails": [
-            "jack.fuller@valsys.io"
-        ]
-    },
     "populateModulesConfig": [
         {
             "tickers": [

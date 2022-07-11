@@ -38,9 +38,7 @@ python main.py assets/example_input.json
 This is a pre-defined set of actions which will be executed given the provided configuration data.
 The workflow is as follows:
 
-1)  Spawn a set of models based off a collection of tickers. 
-
-    * List of tickers which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails with whom the models are shared).
+1)  **Spawn a set of models based off a collection of tickers.** Collecion of lists of tickers, each of which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails with whom the models are shared).
 
 
-2) Populate the spawned models with modules. Each model can be populated with different modules (based off a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.
+2) **Populate the spawned models with modules.** Each model can be populated with different modules (based off a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.

@@ -6,6 +6,11 @@ LOG_TIME = False
 
 
 def read_env(varn, required=True):
+    """Read a variable from the environment.
+
+    If `required=True`, then a `ValueError` is raised
+    if the variable cannot be found.
+    Oetherwise, the variable or `None` is returned."""
     var = os.getenv(varn)
     if var is None and required is True:
         raise ValueError(f'need to have {varn} environment variable')

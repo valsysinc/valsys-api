@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: python:3.7.4-alpine3.10
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: |
+       docker build -t apilib .
+       docker run -t apilib pytest
+       docker run -t apilib /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report"

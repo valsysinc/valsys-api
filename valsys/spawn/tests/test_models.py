@@ -1,4 +1,5 @@
-from valsys.spawn.models import FormulaEditConfig, MasterPopulateModulesConfig, PopulateModulesConfig, LineItemConfig
+from dataclasses import dataclass
+from valsys.spawn.models import FormulaEditConfig, MasterPopulateModulesConfig, PopulateModulesConfig, LineItemConfig, SpawnerProgress
 import pytest
 
 
@@ -152,3 +153,37 @@ class TestMasterPopulateModulesConfig:
         for mc in mpmc:
             t.append(mc.tickers)
         assert t == [['t1'], ['t2']]
+
+
+@dataclass
+class FakeProcess:
+    spawned: bool = False
+    ticker: str = ''
+
+
+class TestSpawnerProgress:
+    def test_init(self):
+        sp = SpawnerProgress()
+        assert len(sp.processes) == 0
+
+    def test_append(self):
+        sp = SpawnerProgress()
+        assert len(sp.processes) == 0
+        sp.append(1)
+        assert len(sp.processes) == 1
+        sp.append(1.1)
+        assert len(sp.processes) == 2
+
+    def test_spawned_yes(self):
+        sp = SpawnerProgress()
+        sp.append(FakeProcess(spawned=True))
+        sp.append(FakeProcess(spawned=False))
+        assert sp.has_errors is False
+
+    def test_spawned_tickers(self):
+        sp = SpawnerProgress()
+        sp.append(FakeProcess(spawned=True, ticker='t1'))
+        sp.append(FakeProcess(spawned=True, ticker='t11'))
+        sp.append(FakeProcess(spawned=False, ticker='t2'))
+        sp.append(FakeProcess(spawned=False, ticker='t22'))
+        assert sp.spawned_tickers == ['t1', 't11']

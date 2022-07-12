@@ -1,4 +1,3 @@
-![](coverage.svg)
 # Valsys API library
 
 Purpose: library to spawn and populate Valsys models via the API.

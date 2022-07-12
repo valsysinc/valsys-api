@@ -18,4 +18,5 @@ jobs:
       run: |
        docker build -t apilib .
        docker run -t apilib pytest
-       docker run -t apilib /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report && coverage-badge -o coverage.svg"
+       docker run -t apilib /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report"
+        

@@ -1,5 +1,9 @@
 from typing import Dict, Any
 from dataclasses import dataclass
+import datetime
+from valsys.spawn.models import ModelSpawnConfig
+
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 @dataclass
@@ -79,3 +83,16 @@ class ModelSeedConfigurationData:
     def validate(self):
         nexpected_fields = 17
         assert len(self.jsonify()) == nexpected_fields
+
+    @classmethod
+    def from_model_spawn_config(cls, config: ModelSpawnConfig, proj_period, hist_period, template_id):
+        return cls(
+            company_name=config.company_name,
+            ticker=config.ticker,
+            industry_group=config.industry,
+            start_period=config.start_period,
+            start_date=datetime.datetime.now().strftime(DATETIME_FORMAT),
+            proj_period=proj_period,
+            hist_period=hist_period,
+            template_id=template_id,
+        )

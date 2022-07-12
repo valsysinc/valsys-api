@@ -159,6 +159,7 @@ class TestMasterPopulateModulesConfig:
 class FakeProcess:
     spawned: bool = False
     ticker: str = ''
+    model_id: str = ''
 
 
 class TestSpawnerProgress:
@@ -187,3 +188,14 @@ class TestSpawnerProgress:
         sp.append(FakeProcess(spawned=False, ticker='t2'))
         sp.append(FakeProcess(spawned=False, ticker='t22'))
         assert sp.spawned_tickers == ['t1', 't11']
+
+    def test_spawned_model_ids_for_tickers(self):
+        sp = SpawnerProgress()
+        sp.append(FakeProcess(spawned=True, ticker='t1', model_id='1'))
+        sp.append(FakeProcess(spawned=True, ticker='t11', model_id='2'))
+        sp.append(FakeProcess(spawned=False, ticker='t2', model_id='3'))
+        sp.append(FakeProcess(spawned=False, ticker='t22', model_id='4'))
+        assert sp.spawned_model_ids_for_tickers(['t1']) == ['1']
+        assert sp.spawned_model_ids_for_tickers(['t1', 't11']) == ['1', '2']
+        assert sp.spawned_model_ids_for_tickers(['t1', 't11', 't2']) == ['1', '2']
+        assert sp.spawned_model_ids_for_tickers(['t1',  't2']) == ['1']

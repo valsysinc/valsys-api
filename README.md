@@ -1,18 +1,27 @@
+![](coverage.svg)
 # Valsys API library
 
-Purpose: spawning & sharing models
+Purpose: library to spawn and populate Valsys models via the API.
 
 
 
 ## Installation
-This assumes you have some system python version.
+This assumes you have some system python version. On a linux-type system, execute
 ```
 make install
 ```
-Note that the test env template will be copied and will contain all variables required (**health warning**: any existing config in that `.env` file will be blown away).
+This will create a python virtual environment, install necceasry python dependencies, and create a template environment file.
+
+Note that the test env template will be copied and will contain all variables required (**health warning**: any existing config in that `.env` file will be copied into `env/.env.bak`).
 
 ## Usage
 The library can be used in a few ways: 1) via a CLI, 2) as a library of functions.
+
+Once installed, start the python environment via
+```
+source .venv/bin/activate
+```
+
 ### CLI
 The valsys library can be used from source via a CLI.
 

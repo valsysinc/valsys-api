@@ -8,3 +8,5 @@ logs/
 htmlcov/
 docs/
 *.ipynb
+*.bak
+*.svg

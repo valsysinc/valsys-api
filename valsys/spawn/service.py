@@ -17,11 +17,12 @@ class ValsysSpawn:
     """ValsysSpawn is the interface to the spawning service of models
     into the Valsys platform."""
     @staticmethod
-    def spawn_models(config: ModelSpawnConfig):
+    def spawn_models(config: ModelSpawnConfigs):
         try:
             return spawn_models(config)
         except Exception as err:
             logger.exception(err)
+        return None
 
     @staticmethod
     def populate_modules(config: PopulateModulesConfig):
@@ -29,6 +30,14 @@ class ValsysSpawn:
 
 
 def spawn_models_same_dcf_periods(config: ModelSpawnConfig) -> List[SpawnProgress]:
+    """
+    Spawn a set of models, each of which has the same 
+    - template name,
+    - proj period, 
+    - hist period,
+    - email list to share to
+    - tags
+    """
 
     tickers = config.tickers
     template_name = config.template_name
@@ -45,17 +54,11 @@ def spawn_models_same_dcf_periods(config: ModelSpawnConfig) -> List[SpawnProgres
     seeds: List[ModelSeedConfigurationData] = []
     for config in company_configs:
         seeds.append(
-            ModelSeedConfigurationData(
-                company_name=config.company_name,
-                ticker=config.ticker,
-                industry_group=config.industry,
-                start_period=config.start_period,
-                start_date=datetime.datetime.now().strftime(
-                    "%Y-%m-%dT%H:%M:%S.%fZ"),
-                proj_period=proj_period,
-                hist_period=hist_period,
-                template_id=template_id,
-            ))
+            ModelSeedConfigurationData.from_model_spawn_config(config,
+                                                               proj_period=proj_period,
+                                                               hist_period=hist_period,
+                                                               template_id=template_id,
+                                                               ))
 
     return SpawnHandler.build_and_spawn_models(
         seeds=seeds,
@@ -74,30 +77,27 @@ def spawn_models(configs: ModelSpawnConfigs) -> SpawnerProgress:
 def populate_modules(config: PopulateModulesConfig):
 
     model_ids = config.model_ids
-    parent_module_name = config.parent_module_name
-    module_name = config.module_name
     key_metrics_config = config.key_metrics_config
-    line_item_data = config.line_item_data
-
-    key_metrics = key_metrics_config.get('metrics')
-    key_metrics_format = json.dumps(key_metrics_config.get('format'))
 
     for model_id in model_ids:
 
-        # Pull the first case uid
         model_info = pull_model_information(model_id)
 
         case_id = model_info.first.uid
         case = pull_case(uid=case_id)
 
-        root_module = case.pull_module(parent_module_name)
+        root_module = case.pull_module(config.parent_module_name)
 
         # Create module
+        module_name = config.module_name
         new_module = add_child_module(parent_module_id=root_module.uid,
                                       name=module_name,
                                       model_id=model_id,
                                       case_id=case_id)
         new_module_id = new_module.uid
+        line_item_data = config.line_item_data
+        key_metrics = key_metrics_config.get('metrics')
+        key_metrics_format = json.dumps(key_metrics_config.get('format'))
         for li in line_item_data:
             item_name = li.name
             line_item = add_item(case_id=case_id,

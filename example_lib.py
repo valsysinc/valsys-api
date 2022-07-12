@@ -1,6 +1,9 @@
 from valsys import ValsysSpawn, ModelSpawnConfigs, PopulateModulesConfig
 
-# Define configuration
+# Define configuration: list of dict's of configurations.
+# Each dict is treated separetely, but everything in a given dict
+# is treated the same (i.e., every ticker in the dict has the same templateName,
+# but a different dict can use a different template name for other tickers.)
 model_spawn_config_json = [{
     "tickers": [
         "SBUX",

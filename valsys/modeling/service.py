@@ -1,14 +1,11 @@
-import json
 
 from typing import List
 
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.model.fact import Fact
 from valsys.utils import logger
-from valsys.utils.utils import timeit
 from valsys.modeling.models import Permissions
 from valsys.modeling.exceptions import TagModelException, ShareModelException
-from valsys.modeling.client.socket_handler import SocketHandler
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.model.model import ModelInformation
@@ -17,15 +14,7 @@ from valsys.modeling.model.module import Module
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.client.service import new_client, ModelingClientTypes
 from valsys.modeling.client.exceptions import ModelingServicePostException, ModelingServiceGetException
-from valsys.modeling.headers import (
-    CASE_ID,
-    MODEL_ID,
-    UID,
-    PARENT_MODULE_ID,
-    NAME,
-    ORDER,
-    MODULE_ID,
-)
+from valsys.modeling.headers import Headers
 
 CODE_POST_SUCCESS = 200
 
@@ -43,7 +32,7 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     client = new_client(auth_token=auth_token, client=ModelingClientTypes.SOCKET)
     try:
         resp = client.get(url=VSURL.SCK_MODELING_CREATE, data=config.jsonify())
-        return resp["data"][UID]
+        return resp["data"][Headers.UID]
     except (ModelingServiceGetException, Exception):
         ModelSpawnException(f"error building model: {client.error}")
 
@@ -56,7 +45,7 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
         return client.post(
             url=VSURL.MODELING_MODEL_PROPERTIES,
             data={
-                MODEL_ID: model_id,
+                Headers.MODEL_ID: model_id,
                 "modelTags": tags,
                 "update": True,
                 "rollForward": True,
@@ -89,7 +78,7 @@ def share_model(model_id: str,
             url=VSURL.USERS_SHARE_MODEL,
             headers={
                 "email": email,
-                MODEL_ID: model_id,
+                Headers.MODEL_ID: model_id,
             },
             data=permissions,
         )
@@ -103,7 +92,7 @@ def pull_model_information(uid: str) -> ModelInformation:
     resp = client.get(
         url=VSURL.MODEL_INFO,
         headers={
-            MODEL_ID: uid,
+            Headers.MODEL_ID: uid,
         },
     )
     cases = resp["data"]["model"]
@@ -116,7 +105,7 @@ def pull_case(uid: str) -> Case:
     resp = client.get(
         url=VSURL.CASE,
         headers={
-            CASE_ID: uid,
+            Headers.CASE_ID: uid,
         },
     )
     return Case.from_json(resp["data"]["case"])
@@ -129,7 +118,7 @@ def recalculate_model(uid: str):
     resp = client.get(
         url=VSURL.RECALC_MODEL,
         headers={
-            UID: uid,
+            Headers.UID: uid,
         },
     )
     if resp.status_code != 200:
@@ -142,10 +131,10 @@ def remove_module(model_id, case_id, module_id, parent_module_id):
     resp = client.post(
         url=VSURL.DELETE_MODULE,
         data={
-            CASE_ID: case_id,
-            MODEL_ID: model_id,
-            PARENT_MODULE_ID: parent_module_id,
-            UID: module_id,
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            Headers.PARENT_MODULE_ID: parent_module_id,
+            Headers.UID: module_id,
         },
     )
 
@@ -160,10 +149,10 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     resp = client.post(
         url=VSURL.ADD_MODULE,
         data={
-            CASE_ID: case_id,
-            MODEL_ID: model_id,
-            NAME: name,
-            PARENT_MODULE_ID: parent_module_id,
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            Headers.NAME: name,
+            Headers.PARENT_MODULE_ID: parent_module_id,
         },
     )
 
@@ -181,11 +170,11 @@ def add_item(case_id, model_id, name, order, module_id) -> LineItem:
         resp = client.post(
             url=VSURL.ADD_ITEM,
             data={
-                CASE_ID: case_id,
-                MODEL_ID: model_id,
-                NAME: name,
-                ORDER: order,
-                MODULE_ID: module_id,
+                Headers.CASE_ID: case_id,
+                Headers.MODEL_ID: model_id,
+                Headers.NAME: name,
+                Headers.ORDER: order,
+                Headers.MODULE_ID: module_id,
             },
         )
     except ModelingServicePostException as err:
@@ -205,8 +194,8 @@ def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
     resp = client.post(
         url=url,
         data={
-            CASE_ID: case_id,
-            MODEL_ID: model_id,
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
             "forecastIncrement": 1,
             "facts": facts,
         },

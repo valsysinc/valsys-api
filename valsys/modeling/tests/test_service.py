@@ -1,7 +1,25 @@
-from valsys.modeling.service import pull_model_information, pull_case
+from valsys.modeling.service import pull_model_information, pull_case, spawn_model
+from valsys.modeling.client.service import ModelingClientTypes
+
 from unittest import mock
 
 MODULE_PREFIX = "valsys.modeling.service"
+
+
+class TestSpawnModel:
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works(self, mock_new_client):
+        config = mock.MagicMock()
+        mock_c = mock.MagicMock()
+        auth_token = '1234'
+        mock_c.get.return_value = {'data': {'uid': 42}}
+        mock_new_client.return_value = mock_c
+
+        assert spawn_model(config, auth_token) == 42
+        assert config.action == 'CREATE_MODEL'
+        config.validate.assert_called_once()
+        config.jsonify.assert_called_once()
+        mock_new_client.assert_called_with(auth_token=auth_token, client=ModelingClientTypes.SOCKET)
 
 
 class TestPullModelInformation:

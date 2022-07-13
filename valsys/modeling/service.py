@@ -1,4 +1,3 @@
-
 from typing import List
 
 from valsys.modeling.client.urls import VSURL
@@ -29,7 +28,8 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
     config.action = "CREATE_MODEL"
     config.validate()
 
-    client = new_client(auth_token=auth_token, client=ModelingClientTypes.SOCKET)
+    client = new_client(auth_token=auth_token,
+                        client=ModelingClientTypes.SOCKET)
     try:
         resp = client.get(url=VSURL.SCK_MODELING_CREATE, data=config.jsonify())
         return resp["data"][Headers.UID]
@@ -38,7 +38,8 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
-    """Tag the machine models"""
+    """For the model with `model_id`, tag with the list of `tags`.
+    """
 
     client = new_client(auth_token)
     try:
@@ -61,7 +62,7 @@ def share_model(model_id: str,
                 email: str,
                 permission: str,
                 auth_token: str = None):
-    """Share models with the team"""
+    """Share model with `model_id` the users `email`."""
 
     client = new_client(auth_token)
     if permission == Permissions.VIEW:
@@ -86,17 +87,17 @@ def share_model(model_id: str,
         raise ShareModelException(f"failed to share models {str(err)}")
 
 
-def pull_model_information(uid: str) -> ModelInformation:
-    """Pulls the model information for the UID."""
+def pull_model_information(model_id: str) -> ModelInformation:
+    """Pulls the model information for the `model_id`."""
     client = new_client()
     resp = client.get(
         url=VSURL.MODEL_INFO,
         headers={
-            Headers.MODEL_ID: uid,
+            Headers.MODEL_ID: model_id,
         },
     )
     cases = resp["data"]["model"]
-    return ModelInformation.from_json(uid, cases)
+    return ModelInformation.from_json(model_id, cases)
 
 
 def pull_case(uid: str) -> Case:
@@ -111,24 +112,24 @@ def pull_case(uid: str) -> Case:
     return Case.from_json(resp["data"]["case"])
 
 
-def recalculate_model(uid: str):
+def recalculate_model(model_id: str):
     """Recalculates the model"""
     client = new_client()
 
     resp = client.get(
         url=VSURL.RECALC_MODEL,
         headers={
-            Headers.UID: uid,
+            Headers.UID: model_id,
         },
     )
-    if resp.status_code != 200:
-        print(resp.json())
+    return resp
 
 
-def remove_module(model_id, case_id, module_id, parent_module_id):
+def remove_module(model_id: str, case_id: str, module_id: str,
+                  parent_module_id: str):
 
     client = new_client()
-    resp = client.post(
+    client.post(
         url=VSURL.DELETE_MODULE,
         data={
             Headers.CASE_ID: case_id,
@@ -143,8 +144,17 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
                      case_id: str) -> Module:
     """Add a new module to the parent module.
 
-    Returns the newly constructed `Module` object."""
-    logger.info(f"adding child module {name} to parent {parent_module_id} for model {model_id}")
+    Inputs:
+    `parent_module_id` (str): the moduleID of the parent
+    `name` (str): the name of the new module
+    `model_id` (str): the ID of the model into which the module is to be inserted
+    `case_id` (str): the caseID of the module.
+
+    Returns the newly constructed `Module` object.
+    """
+    logger.info(
+        f"adding child module {name} to parent {parent_module_id} for model {model_id}"
+    )
     client = new_client()
     resp = client.post(
         url=VSURL.ADD_MODULE,
@@ -163,8 +173,10 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     raise ValueError(f"Error adding child module")
 
 
-def add_item(case_id, model_id, name, order, module_id) -> LineItem:
-    logger.info(f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
+def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
+                  order: int) -> LineItem:
+    logger.info(
+        f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
     client = new_client()
     try:
         resp = client.post(

@@ -7,15 +7,14 @@ from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.spawn_handler import SpawnHandler
 from valsys.spawn.models import PopulateModulesConfig, ModelSpawnConfig, ModelSpawnConfigs
-from valsys.modeling.service import edit_format, edit_formula, pull_case, pull_model_information, add_item, add_child_module
-from valsys.spawn.models import (
-    SpawnerProgress, SpawnProgress
-)
+from valsys.modeling.service import edit_format, edit_formula, pull_case, pull_model_information, add_line_item, add_child_module
+from valsys.spawn.models import (SpawnerProgress, SpawnProgress)
 
 
 class ValsysSpawn:
     """ValsysSpawn is the interface to the spawning service of models
     into the Valsys platform."""
+
     @staticmethod
     def spawn_models(config: ModelSpawnConfigs):
         try:
@@ -29,7 +28,8 @@ class ValsysSpawn:
         return populate_modules(config)
 
 
-def spawn_models_same_dcf_periods(config: ModelSpawnConfig) -> List[SpawnProgress]:
+def spawn_models_same_dcf_periods(
+        config: ModelSpawnConfig) -> List[SpawnProgress]:
     """
     Spawn a set of models, each of which has the same 
     - template name,
@@ -54,11 +54,12 @@ def spawn_models_same_dcf_periods(config: ModelSpawnConfig) -> List[SpawnProgres
     seeds: List[ModelSeedConfigurationData] = []
     for config in company_configs:
         seeds.append(
-            ModelSeedConfigurationData.from_model_spawn_config(config,
-                                                               proj_period=proj_period,
-                                                               hist_period=hist_period,
-                                                               template_id=template_id,
-                                                               ))
+            ModelSeedConfigurationData.from_model_spawn_config(
+                config,
+                proj_period=proj_period,
+                hist_period=hist_period,
+                template_id=template_id,
+            ))
 
     return SpawnHandler.build_and_spawn_models(
         seeds=seeds,
@@ -100,11 +101,11 @@ def populate_modules(config: PopulateModulesConfig):
         key_metrics_format = json.dumps(key_metrics_config.get('format'))
         for li in line_item_data:
             item_name = li.name
-            line_item = add_item(case_id=case_id,
-                                 model_id=model_id,
-                                 name=item_name,
-                                 order=li.order,
-                                 module_id=new_module_id)
+            line_item = add_line_item(case_id=case_id,
+                                      model_id=model_id,
+                                      module_id=new_module_id,
+                                      name=item_name,
+                                      order=li.order)
             if item_name in key_metrics:
                 for idx, cell in enumerate(line_item.facts):
                     cell.fmt = key_metrics_format
@@ -113,7 +114,8 @@ def populate_modules(config: PopulateModulesConfig):
                             model_id=model_id,
                             facts=line_item.facts_for_format_edit())
 
-            formula_edits = config.get_line_item_config(line_item.name).formula_edits
+            formula_edits = config.get_line_item_config(
+                line_item.name).formula_edits
             if len(formula_edits) == 0:
                 continue
             for idx, cell in enumerate(line_item.facts):

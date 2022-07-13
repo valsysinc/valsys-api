@@ -1,4 +1,5 @@
-from valsys.modeling.service import pull_model_information, pull_case, spawn_model
+from dataclasses import dataclass
+from valsys.modeling.service import pull_model_information, pull_case, spawn_model, add_line_item
 from valsys.modeling.client.service import ModelingClientTypes
 import pytest
 from unittest import mock
@@ -8,6 +9,7 @@ MODULE_PREFIX = "valsys.modeling.service"
 
 
 class TestSpawnModel:
+
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
         config = mock.MagicMock()
@@ -20,7 +22,8 @@ class TestSpawnModel:
         assert config.action == 'CREATE_MODEL'
         config.validate.assert_called_once()
         config.jsonify.assert_called_once()
-        mock_new_client.assert_called_with(auth_token=auth_token, client=ModelingClientTypes.SOCKET)
+        mock_new_client.assert_called_with(auth_token=auth_token,
+                                           client=ModelingClientTypes.SOCKET)
 
 
 class TestPullModelInformation:
@@ -64,3 +67,52 @@ class TestPullCase:
         assert kw.get('headers') == {'caseID': uid}
         mock_Case_from_json.assert_called_once_with(mock_cases)
         assert model_info == mock_model_info
+
+
+@dataclass
+class FakeLineItem:
+    name: str = ''
+
+
+class TestAddLineItem:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        mock_client = mock.MagicMock()
+        mock_post = mock.MagicMock()
+        mock_client.post.return_value = mock_post
+        mock_new_client.return_value = mock_client
+        mock_module = mock.MagicMock()
+        case_id, model_id, module_id, name, order = 'c', 'm', 'mi', 'n', 'o'
+        fake_line_item = FakeLineItem(name=name)
+        mock_module.line_items = [fake_line_item]
+        mock_from_json.return_value = mock_module
+
+        li = add_line_item(case_id, model_id, module_id, name, order)
+        mock_new_client.assert_called_once()
+        assert li == fake_line_item
+        _, kww = mock_client.post.call_args
+        assert 'url' in kww
+        kw = kww['data']
+        assert kw['caseID'] == case_id
+        assert kw['modelID'] == model_id
+        assert kw['name'] == name
+        assert kw['order'] == order
+        assert kw['moduleID'] == module_id
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
+    def test_module_not_found(self, mock_from_json, mock_new_client):
+        mock_client = mock.MagicMock()
+        mock_post = mock.MagicMock()
+        mock_client.post.return_value = mock_post
+        mock_new_client.return_value = mock_client
+        mock_module = mock.MagicMock()
+        case_id, model_id, module_id, name, order = 'c', 'm', 'mi', 'n', 'o'
+        fake_line_item = FakeLineItem(name='garbage')
+        mock_module.line_items = [fake_line_item]
+        mock_from_json.return_value = mock_module
+        with pytest.raises(ValueError) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert name in str(err)

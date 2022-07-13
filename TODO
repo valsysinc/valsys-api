@@ -6,7 +6,6 @@ FEATURES
 --------
 - pip-able license
 - queries executed via sockets and HTTP for certain requests
-
 - after spawn, also load models into object
 
 BUGS

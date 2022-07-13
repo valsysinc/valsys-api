@@ -12,15 +12,15 @@ class ModelingClientTypes:
     SOCKET = 'socket'
 
 
-def new_client(auth_token: str = None, client='http') -> ModelingServiceHttpClient:
+def new_client(auth_token: str = None,
+               client='http') -> ModelingServiceHttpClient:
     """Build and return a new modeling service client object.
 
     If no `auth_token` is supplied, one is generated, based
     on the available Valsys credentials in environment variables.
     """
-    auth_token = auth_token or authenticate(
-        username=API_USERNAME, password=API_PASSWORD
-    )
+    auth_token = auth_token or authenticate(username=API_USERNAME,
+                                            password=API_PASSWORD)
 
     if client == ModelingClientTypes.HTTP:
         return ModelingServiceHttpClient(auth_token=auth_token)

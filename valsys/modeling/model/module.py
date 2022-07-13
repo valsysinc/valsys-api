@@ -1,7 +1,6 @@
 from typing import List
 from dataclasses import dataclass, field
 
-# from valsys.modeling.service import add_item
 from .line_item import LineItem
 
 

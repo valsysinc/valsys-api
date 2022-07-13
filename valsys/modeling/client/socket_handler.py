@@ -2,8 +2,9 @@ from dataclasses import dataclass
 import json
 from typing import Dict
 import websocket
-from valsys.modeling.client.urls import VSURL
 from valsys.utils import logger
+
+TRACE_DEFAULT = False
 
 
 class States:
@@ -27,12 +28,10 @@ class Message:
 
     @classmethod
     def from_json(cls, response):
-        return cls(
-            status=response.get("status"),
-            err=response.get("error"),
-            close=response.get("Close"),
-            step=response.get("step")
-        )
+        return cls(status=response.get("status"),
+                   err=response.get("error"),
+                   close=response.get("Close"),
+                   step=response.get("step"))
 
     @classmethod
     def from_response(cls, response):
@@ -40,7 +39,12 @@ class Message:
 
 
 class SocketHandler:
-    def __init__(self, url: str, config: Dict[str, str], auth_token: str, trace: bool = False) -> None:
+
+    def __init__(self,
+                 url: str,
+                 config: Dict[str, str],
+                 auth_token: str,
+                 trace: bool = TRACE_DEFAULT) -> None:
 
         self.config = config
         self.error = None
@@ -106,9 +110,9 @@ class SocketHandler:
         pong = 60
         ping = (pong * 9) / 10
 
-        self.wsapp.run_forever(
-            ping_interval=pong, ping_timeout=ping, ping_payload="0x9"
-        )
+        self.wsapp.run_forever(ping_interval=pong,
+                               ping_timeout=ping,
+                               ping_payload="0x9")
 
     @property
     def succesful(self):

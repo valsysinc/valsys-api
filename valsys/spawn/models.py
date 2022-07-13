@@ -28,11 +28,9 @@ class FormulaEditConfig:
 
     @classmethod
     def from_json(cls, config):
-        return cls(
-            period_name=config.get('periodName'),
-            period_year=config.get('periodYear', None),
-            formula=config.get('formula', None)
-        )
+        return cls(period_name=config.get('periodName'),
+                   period_year=config.get('periodYear', None),
+                   formula=config.get('formula', None))
 
 
 @dataclass
@@ -43,8 +41,12 @@ class LineItemConfig:
 
     @classmethod
     def from_json(cls, config):
-        return cls(name=config.get('name'), order=config.get('order'),
-                   formula_edits=[FormulaEditConfig.from_json(fec) for fec in config.get('formulaEdits', [])])
+        return cls(name=config.get('name'),
+                   order=config.get('order'),
+                   formula_edits=[
+                       FormulaEditConfig.from_json(fec)
+                       for fec in config.get('formulaEdits', [])
+                   ])
 
 
 @dataclass
@@ -73,7 +75,8 @@ class PopulateModulesConfig:
         for li in self.line_item_data:
             if li.name == line_item_name:
                 return li
-        raise ValueError(f"line item with name {line_item_name} not found in config")
+        raise ValueError(
+            f"line item with name {line_item_name} not found in config")
 
     def __post_init__(self):
         self.validate()
@@ -82,15 +85,19 @@ class PopulateModulesConfig:
         self.model_ids = model_ids
 
     @classmethod
-    def from_json(cls, config: Dict[str, Any], model_ids: Optional[List[str]] = None):
+    def from_json(cls,
+                  config: Dict[str, Any],
+                  model_ids: Optional[List[str]] = None):
         return cls(
             tickers=config.get(cls.fields.TICKERS),
             parent_module_name=config.get(cls.fields.PARENT_MODULE_NAME, ''),
             module_name=config.get(cls.fields.MODULE_NAME, ''),
             key_metrics_config=config.get(cls.fields.KEY_METRICS_CONFIG),
-            line_item_data=[LineItemConfig.from_json(li) for li in config.get(cls.fields.LINE_ITEMS, [])],
-            model_ids=model_ids or []
-        )
+            line_item_data=[
+                LineItemConfig.from_json(li)
+                for li in config.get(cls.fields.LINE_ITEMS, [])
+            ],
+            model_ids=model_ids or [])
 
 
 @dataclass
@@ -101,7 +108,9 @@ class MasterPopulateModulesConfig:
     def from_json(cls, config: List[Dict[str, Any]]):
         if config is None:
             return cls()
-        return cls(modules_config=[PopulateModulesConfig.from_json(j) for j in config])
+        return cls(modules_config=[
+            PopulateModulesConfig.from_json(j) for j in config
+        ])
 
     def __iter__(self):
         for cfg in self.modules_config:
@@ -266,5 +275,10 @@ class SpawnerProgress:
     def has_errors(self):
         return len(self.spawned_models) == 0
 
-    def spawned_model_ids_for_tickers(self, tickers: List[str]):
+    def spawned_model_ids_for_tickers(self, tickers: List[str]) -> List[str]:
+        """Return a list of modelIDs that:
+
+        a) have been spawned successfully, and,
+        b) are in the list of provided tickers.
+        """
         return [m.model_id for m in self.spawned_models if m.ticker in tickers]

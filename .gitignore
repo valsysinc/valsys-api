@@ -10,3 +10,4 @@ docs/
 *.ipynb
 *.bak
 *.svg
+*.DS_Store

@@ -18,6 +18,7 @@ BUGS
 ==============================
 FEATURES
 --------
+- code quality: auto format and remove unused imports via "make tidy" (DONE 18/7/22)
 - ABC the client obj (DONE 18/7/22)
 - module spawn (DONE 11/7/22)
 - module configuration (DONE 11/7/22)

@@ -1,4 +1,4 @@
-from valsys.auth.service import auth_headers, authenticate
+from valsys.auth.service import auth_headers, authenticate, Status
 from unittest import mock
 import pytest
 from http import HTTPStatus
@@ -18,7 +18,7 @@ class TestAuthenticate:
             "data": {
                 "AccessToken": fake_access_token
             },
-            "status": "success"
+            "status": Status.SUCCESS
         })
 
         assert authenticate(username=username,

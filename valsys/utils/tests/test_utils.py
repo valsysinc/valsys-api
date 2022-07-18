@@ -1,6 +1,9 @@
-import pytest
-from valsys.utils.utils import read_env
 from unittest import mock
+
+import pytest
+
+from valsys.utils.utils import read_env
+
 
 MODULE_PREFIX = "valsys.utils.utils"
 

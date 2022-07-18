@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import Dict, List
+
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.service import new_client
 

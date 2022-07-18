@@ -1,8 +1,11 @@
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from typing import Dict
+
 import websocket
+
 from valsys.utils import logger
+
 
 TRACE_DEFAULT = False
 

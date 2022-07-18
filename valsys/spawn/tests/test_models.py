@@ -1,6 +1,14 @@
 from dataclasses import dataclass
-from valsys.spawn.models import FormulaEditConfig, MasterPopulateModulesConfig, PopulateModulesConfig, LineItemConfig, SpawnerProgress
+
 import pytest
+
+from valsys.spawn.models import (
+    FormulaEditConfig,
+    LineItemConfig,
+    MasterPopulateModulesConfig,
+    PopulateModulesConfig,
+    SpawnerProgress,
+)
 
 
 class TestFormulaEditConfig:

@@ -1,19 +1,23 @@
 from typing import List
 
+from valsys.modeling.client.exceptions import (
+    ModelingServiceGetException,
+    ModelingServicePostException,
+)
+from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
+from valsys.modeling.exceptions import ShareModelException, TagModelException
+from valsys.modeling.headers import Headers
+from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
-from valsys.utils import logger
+from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.model.model import ModelInformation
+from valsys.modeling.model.module import Module
 from valsys.modeling.models import Permissions
-from valsys.modeling.exceptions import TagModelException, ShareModelException
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
-from valsys.modeling.model.model import ModelInformation
-from valsys.modeling.model.case import Case
-from valsys.modeling.model.module import Module
-from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.client.service import new_client, new_socket_client
-from valsys.modeling.client.exceptions import ModelingServicePostException, ModelingServiceGetException
-from valsys.modeling.headers import Headers
+from valsys.utils import logger
+
 
 CODE_POST_SUCCESS = 200
 CREATE_MODEL_ACTION = "CREATE_MODEL"

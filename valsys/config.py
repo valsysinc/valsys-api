@@ -1,7 +1,10 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+
 from valsys.utils.utils import read_env
+
 
 BUILD = os.getenv("VALSYS_API_BUILD", 'test')
 if BUILD == 'test':

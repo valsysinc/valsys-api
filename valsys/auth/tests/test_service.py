@@ -1,8 +1,11 @@
-from valsys.auth.service import auth_headers, authenticate, Status
-from unittest import mock
-import pytest
-from http import HTTPStatus
 import json
+from http import HTTPStatus
+from unittest import mock
+
+import pytest
+
+from valsys.auth.service import Status, auth_headers, authenticate
+
 
 MODULE_PREFIX = "valsys.auth.service"
 

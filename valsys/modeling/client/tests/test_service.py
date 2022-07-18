@@ -1,6 +1,13 @@
-from valsys.modeling.client.service import new_client, ModelingClientTypes, new_socket_client
 from unittest import mock
+
 import pytest
+
+from valsys.modeling.client.service import (
+    ModelingClientTypes,
+    new_client,
+    new_socket_client,
+)
+
 
 MODULE_PREFIX = "valsys.modeling.client.service"
 

@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Iterator, List, Tuple, Optional, Dict, Any
+from typing import Any, Dict, Iterator, List, Optional, Tuple
+
 from valsys.utils import logger
 
 

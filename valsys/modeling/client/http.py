@@ -1,11 +1,14 @@
-from dataclasses import dataclass
 import json
-from typing import Dict, Any
+from dataclasses import dataclass
 from http import HTTPStatus
+from typing import Any, Dict
+
 import requests
 
-
-from .exceptions import ModelingServiceGetException, ModelingServicePostException
+from .exceptions import (
+    ModelingServiceGetException,
+    ModelingServicePostException,
+)
 
 
 @dataclass

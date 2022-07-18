@@ -1,11 +1,14 @@
-import pytest
 from http import HTTPStatus
 from unittest import mock
-from valsys.modeling.client.http import ModelingServiceHttpClient
+
+import pytest
+
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
+from valsys.modeling.client.http import ModelingServiceHttpClient
+
 
 MODULE_PREFIX = "valsys.modeling.client.http"
 

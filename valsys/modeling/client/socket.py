@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any, Dict
+
 from valsys.modeling.client.socket_handler import SocketHandler
+
 from .exceptions import ModelingServiceGetException
 
 

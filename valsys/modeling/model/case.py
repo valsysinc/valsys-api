@@ -1,7 +1,8 @@
-from .module import Module
-from typing import List
-from .line_item import LineItem
 from dataclasses import dataclass, field
+from typing import List
+
+from .line_item import LineItem
+from .module import Module
 
 
 @dataclass

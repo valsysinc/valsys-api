@@ -1,6 +1,7 @@
-from typing import List
-from .case import Case, CaseInformation
 from dataclasses import dataclass, field
+from typing import List
+
+from .case import Case, CaseInformation
 
 
 @dataclass

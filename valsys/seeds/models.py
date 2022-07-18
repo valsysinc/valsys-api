@@ -1,7 +1,9 @@
-from typing import Dict, Any
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
+from typing import Any, Dict
+
 from valsys.spawn.models import ModelSpawnConfig
+
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 

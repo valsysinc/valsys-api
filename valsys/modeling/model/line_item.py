@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 from typing import List
 
-# from valsys.modeling.service import edit_format, add_child_module, edit_formula
 from .fact import Fact
+
+
+# from valsys.modeling.service import edit_format, add_child_module, edit_formula
 
 
 @dataclass

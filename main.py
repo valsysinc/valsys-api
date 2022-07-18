@@ -1,10 +1,12 @@
-import sys
 import json
+import sys
+
 import pyfiglet
-from valsys.spawn.service import spawn_models, populate_modules
-from valsys.version import VERSION, NAME
+
+from valsys.spawn.models import MasterPopulateModulesConfig, ModelSpawnConfigs
+from valsys.spawn.service import populate_modules, spawn_models
 from valsys.utils import logger
-from valsys.spawn.models import ModelSpawnConfigs, MasterPopulateModulesConfig
+from valsys.version import NAME, VERSION
 
 
 def run_spawn_models(args):

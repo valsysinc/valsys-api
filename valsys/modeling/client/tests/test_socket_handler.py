@@ -1,5 +1,12 @@
-from valsys.modeling.client.socket_handler import SocketHandler, TRACE_DEFAULT, Status, States
 from unittest import mock
+
+from valsys.modeling.client.socket_handler import (
+    TRACE_DEFAULT,
+    SocketHandler,
+    States,
+    Status,
+)
+
 
 MODULE_PREFIX = "valsys.modeling.client.socket_handler"
 

@@ -1,7 +1,7 @@
 from typing import List
-from .service import load_company_configs
-from .service import load_templates
+
 from .models import CompanyConfig
+from .service import load_company_configs, load_templates
 
 
 class SeedsLoader:

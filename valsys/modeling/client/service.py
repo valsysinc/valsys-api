@@ -1,11 +1,10 @@
 from dataclasses import dataclass
+from typing import Dict, Protocol
+
 from valsys.auth.service import authenticate
 from valsys.config import API_PASSWORD, API_USERNAME
-
 from valsys.modeling.client.http import ModelingServiceHttpClient
 from valsys.modeling.client.socket import ModelingServiceSocketClient
-
-from typing import Dict, Protocol
 
 
 @dataclass

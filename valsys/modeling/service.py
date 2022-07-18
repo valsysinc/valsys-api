@@ -11,11 +11,12 @@ from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.module import Module
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.client.service import new_client, ModelingClientTypes
+from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.exceptions import ModelingServicePostException, ModelingServiceGetException
 from valsys.modeling.headers import Headers
 
 CODE_POST_SUCCESS = 200
+CREATE_MODEL_ACTION = "CREATE_MODEL"
 
 
 def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
@@ -25,13 +26,14 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
 
     Raises `ModelSpawnException` on errors.
     """
-    config.action = "CREATE_MODEL"
+    config.action = CREATE_MODEL_ACTION
     config.validate()
 
-    client = new_client(auth_token=auth_token,
-                        client=ModelingClientTypes.SOCKET)
+    client = new_socket_client(auth_token=auth_token)
+
     try:
-        resp = client.get(url=VSURL.SCK_MODELING_CREATE, data=config.jsonify())
+        resp = client.post(url=VSURL.SCK_MODELING_CREATE,
+                           data=config.jsonify())
         return resp["data"][Headers.UID]
     except (ModelingServiceGetException, Exception):
         ModelSpawnException(f"error building model: {client.error}")

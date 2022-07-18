@@ -8,6 +8,7 @@ FEATURES
 - queries executed via sockets and HTTP for certain requests
 - after spawn, also load models into object
 
+
 BUGS
 ----
 
@@ -17,6 +18,7 @@ BUGS
 ==============================
 FEATURES
 --------
+- ABC the client obj (DONE 18/7/22)
 - module spawn (DONE 11/7/22)
 - module configuration (DONE 11/7/22)
 - test pipelines run on github (DONE 11/7/22)

@@ -4,7 +4,6 @@ from distutils.core import setup
 
 from setuptools import find_namespace_packages
 
-
 setup(
     name='valsys',
     packages=find_namespace_packages(include=['valsys.*']),

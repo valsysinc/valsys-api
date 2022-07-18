@@ -1,4 +1,4 @@
-Auto-format the codebase (uses `yapf`) and remove unused imports
+Auto-format the codebase (uses `yapf`), remove unused imports, organises imports
 ```
 make tidy
 ```

@@ -5,7 +5,7 @@ from valsys.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.client.http import ModelingServiceHttpClient
 from valsys.modeling.client.socket import ModelingServiceSocketClient
 
-from typing import Protocol, Dict, Any
+from typing import Dict, Protocol
 
 
 @dataclass

@@ -4,11 +4,14 @@ import pytest
 
 
 class TestFormulaEditConfig:
+
     def test_works_ok(self):
         period_name = 'pn'
         period_year = 'py'
         formula = 'form'
-        fec = FormulaEditConfig(period_name=period_name, period_year=period_year, formula=formula)
+        fec = FormulaEditConfig(period_name=period_name,
+                                period_year=period_year,
+                                formula=formula)
         assert fec.formula == formula
         assert fec.period_name == period_name
         assert fec.period_year == period_year
@@ -43,10 +46,7 @@ class TestFormulaEditConfig:
         period_name = 'pn'
         formula = 'form'
 
-        input_json = {
-            'periodName': period_name,
-            'formula': formula
-        }
+        input_json = {'periodName': period_name, 'formula': formula}
         with pytest.raises(ValueError) as err:
             FormulaEditConfig.from_json(input_json)
         assert 'periodYear' in str(err)
@@ -56,7 +56,6 @@ class TestFormulaEditConfig:
 
         input_json = {
             'periodName': period_name,
-
         }
         with pytest.raises(ValueError) as err:
             FormulaEditConfig.from_json(input_json)
@@ -65,11 +64,14 @@ class TestFormulaEditConfig:
 
 
 class TestPopulateModulesConfig:
+
     def test_min_input(self):
         tickers = ['t1', 't2']
         pmn = 'parent'
         mn = 'module'
-        pmc = PopulateModulesConfig(tickers=tickers, parent_module_name=pmn, module_name=mn)
+        pmc = PopulateModulesConfig(tickers=tickers,
+                                    parent_module_name=pmn,
+                                    module_name=mn)
         assert pmc.tickers == tickers
         assert pmc.parent_module_name == pmn
         assert pmc.module_name == mn
@@ -79,17 +81,23 @@ class TestPopulateModulesConfig:
         pmn = 'parent'
         mn = 'module'
         with pytest.raises(ValueError) as err:
-            PopulateModulesConfig(tickers=tickers, parent_module_name=pmn, module_name='')
+            PopulateModulesConfig(tickers=tickers,
+                                  parent_module_name=pmn,
+                                  module_name='')
         assert 'moduleName' in str(err)
         with pytest.raises(ValueError) as err:
-            PopulateModulesConfig(tickers=tickers, parent_module_name='', module_name='mn')
+            PopulateModulesConfig(tickers=tickers,
+                                  parent_module_name='',
+                                  module_name='mn')
         assert 'parentModuleName' in str(err)
 
     def test_set_model_ids(self):
         tickers = ['t1', 't2']
         pmn = 'parent'
         mn = 'module'
-        pmc = PopulateModulesConfig(tickers=tickers, parent_module_name=pmn, module_name=mn)
+        pmc = PopulateModulesConfig(tickers=tickers,
+                                    parent_module_name=pmn,
+                                    module_name=mn)
         assert pmc.model_ids == []
         model_ids = [1, 2, 3]
         pmc.set_model_ids(model_ids)
@@ -103,8 +111,10 @@ class TestPopulateModulesConfig:
         tickers = ['t1', 't2']
         pmn = 'parent'
         mn = 'module'
-        pmc = PopulateModulesConfig(tickers=tickers, parent_module_name=pmn,
-                                    module_name=mn, line_item_data=[lic1, lic2])
+        pmc = PopulateModulesConfig(tickers=tickers,
+                                    parent_module_name=pmn,
+                                    module_name=mn,
+                                    line_item_data=[lic1, lic2])
         lic = pmc.get_line_item_config(line_item_name=name1)
         assert lic.name == name1
         assert lic.order == o1
@@ -117,8 +127,10 @@ class TestPopulateModulesConfig:
         tickers = ['t1', 't2']
         pmn = 'parent'
         mn = 'module'
-        pmc = PopulateModulesConfig(tickers=tickers, parent_module_name=pmn,
-                                    module_name=mn, line_item_data=[lic1, lic2])
+        pmc = PopulateModulesConfig(tickers=tickers,
+                                    parent_module_name=pmn,
+                                    module_name=mn,
+                                    line_item_data=[lic1, lic2])
         with pytest.raises(ValueError) as err:
             pmc.get_line_item_config(line_item_name='name3')
         assert 'name3' in str(err)
@@ -127,7 +139,8 @@ class TestPopulateModulesConfig:
         tickers = ['t1', 't2']
         pmn = 'parent'
         mn = 'module'
-        pmc = PopulateModulesConfig(tickers=tickers, parent_module_name=pmn,
+        pmc = PopulateModulesConfig(tickers=tickers,
+                                    parent_module_name=pmn,
                                     module_name=mn)
         with pytest.raises(ValueError) as err:
             pmc.get_line_item_config(line_item_name='name3')
@@ -135,6 +148,7 @@ class TestPopulateModulesConfig:
 
 
 class TestMasterPopulateModulesConfig:
+
     def test_works_no_input(self):
         mpmc = MasterPopulateModulesConfig()
         assert mpmc.modules_config == []
@@ -145,8 +159,15 @@ class TestMasterPopulateModulesConfig:
         assert len(mpmc.modules_config) == 0
 
     def test_works_ok_from_json(self):
-        input_config = [{'tickers': ['t1'], 'parentModuleName':'pmod1', 'moduleName':'mondname1'},
-                        {'tickers': ['t2'], 'parentModuleName':'pmod2', 'moduleName':'mondname2'}]
+        input_config = [{
+            'tickers': ['t1'],
+            'parentModuleName': 'pmod1',
+            'moduleName': 'mondname1'
+        }, {
+            'tickers': ['t2'],
+            'parentModuleName': 'pmod2',
+            'moduleName': 'mondname2'
+        }]
         mpmc = MasterPopulateModulesConfig.from_json(input_config)
         assert len(mpmc.modules_config) == len(input_config)
         t = []
@@ -163,6 +184,7 @@ class FakeProcess:
 
 
 class TestSpawnerProgress:
+
     def test_init(self):
         sp = SpawnerProgress()
         assert len(sp.processes) == 0
@@ -197,5 +219,24 @@ class TestSpawnerProgress:
         sp.append(FakeProcess(spawned=False, ticker='t22', model_id='4'))
         assert sp.spawned_model_ids_for_tickers(['t1']) == ['1']
         assert sp.spawned_model_ids_for_tickers(['t1', 't11']) == ['1', '2']
-        assert sp.spawned_model_ids_for_tickers(['t1', 't11', 't2']) == ['1', '2']
-        assert sp.spawned_model_ids_for_tickers(['t1',  't2']) == ['1']
+        assert sp.spawned_model_ids_for_tickers(['t1', 't11',
+                                                 't2']) == ['1', '2']
+        assert sp.spawned_model_ids_for_tickers(['t1', 't2']) == ['1']
+
+
+class TestLineItemConfig:
+
+    def test_init(self):
+        name, order = 'name', 1
+        lic = LineItemConfig(name=name, order=order)
+        assert lic.name == name
+        assert lic.order == order
+        assert len(lic.formula_edits) == 0
+
+    def test_from_json_no_formula_edits(self):
+        name, order = 'name', 1
+        ij = {'name': name, 'order': order}
+        li_from_json = LineItemConfig.from_json(ij)
+        assert li_from_json.name == name
+        assert li_from_json.order == order
+        assert li_from_json.formula_edits == []

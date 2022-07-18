@@ -15,3 +15,6 @@ install:
 	pip install -r requirements.txt
 	cp env/.env env/.env.bak
 	cp env/.env.test env/.env
+
+tidy:
+	autoflake --in-place -r .

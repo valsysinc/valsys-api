@@ -40,8 +40,7 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
-    """For the model with `model_id`, tag with the list of `tags`.
-    """
+    """Tag the model with `model_id` with the list of `tags`."""
 
     client = new_client(auth_token)
     try:

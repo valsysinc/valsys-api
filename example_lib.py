@@ -5,34 +5,24 @@ from valsys import ValsysSpawn, ModelSpawnConfigs, PopulateModulesConfig
 # is treated the same (i.e., every ticker in the dict has the same templateName,
 # but a different dict can use a different template name for other tickers.)
 model_spawn_config_json = [{
-    "tickers": [
-        "SBUX",
-        "BYND"
-    ],
+    "tickers": ["SBUX", "BYND"],
     "templateName": "dcf-standard",
     "histPeriod": 2,
     "projPeriod": 3,
-    "tags": [
-        "t1"
-    ],
-    "emails": [
-        "jack.fuller@valsys.io"
-    ]
+    "tags": ["t1"],
+    "emails": ["jack.fuller@valsys.io"]
 }]
 
 module_spawn_config_json = {
-    "tickers": [
-        "SBUX"
-    ],
-    "parentModuleName": "Income Statement",
-    "moduleName": "Operating Model",
+    "tickers": ["SBUX"],
+    "parentModuleName":
+    "Income Statement",
+    "moduleName":
+    "Operating Model",
     "keyMetricsConfig": {
         "metrics": [
-            "Revenue Growth, %",
-            "Gross Margin, %",
-            "SG&A / sales",
-            "R&D / sales",
-            "Capex / sales"
+            "Revenue Growth, %", "Gross Margin, %", "SG&A / sales",
+            "R&D / sales", "Capex / sales"
         ],
         "format": {
             "fontWeight": "bold",
@@ -44,16 +34,13 @@ module_spawn_config_json = {
             "decimalPlaces": 1
         }
     },
-    "lineItems": [
-        {
-            "name": "Revenue Growth, %",
-            "order": 2
-        },
-        {
-            "name": "line item 2",
-            "order": 1
-        }
-    ]
+    "lineItems": [{
+        "name": "Revenue Growth, %",
+        "order": 2
+    }, {
+        "name": "line item 2",
+        "order": 1
+    }]
 }
 
 # Turn the configuration json into a usable model config object
@@ -65,12 +52,14 @@ model_spawn_config_obj = ModelSpawnConfigs.from_json(model_spawn_config_json)
 spawn_report = ValsysSpawn.spawn_models(model_spawn_config_obj)
 
 # Collect a list of modelIDs for the successfully spawned models.
-model_ids_for_ticker = spawn_report.spawned_model_ids_for_tickers(spawn_report.spawned_tickers)
+model_ids_for_ticker = spawn_report.spawned_model_ids_for_tickers(
+    spawn_report.spawned_tickers)
 
 # Collect together inputs required to add modules to newly created models.
 # Note that we pass in the model ids for the newly spawned models (these are
 # only the successful ones).
-pmc = PopulateModulesConfig.from_json(config=module_spawn_config_json, model_ids=model_ids_for_ticker)
+pmc = PopulateModulesConfig.from_json(config=module_spawn_config_json,
+                                      model_ids=model_ids_for_ticker)
 
 # Add modules to newly created models, according to the provided input configuration.
 ValsysSpawn.populate_modules(pmc)

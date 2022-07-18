@@ -23,6 +23,5 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    python_requires='>=3.6',                # Minimum version requirement of the package
-
+    python_requires='>=3.6',  # Minimum version requirement of the package
 )

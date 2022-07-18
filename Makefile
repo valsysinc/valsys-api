@@ -18,3 +18,4 @@ install:
 
 tidy:
 	autoflake --in-place -r .
+	yapf --in-place --recursive *.py

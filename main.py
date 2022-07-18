@@ -11,15 +11,18 @@ def run_spawn_models(args):
     config_filename = args[0]
     with open(config_filename, "r") as file:
         config_file = json.loads(file.read())
-    spawn_config = ModelSpawnConfigs.from_json(config_file.get('spawnModelsConfig'))
+    spawn_config = ModelSpawnConfigs.from_json(
+        config_file.get('spawnModelsConfig'))
     spawner_report = spawn_models(spawn_config)
     spawned_models = spawner_report.spawned_models
 
     if len(spawned_models) == 0:
         raise ValueError(f"no models spawned")
-    mpmc = MasterPopulateModulesConfig.from_json(config_file.get('populateModulesConfig'))
+    mpmc = MasterPopulateModulesConfig.from_json(
+        config_file.get('populateModulesConfig'))
     for pmc in mpmc:
-        model_ids_for_ticker = spawner_report.spawned_model_ids_for_tickers(pmc.tickers)
+        model_ids_for_ticker = spawner_report.spawned_model_ids_for_tickers(
+            pmc.tickers)
         pmc.set_model_ids(model_ids_for_ticker)
         populate_modules(pmc)
     return spawner_report

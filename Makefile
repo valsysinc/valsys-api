@@ -1,8 +1,11 @@
 test:
 	export VALSYS_API_BUILD=test; pytest . --disable-warnings
 
-coverage:
+coverage-ci:
 	export VALSYS_API_BUILD=test; coverage run --omit="*/test*" --source=. -m pytest . 
+	
+coverage:
+	make coverage-ci
 	coverage html
 	open htmlcov/index.html
 

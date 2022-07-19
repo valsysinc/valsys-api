@@ -7,7 +7,7 @@ from valsys.modeling.exceptions import ShareModelException, TagModelException
 from valsys.modeling.service import share_model, spawn_model, tag_model
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
-from valsys.spawn.models import SpawnProgress, SpawnerProgress
+from valsys.spawn.models import SpawnProgress, SpawnedModels
 
 
 @dataclass

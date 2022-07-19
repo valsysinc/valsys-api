@@ -18,5 +18,5 @@ jobs:
       run: |
        docker build -t apilib .
        docker run -t apilib make test
-       docker run -t apilib /bin/bash -c "make coverage"
+       docker run -t apilib /bin/bash -c "make coverage-ci"
         

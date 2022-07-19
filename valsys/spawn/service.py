@@ -12,6 +12,7 @@ from valsys.modeling.service import (
 from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.models import ModelSeedConfigurationData
 from valsys.spawn.models import (
+    MasterPopulateModulesConfig,
     ModelSpawnConfig,
     ModelSpawnConfigs,
     PopulateModulesConfig,
@@ -40,7 +41,7 @@ class ValsysSpawn:
 
 
 def spawn_models_same_dcf_periods(
-        config: ModelSpawnConfig) -> List[SpawnProgress]:
+        model_spawn_config: ModelSpawnConfig) -> List[SpawnProgress]:
     """
     Spawn a set of models, each of which has the same 
     - template name,
@@ -50,14 +51,12 @@ def spawn_models_same_dcf_periods(
     - tags
     """
 
-    tickers = config.tickers
-    template_name = config.template_name
-    proj_period = config.proj_period
-    hist_period = config.hist_period
-    tags = config.tags
-    emails = config.emails
+    tickers = model_spawn_config.tickers
+    template_name = model_spawn_config.template_name
+    proj_period = model_spawn_config.proj_period
+    hist_period = model_spawn_config.hist_period
 
-    logger.info(f"running spawn with {config.jsonify()}")
+    logger.info(f"running spawn with {model_spawn_config.jsonify()}")
 
     company_configs = SeedsLoader.company_configs_by_ticker(tickers)
     template_id = SeedsLoader.template_id_by_name(template_name=template_name)
@@ -74,8 +73,8 @@ def spawn_models_same_dcf_periods(
 
     return SpawnHandler.build_and_spawn_models(
         seeds=seeds,
-        tags=tags,
-        emails=emails,
+        tags=model_spawn_config.tags,
+        emails=model_spawn_config.emails,
     )
 
 
@@ -84,6 +83,15 @@ def spawn_models(configs: ModelSpawnConfigs) -> SpawnerProgress:
     for cfg in configs:
         [rep.append(proc) for proc in spawn_models_same_dcf_periods(cfg)]
     return rep
+
+
+def populate_models_with_modules(modules_config: MasterPopulateModulesConfig,
+                                 spawner_report: SpawnerProgress):
+    for pmc in modules_config:
+        model_ids_for_ticker = spawner_report.spawned_model_ids_for_tickers(
+            pmc.tickers)
+        pmc.set_model_ids(model_ids_for_ticker)
+        populate_modules(pmc)
 
 
 def populate_modules(config: PopulateModulesConfig):

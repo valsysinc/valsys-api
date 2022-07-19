@@ -7,7 +7,7 @@ from valsys.spawn.models import (
     LineItemConfig,
     MasterPopulateModulesConfig,
     PopulateModulesConfig,
-    SpawnerProgress,
+    SpawnedModels,
 )
 
 
@@ -194,11 +194,11 @@ class FakeProcess:
 class TestSpawnerProgress:
 
     def test_init(self):
-        sp = SpawnerProgress()
+        sp = SpawnedModels()
         assert len(sp.processes) == 0
 
     def test_append(self):
-        sp = SpawnerProgress()
+        sp = SpawnedModels()
         assert len(sp.processes) == 0
         sp.append(1)
         assert len(sp.processes) == 1
@@ -206,13 +206,13 @@ class TestSpawnerProgress:
         assert len(sp.processes) == 2
 
     def test_spawned_yes(self):
-        sp = SpawnerProgress()
+        sp = SpawnedModels()
         sp.append(FakeProcess(spawned=True))
         sp.append(FakeProcess(spawned=False))
         assert sp.has_errors is False
 
     def test_spawned_tickers(self):
-        sp = SpawnerProgress()
+        sp = SpawnedModels()
         sp.append(FakeProcess(spawned=True, ticker='t1'))
         sp.append(FakeProcess(spawned=True, ticker='t11'))
         sp.append(FakeProcess(spawned=False, ticker='t2'))
@@ -220,7 +220,7 @@ class TestSpawnerProgress:
         assert sp.spawned_tickers == ['t1', 't11']
 
     def test_spawned_model_ids_for_tickers(self):
-        sp = SpawnerProgress()
+        sp = SpawnedModels()
         sp.append(FakeProcess(spawned=True, ticker='t1', model_id='1'))
         sp.append(FakeProcess(spawned=True, ticker='t11', model_id='2'))
         sp.append(FakeProcess(spawned=False, ticker='t2', model_id='3'))

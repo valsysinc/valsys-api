@@ -190,6 +190,7 @@ class SpawnProgress:
     share_error: Exception = None
     shared_to: List[Tuple[str,
                           Optional[Exception]]] = field(default_factory=list)
+    modules: List[Any] = field(default_factory=list)
 
     @property
     def all_complete(self):
@@ -225,6 +226,7 @@ class SpawnProgress:
             "spawned": self.spawned,
             "tagged": self.tagged,
             "shared": self.shared,
+            "modules": self.modules
         }
         if detail:
             j.update({
@@ -242,13 +244,24 @@ class SpawnProgress:
 
 
 @dataclass
-class SpawnerProgress:
+class SpawnedModels:
     options: Dict[str, Any] = field(default_factory=dict)
     processes: List[SpawnProgress] = field(default_factory=list)
     verbose: bool = False
 
     def __post_init__(self):
         self.verbose = self.options.get("verbose", False)
+
+    def add_populated_modules(self, pmc_rep):
+        for m in pmc_rep.meta:
+            self.add_modules_to_model(model_id=m.get('uid'),
+                                      modules=m.get('modules'))
+
+    def add_modules_to_model(self, model_id, modules):
+        for p in self.processes:
+            if p.model_id == model_id:
+                p.modules = modules
+                return
 
     def append(self, process: SpawnProgress):
         self.processes.append(process)
@@ -278,3 +291,49 @@ class SpawnerProgress:
         b) are in the list of provided tickers.
         """
         return [m.model_id for m in self.spawned_models if m.ticker in tickers]
+
+
+@dataclass
+class PopulatedModules:
+    meta: List[Any] = field(default_factory=list)
+
+    def add_model(self, model_id, case_name):
+        self.meta.append({'uid': model_id, 'case': case_name, 'modules': []})
+
+    def get_model_meta(self, model_id):
+        for model_meta in self.meta:
+            if model_meta.get('uid') == model_id:
+                return model_meta
+
+    def get_module_meta(self, model_meta, module_id):
+        for module_meta in model_meta['modules']:
+            if module_meta.get('uid') == module_id:
+                return module_meta
+
+    def add_module_to_model(self, model_id, module_id, name, uid_parent):
+        model_meta = self.get_model_meta(model_id=model_id)
+        model_meta['modules'].append({
+            'uid': module_id,
+            'name': name,
+            'uid_parent': uid_parent,
+            'line_items': []
+        })
+
+    def add_line_item_to_module(self, model_id, module_id, line_item_uid,
+                                line_item_name):
+        model_meta = self.get_model_meta(model_id=model_id)
+        module_meta = self.get_module_meta(model_meta, module_id)
+        module_meta['line_items'].append({
+            'name': line_item_name,
+            'uid': line_item_uid,
+            'processes': []
+        })
+
+    def add_process_to_line_item(self, model_id, module_id, line_item_uid,
+                                 proc_name):
+        model_meta = self.get_model_meta(model_id=model_id)
+        module_meta = self.get_module_meta(model_meta, module_id)
+        for li in module_meta['line_items']:
+            if li['uid'] == line_item_uid:
+                li['processes'].append(proc_name)
+                return

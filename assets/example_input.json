@@ -76,6 +76,55 @@
                     ]
                 }
             ]
+        },
+        {
+            "tickers": [
+                "BYND"
+            ],
+            "parentModuleName": "Income Statement",
+            "moduleName": "A new module",
+            "keyMetricsConfig": {
+                "metrics": [
+                    "Revenue Growth, %",
+                    "Gross Margin, %",
+                    "SG&A / sales",
+                    "R&D / sales",
+                    "Capex / sales"
+                ],
+                "format": {
+                    "fontWeight": "bold",
+                    "fontStyle": "normal",
+                    "textAlign": "right",
+                    "textDecoration": "none",
+                    "valFormat": "Percentage",
+                    "unit": "Raw",
+                    "decimalPlaces": 1
+                }
+            },
+            "lineItems": [
+                {
+                    "name": "Revenue Growth, %",
+                    "order": 1,
+                    "formulaEdits": [
+                        {
+                            "periodName": "",
+                            "periodYear": "2019",
+                            "formula": "5*2"
+                        }
+                    ]
+                },
+                {
+                    "name": "line item 2",
+                    "order": 2,
+                    "formulaEdits": [
+                        {
+                            "periodName": "",
+                            "periodYear": "2018",
+                            "formula": "1+2"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

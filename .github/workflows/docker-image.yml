@@ -17,6 +17,6 @@ jobs:
     - name: Build the Docker image
       run: |
        docker build -t apilib .
-       docker run -t apilib pytest
-       docker run -t apilib /bin/bash -c "coverage run --source=. -m pytest . &&  coverage report"
+       docker run -t apilib make test
+       docker run -t apilib /bin/bash -c "make coverage"
         

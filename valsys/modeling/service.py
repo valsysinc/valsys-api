@@ -157,9 +157,9 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
 
     Returns the newly constructed `Module` object.
     """
-    logger.info(
-        f"adding child module {name} to parent {parent_module_id} for model {model_id}"
-    )
+    #logger.info(
+    #    f"adding child module {name} to parent {parent_module_id} for model {model_id}"
+    #)
     client = new_client()
     resp = client.post(
         url=VSURL.ADD_MODULE,
@@ -180,8 +180,8 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int) -> LineItem:
-    logger.info(
-        f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
+    #logger.info(
+    #    f'adding line item=<{name}> order=<{order}> to modelID={model_id}')
     client = new_client()
     try:
         resp = client.post(

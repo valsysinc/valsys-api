@@ -12,6 +12,14 @@ class Module:
     line_items: List[LineItem] = field(default_factory=list)
     child_modules: List["Module"] = field(default_factory=list)
 
+    @property
+    def module_meta(self):
+        return {
+            'name': self.name,
+            'uid': self.uid,
+            'children': [m.module_meta for m in self.child_modules or []]
+        }
+
     def find_module(self, name: str) -> "Module":
         if self.child_modules is None:
             return None

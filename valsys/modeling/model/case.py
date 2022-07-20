@@ -23,6 +23,10 @@ class Case:
     modules: List[Module] = field(default_factory=list)
     ticker: str = ""
 
+    @property
+    def module_meta(self):
+        return [module.module_meta for module in self.modules]
+
     def set_ticker(self, ticker):
         self.ticker = ticker
 

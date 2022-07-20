@@ -43,7 +43,11 @@ def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
-    """Tag the model with `model_id` with the list of `tags`."""
+    """Tag the model with `model_id` with the list of `tags`.
+    
+    Note that this removes any existing tags;
+    if you wanted to append tags, use the `append_tags` function.
+    """
 
     client = new_client(auth_token)
     try:
@@ -73,10 +77,12 @@ def share_model(model_id: str,
         permissions = {
             "view": True,
         }
-    else:
+    elif permission == Permissions.EDIT:
         permissions = {
             "edit": True,
         }
+    else:
+        raise NotImplementedError(f"invalid permission: {permission}")
 
     try:
         client.post(
@@ -101,6 +107,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
         },
     )
     cases = resp["data"]["model"]
+
     return ModelInformation.from_json(model_id, cases)
 
 
@@ -114,6 +121,17 @@ def pull_case(uid: str) -> Case:
         },
     )
     return Case.from_json(resp["data"]["case"])
+
+
+def get_model_tags(uid: str) -> List[str]:
+    """Get the list of tags for the model."""
+    model_info = pull_model_information(uid)
+    return model_info.tags
+
+
+def append_tags(uid: str, tags: List[str]):
+    curr_tags = get_model_tags(uid)
+    tag_model(uid, list(set(tags).union(set(curr_tags))))
 
 
 def recalculate_model(model_id: str):

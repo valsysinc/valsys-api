@@ -4,7 +4,7 @@ logs/
 .coverage
 .vscode/*
 *.swp
-.env
+env/
 htmlcov/
 docs/
 *.ipynb

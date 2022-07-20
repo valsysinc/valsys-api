@@ -1,4 +1,5 @@
-from valsys import ValsysSpawn, ModelSpawnConfigs, PopulateModulesConfig
+from valsys.spawn.service import ValsysSpawn
+from valsys.spawn.models import ModelSpawnConfigs, PopulateModulesConfig
 
 # Define configuration: list of dict's of configurations.
 # Each dict is treated separetely, but everything in a given dict

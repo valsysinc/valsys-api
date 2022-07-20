@@ -1,10 +1,9 @@
-import json
-from http import HTTPStatus
 from typing import Dict
 
 import requests
 
 from valsys.modeling.client.urls import VSURL
+
 from .authenticate import authenticate2
 
 

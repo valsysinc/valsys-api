@@ -1,6 +1,9 @@
 import os
 
 
+def does_file_exist(fn:str):
+    return os.path.exists(fn)
+
 def does_dir_exist(dir: str) -> bool:
     return os.path.exists(dir)
 

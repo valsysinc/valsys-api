@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.client.service import ModelingClientTypes
 from valsys.modeling.service import (
     CREATE_MODEL_ACTION,
     add_line_item,
@@ -11,7 +10,6 @@ from valsys.modeling.service import (
     pull_model_information,
     spawn_model,
 )
-from valsys.spawn.exceptions import ModelSpawnException
 
 
 MODULE_PREFIX = "valsys.modeling.service"

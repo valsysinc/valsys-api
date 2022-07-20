@@ -1,6 +1,5 @@
 import json
 from http import HTTPStatus
-from typing import Dict
 
 import requests
 

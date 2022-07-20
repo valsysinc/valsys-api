@@ -30,12 +30,15 @@ def run_spawn_models(args):
 
 def main(args):
     print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-    logger.info(f"start")
-    res = run_spawn_models(args)
-    if res.has_errors:
-        logger.info(f'done with errors')
-    else:
-        logger.info(f'done')
+
+    mode = args[0]
+    if mode == '--spawn':
+        logger.info(f"start")
+        res = run_spawn_models(args[1:])
+        if res.has_errors:
+            logger.info(f'done with errors')
+        else:
+            logger.info(f'done')
 
 
 if __name__ == "__main__":

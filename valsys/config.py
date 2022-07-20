@@ -3,15 +3,15 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from valsys.env import get_envfiles
 from valsys.utils.utils import read_env
 
 
 BUILD = os.getenv("VALSYS_API_BUILD", 'local')
-if BUILD == 'test':
-    print('VALSYS_API_BUILD=test')
-    load_dotenv(dotenv_path=Path('env/.env.test'))
-else:
-    load_dotenv(dotenv_path=Path('env/.env'))
+env_files = get_envfiles(BUILD)
+
+load_dotenv(dotenv_path=Path(env_files.config))
+load_dotenv(dotenv_path=Path(env_files.creds))
 
 BASE_SCK = read_env("VALSYS_API_SOCKET")
 BASE_URL = read_env("VALSYS_API_SERVER")

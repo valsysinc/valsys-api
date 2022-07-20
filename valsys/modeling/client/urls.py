@@ -20,3 +20,7 @@ class VSURL:
     USERS_MODELS = f"{BASE_URL}/users/models"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
+
+    @classmethod
+    def login(cls, base):
+        return f"{base}/users/login"

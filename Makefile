@@ -10,7 +10,7 @@ coverage:
 	open htmlcov/index.html
 
 doc-gen:
-	pdoc valsys -o docs
+	pdoc valsys -o code-docs
 
 install:
 	./scripts/install-mac.sh

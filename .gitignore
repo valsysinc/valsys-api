@@ -6,7 +6,7 @@ logs/
 *.swp
 env/
 htmlcov/
-docs/
+code-docs/
 *.ipynb
 *.bak
 *.svg

@@ -65,22 +65,21 @@ def create_env_file(username: str,
     write_env(creds, envfiles.creds)
 
 
-def main(args):
+def main():
 
-    mode = args[0]
     create_env_file(username='any',
                     password='any',
                     envfiles=get_envfiles('test'),
                     verify=False)
-    if mode == '--login':
-        print('please enter your Valsys credentials when prompted:')
-        username = input('Valsys username: ')
-        password = getpass.getpass('Valsys password: ')
-        create_env_file(username=username,
-                        password=password,
-                        envfiles=get_envfiles('local'))
-        print('login succesful')
+
+    print('please enter your Valsys credentials when prompted:')
+    username = input('Valsys username: ')
+    password = getpass.getpass('Valsys password: ')
+    create_env_file(username=username,
+                    password=password,
+                    envfiles=get_envfiles('local'))
+    print('login succesful')
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

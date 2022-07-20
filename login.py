@@ -1,5 +1,3 @@
-import sys
-
 import getpass
 
 from valsys.env import get_envfiles, ENV_ROOT, EnvFiles
@@ -69,11 +67,6 @@ def create_env_file(username: str,
 
 def main():
     print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
-
-    create_env_file(username='any',
-                    password='any',
-                    envfiles=get_envfiles('test'),
-                    verify=False)
 
     print('Please enter your Valsys credentials when prompted:')
     username = input('    > Valsys username: ')

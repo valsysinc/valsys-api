@@ -7,7 +7,7 @@ from valsys.utils.service import does_file_exist, ensure_dir
 from valsys.auth.authenticate import authenticate2
 import datetime
 import pyfiglet
-from valsys.version import NAME, VERSION
+from valsys.version import VERSION
 
 
 class InvalidCredentialsException(Exception):
@@ -86,4 +86,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()

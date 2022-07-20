@@ -1,5 +1,5 @@
 test:
-	export VALSYS_API_BUILD=test; pytest . --disable-warnings
+	export VALSYS_API_BUILD=test; python login-test.py; pytest . --disable-warnings
 
 coverage-ci:
 	export VALSYS_API_BUILD=test; coverage run --omit="*/test*" --source=. -m pytest . 

@@ -11,7 +11,8 @@ class Model(object):
 
     @classmethod
     def from_json(cls, data):
-        return cls(uid=data["uid"], cases=list(map(Case.from_json, data["cases"])))
+        return cls(uid=data["uid"],
+                   cases=list(map(Case.from_json, data["cases"])))
 
     def pull_case(self, name: str) -> Case:
         for case in self.cases:
@@ -22,6 +23,7 @@ class Model(object):
 @dataclass
 class ModelInformation:
     uid: str
+    tags: List[str] = field(default_factory=list)
     cases: List[CaseInformation] = field(default_factory=list)
 
     @property
@@ -32,7 +34,10 @@ class ModelInformation:
 
     @classmethod
     def from_json(cls, uid, input_json):
+        tags = input_json.get('modelTags').split(',')
         return cls(
             uid=uid,
-            cases=list(map(CaseInformation.from_json, input_json.get("cases"))),
+            tags=[t for t in tags if t],
+            cases=list(map(CaseInformation.from_json,
+                           input_json.get("cases"))),
         )

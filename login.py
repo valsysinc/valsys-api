@@ -6,6 +6,8 @@ from valsys.env import get_envfiles, ENV_ROOT, EnvFiles
 from valsys.utils.service import does_file_exist, ensure_dir
 from valsys.auth.authenticate import authenticate2
 import datetime
+import pyfiglet
+from valsys.version import NAME, VERSION
 
 
 class InvalidCredentialsException(Exception):
@@ -66,6 +68,7 @@ def create_env_file(username: str,
 
 
 def main():
+    print(pyfiglet.figlet_format(f"{NAME}Login"), f"{' '*10} v{VERSION}")
 
     create_env_file(username='any',
                     password='any',
@@ -73,12 +76,13 @@ def main():
                     verify=False)
 
     print('please enter your Valsys credentials when prompted:')
-    username = input('Valsys username: ')
-    password = getpass.getpass('Valsys password: ')
+    username = input('    > Valsys username: ')
+    password = getpass.getpass('    > Valsys password: ')
     create_env_file(username=username,
                     password=password,
                     envfiles=get_envfiles('local'))
     print('login succesful')
+    print()
 
 
 if __name__ == "__main__":

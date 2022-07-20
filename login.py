@@ -44,7 +44,10 @@ def write_env(env_vars, filename):
             f.write(f"{r}\n")
 
 
-def create_env_file(username, password, envfiles: EnvFiles, verify=True):
+def create_env_file(username: str,
+                    password: str,
+                    envfiles: EnvFiles,
+                    verify=True):
     fields = {
         'VALSYS_API_SOCKET': 'wss://dev-api.valsys.io',
         'VALSYS_API_SERVER': 'https://dev-api.valsys.io'
@@ -57,7 +60,6 @@ def create_env_file(username, password, envfiles: EnvFiles, verify=True):
             f"cannot login on {fields.get('VALSYS_API_SERVER')}: invalid credentials for user {username}"
         )
 
-    print('login succesful; writing env file')
     ensure_dir(ENV_ROOT)
     write_env(fields, envfiles.config)
     write_env(creds, envfiles.creds)
@@ -77,6 +79,7 @@ def main(args):
         create_env_file(username=username,
                         password=password,
                         envfiles=get_envfiles('local'))
+        print('login succesful')
 
 
 if __name__ == "__main__":

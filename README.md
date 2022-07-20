@@ -36,3 +36,10 @@ This is a pre-defined set of actions which will be executed given the provided c
 
 
 2) **Populate the spawned models with modules.** Each model can be populated with different modules (based off a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.
+
+## Docserver
+execute
+```
+markdownserver
+```
+then visit `http://localhost:8009/docs/main.md` in a browser.

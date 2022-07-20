@@ -8,11 +8,11 @@ This assumes knowledge of the models `uid`.
 # Import the append_tags function from the modeling service
 from valsys.modeling.service import append_tags
 # define the models uid
-uid = "0xe50deb"
+model_uid = "0xe50deb"
 # define the tags to be appended to the model
 tags_to_append = ["t5", "t4"]
 # append the tags
-append_tags(uid, tags_to_append)
+append_tags(model_uid, tags_to_append)
 ```
 
 ## Share a model
@@ -21,20 +21,20 @@ append_tags(uid, tags_to_append)
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
 # define the models uid
-uid = "0xe50deb"
+model_uid = "0xe50deb"
 # define the email of the user the model is to be shared with
 email_to_share_to = "jack.fuller@valsys.io"
 # define the permissions for the user
 permission = "view"
 # share the model
-share_model(uid, email_to_share_to, permission=permission)
+share_model(model_uid, email_to_share_to, permission=permission)
 ```
 ### With multiple user and different permissions
 ```python
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
 # define the models uid
-uid = "0xe50deb"
+model_uid = "0xe50deb"
 # define the list of emails of the users the model is to be shared with;
 # note that we are allowed to put different permissions per user.
 users = [
@@ -44,16 +44,16 @@ users = [
 
 # share the model
 for email, permission in users:
-    share_model(uid, email, permission=permission)
+    share_model(model_uid, email, permission=permission)
 ```
 
 ## Obtain module information for a model
 ```python
 from valsys.modeling.service import pull_model_information, pull_case
 
-uid = "0xe50deb"
+model_uid = "0xe50deb"
 
-first_case_info = pull_model_information(uid).first
+first_case_info = pull_model_information(model_uid).first
 case = pull_case(first_case_info.uid)
 module_info = case.module_meta
 ```

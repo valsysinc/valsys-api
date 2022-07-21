@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from valsys.seeds.loader import SeedsLoader
-
+from valsys.seeds.exceptions import TemplateNotFoundException
 
 MODULE_PREFIX = "valsys.seeds.loader"
 
@@ -79,6 +79,6 @@ class TestSeedsLoader:
             'template_name': 't2',
             'uid': 'uid2'
         }]
-        with pytest.raises(ValueError) as err:
+        with pytest.raises(TemplateNotFoundException) as err:
             SeedsLoader.template_id_by_name(template_name)
         assert template_name in str(err)

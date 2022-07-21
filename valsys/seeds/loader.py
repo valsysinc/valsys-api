@@ -2,6 +2,7 @@ from typing import List
 
 from .models import CompanyConfig
 from .service import load_company_configs, load_templates
+from .exceptions import TemplateNotFoundException
 
 
 class SeedsLoader:
@@ -9,7 +10,8 @@ class SeedsLoader:
     and IDs for use in the Spawner."""
 
     @classmethod
-    def company_configs_by_ticker(cls, tickers: List[str]) -> List[CompanyConfig]:
+    def company_configs_by_ticker(cls,
+                                  tickers: List[str]) -> List[CompanyConfig]:
         """Load a list of company configs by ticker from
         the valsys modeling service API."""
         if len(tickers) == 0:
@@ -29,4 +31,5 @@ class SeedsLoader:
         for template in load_templates():
             if template.get("template_name") == template_name:
                 return template.get("uid")
-        raise ValueError(f"template not found for template_name: {template_name}")
+        raise TemplateNotFoundException(
+            f"template not found for template_name: {template_name}")

@@ -34,7 +34,7 @@ class ModelInformation:
 
     @classmethod
     def from_json(cls, uid, input_json):
-        tags = input_json.get('modelTags').split(',')
+        tags = input_json.get('modelTags', '').split(',')
         return cls(
             uid=uid,
             tags=[t for t in tags if t],

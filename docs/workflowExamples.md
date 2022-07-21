@@ -66,6 +66,7 @@ permission = Permissions.VIEW
 # share the model
 share_model(model_uid, email_to_share_to, permission=permission)
 ```
+A model can only be shared with a given user once. Violating this will result in a `ShareModelException`.
 ### With multiple user and different permissions
 ```python
 # Import the share_model function from the modeling service
@@ -86,8 +87,6 @@ users = [
 for email, permission in users:
     share_model(model_uid, email, permission=permission)
 ```
-
-
 
 ## Obtain module information for a model
 
@@ -180,7 +179,7 @@ new_module_name = 'new module'
 # go get the case uid for the model
 case_uid = pull_model_information(model_uid).first.uid
 # use the above data to add a child module
-add_child_module(parent_module_uid, new_module_name, model_uid, case_uid)
+new_module = add_child_module(parent_module_uid, new_module_name, model_uid, case_uid)
 ```
 
 ## Add line item to a module

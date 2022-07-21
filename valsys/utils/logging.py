@@ -9,7 +9,7 @@ ensure_dir(LOGS_DIR)
 
 LOG_FILE = f"{LOGS_DIR}/general.log"
 LOG_FILE_ERR = f"{LOGS_DIR}/error.log"
-LOG_ID = "SPAWN"
+LOG_ID = "VALSYS"
 logger = logging.getLogger(LOG_ID)
 logger.setLevel(logging.DEBUG)
 FORMAT = "[%(asctime)s] %(name)s %(levelname)s - %(message)s"

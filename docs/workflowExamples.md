@@ -1,6 +1,39 @@
 # Workflow examples
 
-This contains a bunch of examples of how to use the library.
+This is a collection of examples of how to use the Valsys library.
+
+## Spawn a model
+This is one of the most involved processes, in terms of the required data.
+
+In the below example, we show how to spawn a `SBUX` model and obtains its model `uid`. 
+
+```python
+# Import the spawn_model function from the modeling service
+from valsys.modeling.service import spawn_model
+
+# Import the class for the model seed configuration data
+from valsys.seeds.model import ModelSeedConfigurationData
+
+# Define the model seed configuration data
+model_seed_config = ModelSeedConfigurationData(
+    company_name = 'STARBUCKS CORP',
+    ticker = 'SBUX',
+    template_name = 'dcf-standard',
+    proj_period = 3,
+    hist_period = 2,
+    industry_group = 'RETAIL-EATING \u0026 DRINKING PLACES',
+    start_period = 2019,
+    start_date = "2022-07-08T14:18:33.050Z"
+)
+
+# Spawn the model and obtain the new modelID
+spawned_model_id = spawn_model(model_seed_config)
+```
+
+If the `template_name` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 
+```
+TemplateNotFoundException: template not found for template_name: dcf-standard2
+```
 
 ## Append tags to an existing model
 This assumes knowledge of the models `uid`.
@@ -16,16 +49,20 @@ append_tags(model_uid, tags_to_append)
 ```
 
 ## Share a model
+The API allows a model to be shared to another user. This is done by referencing the modelsID, the email of the user the model is to be shared with, and the permissions that the user will have over the model.
 ### With a single user
 ```python
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
+# Import the permissions types 
+from valsys.modeling.models import Permissions
+
 # define the models uid
 model_uid = "0xe50deb"
 # define the email of the user the model is to be shared with
 email_to_share_to = "jack.fuller@valsys.io"
 # define the permissions for the user
-permission = "view"
+permission = Permissions.VIEW
 # share the model
 share_model(model_uid, email_to_share_to, permission=permission)
 ```
@@ -33,13 +70,16 @@ share_model(model_uid, email_to_share_to, permission=permission)
 ```python
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
+# Import the permissions types 
+from valsys.modeling.models import Permissions
+
 # define the models uid
 model_uid = "0xe50deb"
 # define the list of emails of the users the model is to be shared with;
 # note that we are allowed to put different permissions per user.
 users = [
-    ("jack.fuller@valsys.io", "view"),
-    ("simon.bessey@valsys.io", "edit")
+    ("jack.fuller@valsys.io", Permissions.VIEW),
+    ("simon.bessey@valsys.io", Permissions.EDIT)
 ]
 
 # share the model
@@ -47,7 +87,14 @@ for email, permission in users:
     share_model(model_uid, email, permission=permission)
 ```
 
+
+
 ## Obtain module information for a model
+
+It will be common to need module information: for example, moduleIDs.
+
+This workflow shows how to obtain the module meta data for a model. Crucially, this shows the module hierarchy, as well as the module IDs and names.
+
 ```python
 from valsys.modeling.service import pull_model_information, pull_case
 

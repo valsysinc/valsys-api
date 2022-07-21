@@ -170,7 +170,7 @@ Note that the nested structure highlights the modules parent-child relationship.
 Adding a child module requires knowledge of the parent modules `uid`.
 ```python
 # Import the add_child_module function from the modeling service
-from valsys.modeling.service import add_child_module
+from valsys.modeling.service import add_child_module, pull_model_information
 # define the model uid
 model_uid = '0xe50deb'
 # define the uid of the parent module
@@ -182,3 +182,22 @@ case_uid = pull_model_information(model_uid).first.uid
 # use the above data to add a child module
 add_child_module(parent_module_uid, new_module_name, model_uid, case_uid)
 ```
+
+## Add line item to a module
+This workflow allows a line item to be added to an existing module; it requires knowledge of the `modelID`, and `moduleID`. One must provide the `name` of the new line item, and the `order` of the line item in the module.
+```python
+# Import the add_line_item function from the modeling service
+from valsys.modeling.service import add_line_item, pull_model_information
+# Define the required data
+model_id = '0xe50deb'
+module_id = '0xe51235'
+line_item_name = 'new line item'
+line_item_order = 10
+
+# Get the caseID from the modelID
+case_id = pull_model_information(model_id).first.uid
+# Add the new line item
+# returns a new line line object.
+new_line_item = add_line_item(model_id = model_id, case_id = case_id, module_id = module_id, name = line_item_name, order = line_item_order)
+```
+Note that adding the same line item multiple times will result in an error.

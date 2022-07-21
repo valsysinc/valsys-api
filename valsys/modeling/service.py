@@ -14,7 +14,7 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import Permissions
-from valsys.seeds.models import ModelSeedConfigurationData
+from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
@@ -22,7 +22,8 @@ CODE_POST_SUCCESS = 200
 CREATE_MODEL_ACTION = "CREATE_MODEL"
 
 
-def spawn_model(config: ModelSeedConfigurationData, auth_token: str) -> str:
+def spawn_model(config: ModelSeedConfigurationData,
+                auth_token: str = None) -> str:
     """
     Given a model config and authentication token, spawn a model.
     Returns the model ID.

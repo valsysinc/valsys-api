@@ -5,7 +5,7 @@ from valsys.auth.service import authenticate
 from valsys.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.exceptions import ShareModelException, TagModelException
 from valsys.modeling.service import share_model, spawn_model, tag_model
-from valsys.seeds.models import ModelSeedConfigurationData
+from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.spawn.models import SpawnProgress
 

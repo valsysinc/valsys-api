@@ -10,7 +10,7 @@ from valsys.modeling.service import (
     pull_model_information,
 )
 from valsys.seeds.loader import SeedsLoader
-from valsys.seeds.models import ModelSeedConfigurationData
+from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.models import (
     MasterPopulateModulesConfig,
     ModelSpawnConfig,

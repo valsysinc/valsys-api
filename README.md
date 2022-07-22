@@ -30,8 +30,10 @@ The library can be used in a few ways:
 Detailed documentation on both of these use cases can be found in the documentation server.
 
 ## Docserver
-execute
+To see the docs locally,
 ```
 make docserver
 ```
 then visit `http://localhost:8989/` in a browser.
+
+To see the public-facing docs, visit `https://valsysinc.github.io/valsys-api/`

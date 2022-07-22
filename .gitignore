@@ -11,3 +11,4 @@ code-docs/
 *.bak
 *.svg
 *.DS_Store
+site/*

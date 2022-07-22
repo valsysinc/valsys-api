@@ -8,6 +8,7 @@ For example, `from valsys.modeling.service import tag_model`.
 The exposed functions are listed out below
 
 ## Model tagging
+
 ```python
 tag_model(model_id: str, tags: List[str])
 ```
@@ -18,12 +19,20 @@ tag_model(model_id: str, tags: List[str])
 ```python
 share_model(model_id: str, email: str, permission: str)
 ```
-Share model with `model_id` the users `email`.
+::: valsys.modeling.service.share_model
 
 The model is shared to the user with specified permissions; the allowed values are
+
 * `permission` = `view`
 * `permission` = `edit`
+  
 Any other permission value will result in a `NotImplementedError` exception being thrown.
+
+The allowed permissions and the correct strings can be found via
+```python
+from valsys.modeling.models import Permissions
+```
+So, for example, `Permissions.VIEW` could be provided to the `share_model` function call.
 
 If you attempt to share the model with a user that dosent exist, a `ShareModelException` will be thrown.
 
@@ -65,13 +74,9 @@ Recalculates the model
 ```python
 add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str) 
 ```
-Add a new module to the parent module.
 
-Inputs:
-* `parent_module_id` (str): the moduleID of the parent
-* `name` (str): the name of the new module
-* `model_id` (str): the ID of the model into which the module is to be inserted
-* `case_id` (str): the caseID of the module.
+:::valsys.modeling.service.add_child_module
+
 
 Returns the newly constructed `Module` object.
 

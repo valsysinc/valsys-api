@@ -6,3 +6,4 @@ theme:
 plugins:
   - mkdocstrings
   - search
+

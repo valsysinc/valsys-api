@@ -48,6 +48,11 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     
     Note that this removes any existing tags;
     if you wanted to append tags, use the `append_tags` function.
+
+    Args:
+        model_id: ID of the model to add tags to
+        tags: List of tags to add to the model
+        auth_token: Optional authentication token
     """
 
     client = new_client(auth_token)
@@ -71,7 +76,13 @@ def share_model(model_id: str,
                 email: str,
                 permission: str,
                 auth_token: str = None):
-    """Share model with `model_id` the users `email`."""
+    """Share model to another user.
+    
+    Args:
+         model_id: ID of the model to share
+         email: The email address of the user to share the model with
+         permission: The permissions to give to the user
+    """
 
     client = new_client(auth_token)
     if permission == Permissions.VIEW:
@@ -167,11 +178,11 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
                      case_id: str) -> Module:
     """Add a new module to the parent module.
 
-    Inputs:
-    `parent_module_id` (str): the moduleID of the parent
-    `name` (str): the name of the new module
-    `model_id` (str): the ID of the model into which the module is to be inserted
-    `case_id` (str): the caseID of the module.
+    Args:
+        parent_module_id: the moduleID of the parent
+        name: the name of the new module
+        model_id: the ID of the model into which the module is to be inserted
+        case_id: the caseID of the module.
 
     Returns the newly constructed `Module` object.
     """

@@ -4,7 +4,6 @@
 
 FEATURES
 --------
-- make login comamnd to write env file
 - pip-able license
 - queries executed via sockets and HTTP for certain requests
 - after spawn, also load models into object
@@ -19,6 +18,7 @@ BUGS
 ==============================
 FEATURES
 --------
+- make login comamnd to write env file (DONE 22/7/22)
 - code quality: auto format and remove unused imports via "make tidy" (DONE 18/7/22)
 - ABC the client obj (DONE 18/7/22)
 - module spawn (DONE 11/7/22)

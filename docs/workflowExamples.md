@@ -5,7 +5,8 @@ This is a collection of examples of how to use the Valsys library.
 ## Spawn a model
 This is one of the most involved processes, in terms of the required data.
 
-In the below example, we show how to spawn a `SBUX` model and obtains its model `uid`. 
+In the below example, we show how to spawn a `SBUX` model and obtain its model `uid`. 
+
 
 ```python
 # Import the spawn_model function from the modeling service

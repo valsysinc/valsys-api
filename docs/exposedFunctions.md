@@ -11,7 +11,8 @@ The exposed functions are listed out below
 ```python
 tag_model(model_id: str, tags: List[str])
 ```
-Tag the model with `model_id` (`str`) with the list of `tags` (`List[str]`).
+
+::: valsys.modeling.service.tag_model
 
 ## Model sharing
 ```python

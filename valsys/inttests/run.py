@@ -1,12 +1,11 @@
-import os, sys, logging
-
-# Need to add this line to run from project root.
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from valsys.utils import logger
-from inttests.config import TestModelConfig
+from valsys.inttests.config import TestModelConfig
 
 
 def run_spawn_model():
+    """
+    SPAWN A MODEL
+    """
     logger.info(f'running: run_spawn_model')
     # Import the spawn_model function from the modeling service
     from valsys.modeling.service import spawn_model
@@ -108,7 +107,7 @@ def run_add_line_item(model_id, module_id):
                                   order=line_item_order)
 
 
-def main():
+def run_inttests():
     logger.info('running integration tests')
     model_id = run_spawn_model()
     model_id = run_tag_model(model_id)
@@ -120,4 +119,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run_inttests()

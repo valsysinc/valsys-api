@@ -20,6 +20,11 @@ tidy:
 	yapf --in-place --recursive *.py
 	importanize path valsys/
 
-
 inttest:
-	python inttests/run.py 
+	python main.py --inttests
+
+login:
+	python login.py
+
+update:
+	pip install -r requirements.txt

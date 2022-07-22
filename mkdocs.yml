@@ -1,0 +1,8 @@
+site_name: Valsys
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+  - search

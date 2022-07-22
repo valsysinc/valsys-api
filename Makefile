@@ -12,6 +12,9 @@ coverage:
 docserver:
 	mkdocs serve -a localhost:8989 --livereload
 
+docdeploy:
+	mkdocs gh-deploy 
+
 install:
 	./scripts/install-mac.sh
 

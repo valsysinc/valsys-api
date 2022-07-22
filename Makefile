@@ -10,8 +10,8 @@ coverage:
 	open htmlcov/index.html
 
 docserver:
-	mkdocs serve
-	
+	mkdocs serve -a localhost:8989
+
 install:
 	./scripts/install-mac.sh
 

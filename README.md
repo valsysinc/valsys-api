@@ -44,6 +44,6 @@ This is a pre-defined set of actions which will be executed given the provided c
 ## Docserver
 execute
 ```
-markdownserver
+make docserver
 ```
-then visit `http://localhost:8009/docs/main.md` in a browser.
+then visit `http://localhost:8989/` in a browser.

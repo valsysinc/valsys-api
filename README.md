@@ -27,7 +27,7 @@ The library can be used in a few ways:
 * via a CLI,
 * as a library of functions.
 
-Detailed documentation on both of these use cases can be found in the documentation server.
+Detailed documentation on both of these use cases can be found [here](https://valsysinc.github.io/valsys-api/).
 
 ## Docserver
 To see the docs locally,

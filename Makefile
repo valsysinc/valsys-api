@@ -9,9 +9,9 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-doc-gen:
-	pdoc valsys -o code-docs
-
+docserver:
+	mkdocs serve
+	
 install:
 	./scripts/install-mac.sh
 

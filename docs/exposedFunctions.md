@@ -40,12 +40,13 @@ If you attempt to share the model with a user that dosent exist, a `ShareModelEx
 ```python                
 pull_model_information(model_id: str)                
 ```
-Pulls the model information for the `model_id`.
+:::valsys.modeling.service.pull_model_information
 
 This function returns a `ModelInformation` object, whose structure is
 ```python
 class ModelInformation:
     uid: str # the uid of the model
+    tags: List[str] # tags on the model
     cases: List[CaseInformation] # list of case information inside the model
 ```
 in which a `CaseInformation` object has the structure
@@ -59,10 +60,9 @@ class CaseInformation:
 
 ## Get model case
 ```python
-pull_case(uid: str)
+pull_case(case_id: str)
 ```
-Retreive a `Case` by its uid.
-Returns... TODO
+:::valsys.modeling.service.pull_case
 
 ## Recalculate model
 ```python
@@ -74,14 +74,12 @@ Recalculates the model
 ```python
 add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str) 
 ```
-
 :::valsys.modeling.service.add_child_module
 
-
-Returns the newly constructed `Module` object.
 
 ## Add a line item
 ```python
 add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int)                      
 ```
+:::valsys.modeling.service.add_line_item

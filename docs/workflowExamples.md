@@ -8,7 +8,7 @@ This is one of the most involved processes, in terms of the required data.
 In the below example, we show how to spawn a `SBUX` model and obtain its model `uid`. 
 
 
-```python
+```python linenums="1"
 # Import the spawn_model function from the modeling service
 from valsys.modeling.service import spawn_model
 
@@ -38,7 +38,7 @@ TemplateNotFoundException: template not found for template_name: dcf-standard2
 
 ## Append tags to an existing model
 This assumes knowledge of the models `uid`.
-```python
+```python linenums="1" 
 # Import the append_tags function from the modeling service
 from valsys.modeling.service import append_tags
 # define the models uid
@@ -52,7 +52,7 @@ append_tags(model_uid, tags_to_append)
 ## Share a model
 The API allows a model to be shared to another user. This is done by referencing the modelsID, the email of the user the model is to be shared with, and the permissions that the user will have over the model.
 ### With a single user
-```python
+```python linenums="1"
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
 # Import the permissions types 
@@ -69,7 +69,7 @@ share_model(model_uid, email_to_share_to, permission=permission)
 ```
 A model can only be shared with a given user once. Violating this will result in a `ShareModelException`.
 ### With multiple user and different permissions
-```python
+```python linenums="1"
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
 # Import the permissions types 
@@ -95,7 +95,7 @@ It will be common to need module information: for example, moduleIDs.
 
 This workflow shows how to obtain the module meta data for a model. Crucially, this shows the module hierarchy, as well as the module IDs and names.
 
-```python
+```python linenums="1"
 from valsys.modeling.service import pull_model_information, pull_case
 
 model_uid = "0xe50deb"
@@ -105,7 +105,7 @@ case = pull_case(first_case_info.uid)
 module_info = case.module_meta
 ```
 will result in `module_info` being something like
-```json
+```json linenums="1"
 [
     {
         "name": "DCF", 
@@ -168,24 +168,28 @@ Note that the nested structure highlights the modules parent-child relationship.
 
 ## Add child module to existing module
 Adding a child module requires knowledge of the parent modules `uid`.
-```python
+```python linenums="1"
 # Import the add_child_module function from the modeling service
 from valsys.modeling.service import add_child_module, pull_model_information
-# define the model uid
-model_uid = '0xe50deb'
-# define the uid of the parent module
-parent_module_uid = '0xe51235'
+# define the model id
+model_id = '0xe50deb'
+# define the id of the parent module
+parent_module_id = '0xe51235'
 # define the name of the new module
 new_module_name = 'new module'
 # go get the case uid for the model
-case_uid = pull_model_information(model_uid).first.uid
+case_id = pull_model_information(model_id).first.uid
 # use the above data to add a child module
-new_module = add_child_module(parent_module_uid, new_module_name, model_uid, case_uid)
+new_module = add_child_module(
+    parent_module_id = parent_module_id, 
+    name = new_module_name, 
+    model_id = model_id, 
+    case_id = case_id)
 ```
 
 ## Add line item to a module
 This workflow allows a line item to be added to an existing module; it requires knowledge of the `modelID`, and `moduleID`. One must provide the `name` of the new line item, and the `order` of the line item in the module.
-```python
+```python linenums="1"
 # Import the add_line_item function from the modeling service
 from valsys.modeling.service import add_line_item, pull_model_information
 # Define the required data
@@ -196,8 +200,12 @@ line_item_order = 10
 
 # Get the caseID from the modelID
 case_id = pull_model_information(model_id).first.uid
-# Add the new line item
-# returns a new line line object.
-new_line_item = add_line_item(model_id = model_id, case_id = case_id, module_id = module_id, name = line_item_name, order = line_item_order)
+# Add the new line item, which returns a new line line object.
+new_line_item = add_line_item(
+    model_id = model_id, 
+    case_id = case_id, 
+    module_id = module_id, 
+    name = line_item_name, 
+    order = line_item_order)
 ```
 Note that adding the same line item multiple times will result in an error.

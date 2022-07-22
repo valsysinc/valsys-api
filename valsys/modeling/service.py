@@ -110,7 +110,14 @@ def share_model(model_id: str,
 
 
 def pull_model_information(model_id: str) -> ModelInformation:
-    """Pulls the model information for the `model_id`."""
+    """Pulls the model information for the `model_id`.
+    
+    Args:
+        model_id: the ID of the required model.
+    
+    Returns:
+        The `ModelInformation` object for the model.
+    """
     client = new_client()
     resp = client.get(
         url=VSURL.MODEL_INFO,
@@ -123,13 +130,20 @@ def pull_model_information(model_id: str) -> ModelInformation:
     return ModelInformation.from_json(model_id, cases)
 
 
-def pull_case(uid: str) -> Case:
-    """Retreive a `Case` by its uid."""
+def pull_case(case_id: str) -> Case:
+    """Retreive a `Case` by its uid.
+    
+    Args:
+        case_id: the case's UID
+    
+    Returns:
+        The appropriate `Case` object.
+    """
     client = new_client()
     resp = client.get(
         url=VSURL.CASE,
         headers={
-            Headers.CASE_ID: uid,
+            Headers.CASE_ID: case_id,
         },
     )
     return Case.from_json(resp["data"]["case"])
@@ -184,7 +198,8 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
         model_id: the ID of the model into which the module is to be inserted
         case_id: the caseID of the module.
 
-    Returns the newly constructed `Module` object.
+    Returns:
+        The newly constructed `Module` object.
     """
 
     client = new_client()
@@ -207,6 +222,18 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int) -> LineItem:
+    """Add a line item to an existing module.
+    
+    Args:
+        case_id: caseID of the model
+        model_id: modelID
+        module_id: ID of the module for the new line item
+        name: name of the line item
+        order: order of the line item in the module
+
+    Returns:
+        The newly created `LineItem` object.
+    """
 
     client = new_client()
     try:

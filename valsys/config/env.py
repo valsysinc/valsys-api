@@ -1,7 +1,6 @@
 import os
 
-
-ENV_ROOT = 'env'
+ENV_ROOT = '.valsys-env'
 
 
 class EnvFiles:

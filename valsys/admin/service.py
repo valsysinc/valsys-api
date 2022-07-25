@@ -65,12 +65,9 @@ def create_env_file(username: str,
     write_env(creds, envfiles.creds)
 
 
-def _login():
-    print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
-
-    print('Please enter your Valsys credentials when prompted:')
-    username = input('    > Valsys username: ')
-    password = getpass.getpass('    > Valsys password: ')
+def _login2(username: str, password: str, show_banner=True):
+    if show_banner:
+        print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
     create_env_file(username=username,
                     password=password,
                     envfiles=get_envfiles('local'))
@@ -78,6 +75,14 @@ def _login():
     print()
 
 
-if __name__ == "__main__":
+def _login_cli():
+    print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
 
-    _login()
+    print('Please enter your Valsys credentials when prompted:')
+    username = input('    > Valsys username: ')
+    password = getpass.getpass('    > Valsys password: ')
+    _login2(username=username, password=password, show_banner=False)
+
+
+if __name__ == "__main__":
+    _login_cli()

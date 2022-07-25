@@ -12,3 +12,4 @@ code-docs/
 *.svg
 *.DS_Store
 site/*
+.valsys-env/

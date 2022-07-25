@@ -2,12 +2,12 @@
 
 from distutils.core import setup
 
-from setuptools import find_namespace_packages
+from setuptools import find_packages
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 setup(
     name='valsys',
-    packages=find_namespace_packages(include=['valsys.*']),
+    packages=find_packages(),
     version="0.1.0",
     license='MIT',
     description='Valsys python library',

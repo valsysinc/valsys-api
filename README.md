@@ -1,6 +1,6 @@
 # Valsys API library
 
-Purpose: library to spawn and populate Valsys models via the API.
+Purpose: library to build and interact with Valsys models via the API.
 
 ## Installation
 ### **Recommended**: installation via `pip`

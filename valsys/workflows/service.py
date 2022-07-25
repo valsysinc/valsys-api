@@ -4,10 +4,7 @@ from valsys.spawn.models import MasterPopulateModulesConfig, ModelSpawnConfigs
 from valsys.spawn.service import populate_models_with_modules, spawn_models
 
 
-def main_run_spawn_models(args):
-    config_filename = args[0]
-    with open(config_filename, "r") as file:
-        config_file = json.loads(file.read())
+def main_run_spawn_models(config_file):
 
     spawn_config = ModelSpawnConfigs.from_json(
         config_file.get('spawnModelsConfig'))
@@ -21,3 +18,10 @@ def main_run_spawn_models(args):
                                  spawner_report=spawned_models)
 
     return spawned_models
+
+
+def main_run_spawn_models_from_file(args):
+    config_filename = args[0]
+    with open(config_filename, "r") as file:
+        config_file = json.loads(file.read())
+    return main_run_spawn_models(config_file)

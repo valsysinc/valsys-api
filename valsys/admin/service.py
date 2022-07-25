@@ -12,10 +12,13 @@ class InvalidCredentialsException(Exception):
     pass
 
 
-def try_login(base, user, password):
-    url = f"{base}/users/login"
+def gen_login_url(base: str) -> str:
+    return f"{base}/users/login"
+
+
+def try_login(base: str, user: str, password: str) -> bool:
     try:
-        authenticate2(user, password, url=url)
+        authenticate2(user, password, url=gen_login_url(base))
         return True
     except Exception:
         return False
@@ -66,6 +69,7 @@ def create_env_file(username: str,
 
 
 def _login2(username: str, password: str, show_banner=True):
+    """Login with the provided credentials."""
     if show_banner:
         print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
     create_env_file(username=username,
@@ -76,6 +80,7 @@ def _login2(username: str, password: str, show_banner=True):
 
 
 def _login_cli():
+    """Login, asking for the credentials via the CLI."""
     print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
 
     print('Please enter your Valsys credentials when prompted:')

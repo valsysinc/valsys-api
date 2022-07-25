@@ -2,7 +2,7 @@ import sys
 import pyfiglet
 
 from valsys.utils import logger
-from valsys.version import NAME, VERSION
+from valsys.config.version import NAME, VERSION
 
 
 def main(args):

@@ -1,11 +1,11 @@
 import getpass
 
-from valsys.env import get_envfiles, ENV_ROOT, EnvFiles
+from valsys.config.env import get_envfiles, ENV_ROOT, EnvFiles
 from valsys.utils.service import does_file_exist, ensure_dir
 from valsys.auth.authenticate import authenticate2
 import datetime
 import pyfiglet
-from valsys.version import VERSION
+from valsys.config.version import VERSION
 
 
 class InvalidCredentialsException(Exception):

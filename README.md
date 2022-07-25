@@ -3,10 +3,15 @@
 Purpose: library to spawn and populate Valsys models via the API.
 
 
+## Installation via `pip`
+For this, recommend that you're in a virtual environment; there is a requirement that you have python `>=3.6` installed.
+```
+pip install git+https://github.com/valsysinc/valsys-api
+```
 
-## Installation
+## Installation via source
 This assumes you have some system python version. 
-
+### Mac/linux
 On a linux-type system, execute
 ```
 make install
@@ -18,6 +23,20 @@ Finally, you will need to log into the valsys system; this allows authentication
 make login
 ```
 
+### Windows
+* Have git installed https://git-scm.com/download/win
+* Download python https://www.python.org/downloads/
+
+From within powershell,
+```
+set-executionpolicy RemoteSigned # can only run as admin
+python -m venv .venv
+.venv\Scripts\activate.ps1
+pip install -r requirements.txt
+```
+```
+$Env:VALSYS_API_BUILD='test'
+```
 ## Usage
 Once installed, start the python environment via
 ```

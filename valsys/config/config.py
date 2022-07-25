@@ -3,9 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from valsys.env import get_envfiles
+from valsys.config.env import get_envfiles
 from valsys.utils.utils import read_env
-
 
 BUILD = os.getenv("VALSYS_API_BUILD", 'local')
 env_files = get_envfiles(BUILD)

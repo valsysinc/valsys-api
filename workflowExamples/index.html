@@ -181,23 +181,8 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
-        Valsys library documentation
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
-        CLI
+        Command line interface
       </a>
     </li>
   
@@ -434,7 +419,7 @@
 <h1 id="workflow-examples">Workflow examples</h1>
 <p>This is a collection of examples of how to use the Valsys library.</p>
 <h2 id="spawn-a-model">Spawn a model</h2>
-<p>This is one of the most involved processes, in terms of the required data.</p>
+<p>This workflow allows a model to be spawned from a template.</p>
 <p>In the below example, we show how to spawn a <code>SBUX</code> model and obtain its model <code>uid</code>. </p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -480,22 +465,28 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>TemplateNotFoundException: template not found for template_name: dcf-standard2
 </code></pre></div></p>
 <h2 id="append-tags-to-an-existing-model">Append tags to an existing model</h2>
-<p>This assumes knowledge of the models <code>uid</code>.
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span>
-<span class="normal"><a href="#__codelineno-2-4">4</a></span>
-<span class="normal"><a href="#__codelineno-2-5">5</a></span>
-<span class="normal"><a href="#__codelineno-2-6">6</a></span>
-<span class="normal"><a href="#__codelineno-2-7">7</a></span>
-<span class="normal"><a href="#__codelineno-2-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Import the append_tags function from the modeling service</span>
+<p>Tags can be added or appended to existing models; this assumes knowledge of the models <code>uid</code>.
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Import the append_tags function from the modeling service</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">append_tags</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="c1"># define the models uid</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="c1"># define the tags to be appended to the model</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="n">tags_to_append</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;t5&quot;</span><span class="p">,</span> <span class="s2">&quot;t4&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="c1"># append the tags</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="n">append_tags</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">tags_to_append</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="c1"># Define the models uid</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="c1"># Define the tags to be appended to the model</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="n">tags_to_append</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;t5&quot;</span><span class="p">,</span> <span class="s2">&quot;t4&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="c1"># Append the tags</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="n">append_tags</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">tags_to_append</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 <h2 id="share-a-model">Share a model</h2>
 <p>The API allows a model to be shared to another user. This is done by referencing the modelsID, the email of the user the model is to be shared with, and the permissions that the user will have over the model.</p>
@@ -512,19 +503,27 @@
 <span class="normal"><a href="#__codelineno-3-10">10</a></span>
 <span class="normal"><a href="#__codelineno-3-11">11</a></span>
 <span class="normal"><a href="#__codelineno-3-12">12</a></span>
-<span class="normal"><a href="#__codelineno-3-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Import the share_model function from the modeling service</span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span>
+<span class="normal"><a href="#__codelineno-3-15">15</a></span>
+<span class="normal"><a href="#__codelineno-3-16">16</a></span>
+<span class="normal"><a href="#__codelineno-3-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Import the share_model function from the modeling service</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">share_model</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="c1"># Import the permissions types </span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="c1"># define the models uid</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="c1"># define the email of the user the model is to be shared with</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="n">email_to_share_to</span> <span class="o">=</span> <span class="s2">&quot;jack.fuller@valsys.io&quot;</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="c1"># define the permissions for the user</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="n">permission</span> <span class="o">=</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="c1"># share the model</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="n">share_model</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">email_to_share_to</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="c1"># Import the permissions types </span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="c1"># Define the models uid</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="c1"># Define the email of the user the model is to be shared with</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="n">email_to_share_to</span> <span class="o">=</span> <span class="s2">&quot;jack.fuller@valsys.io&quot;</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="c1"># Define the permissions for the user</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="n">permission</span> <span class="o">=</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15"></a>
+<a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="c1"># Share the model</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="n">share_model</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">email_to_share_to</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 A model can only be shared with a given user once. Violating this will result in a <code>ShareModelException</code>.</p>
 <h3 id="with-multiple-user-and-different-permissions">With multiple user and different permissions</h3>
@@ -544,23 +543,27 @@ A model can only be shared with a given user once. Violating this will result in
 <span class="normal"><a href="#__codelineno-4-14">14</a></span>
 <span class="normal"><a href="#__codelineno-4-15">15</a></span>
 <span class="normal"><a href="#__codelineno-4-16">16</a></span>
-<span class="normal"><a href="#__codelineno-4-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># Import the share_model function from the modeling service</span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># Import the share_model function from the modeling service</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">share_model</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="c1"># Import the permissions types </span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="c1"># define the models uid</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="c1"># define the list of emails of the users the model is to be shared with;</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="c1"># note that we are allowed to put different permissions per user.</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="n">users</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11"></a>    <span class="p">(</span><span class="s2">&quot;jack.fuller@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span><span class="p">),</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12"></a>    <span class="p">(</span><span class="s2">&quot;simon.bessey@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">EDIT</span><span class="p">)</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="p">]</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14"></a>
-<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="c1"># share the model</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="k">for</span> <span class="n">email</span><span class="p">,</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
-<a id="__codelineno-4-17" name="__codelineno-4-17"></a>    <span class="n">share_model</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Import the permissions types </span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="c1"># Define the models uid</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="c1"># Define the list of emails of the users the model is to be shared with;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="c1"># note that we are allowed to put different permissions per user.</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="n">users</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a>    <span class="p">(</span><span class="s2">&quot;jack.fuller@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span><span class="p">),</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a>    <span class="p">(</span><span class="s2">&quot;simon.bessey@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">EDIT</span><span class="p">)</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="p">]</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="c1"># Share the model</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="k">for</span> <span class="n">email</span><span class="p">,</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a>    <span class="n">share_model</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <h2 id="obtain-module-information-for-a-model">Obtain module information for a model</h2>
 <p>It will be common to need module information: for example, moduleIDs.</p>
@@ -710,22 +713,32 @@ Note that the nested structure highlights the modules parent-child relationship.
 <span class="normal"><a href="#__codelineno-7-13">13</a></span>
 <span class="normal"><a href="#__codelineno-7-14">14</a></span>
 <span class="normal"><a href="#__codelineno-7-15">15</a></span>
-<span class="normal"><a href="#__codelineno-7-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># Import the add_child_module function from the modeling service</span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span>
+<span class="normal"><a href="#__codelineno-7-17">17</a></span>
+<span class="normal"><a href="#__codelineno-7-18">18</a></span>
+<span class="normal"><a href="#__codelineno-7-19">19</a></span>
+<span class="normal"><a href="#__codelineno-7-20">20</a></span>
+<span class="normal"><a href="#__codelineno-7-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># Import the add_child_module function from the modeling service</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">add_child_module</span><span class="p">,</span> <span class="n">pull_model_information</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="c1"># define the model id</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;0xe50deb&#39;</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="c1"># define the id of the parent module</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="n">parent_module_id</span> <span class="o">=</span> <span class="s1">&#39;0xe51235&#39;</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="c1"># define the name of the new module</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="n">new_module_name</span> <span class="o">=</span> <span class="s1">&#39;new module&#39;</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="c1"># go get the case uid for the model</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="n">case_id</span> <span class="o">=</span> <span class="n">pull_model_information</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">uid</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="c1"># use the above data to add a child module</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="n">new_module</span> <span class="o">=</span> <span class="n">add_child_module</span><span class="p">(</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13"></a>    <span class="n">parent_module_id</span> <span class="o">=</span> <span class="n">parent_module_id</span><span class="p">,</span> 
-<a id="__codelineno-7-14" name="__codelineno-7-14"></a>    <span class="n">name</span> <span class="o">=</span> <span class="n">new_module_name</span><span class="p">,</span> 
-<a id="__codelineno-7-15" name="__codelineno-7-15"></a>    <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="p">,</span> 
-<a id="__codelineno-7-16" name="__codelineno-7-16"></a>    <span class="n">case_id</span> <span class="o">=</span> <span class="n">case_id</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="c1"># Define the model id</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;0xe50deb&#39;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="c1"># Define the id of the parent module</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="n">parent_module_id</span> <span class="o">=</span> <span class="s1">&#39;0xe51235&#39;</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9"></a>
+<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="c1"># Define the name of the new module</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="n">new_module_name</span> <span class="o">=</span> <span class="s1">&#39;new module&#39;</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="c1"># Go get the case uid for the model</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="n">case_id</span> <span class="o">=</span> <span class="n">pull_model_information</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">uid</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15"></a>
+<a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="c1"># Use the above data to add a child module</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17"></a><span class="n">new_module</span> <span class="o">=</span> <span class="n">add_child_module</span><span class="p">(</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18"></a>    <span class="n">parent_module_id</span> <span class="o">=</span> <span class="n">parent_module_id</span><span class="p">,</span> 
+<a id="__codelineno-7-19" name="__codelineno-7-19"></a>    <span class="n">name</span> <span class="o">=</span> <span class="n">new_module_name</span><span class="p">,</span> 
+<a id="__codelineno-7-20" name="__codelineno-7-20"></a>    <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="p">,</span> 
+<a id="__codelineno-7-21" name="__codelineno-7-21"></a>    <span class="n">case_id</span> <span class="o">=</span> <span class="n">case_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 <h2 id="add-line-item-to-a-module">Add line item to a module</h2>
 <p>This workflow allows a line item to be added to an existing module; it requires knowledge of the <code>modelID</code>, and <code>moduleID</code>. One must provide the <code>name</code> of the new line item, and the <code>order</code> of the line item in the module.
@@ -745,23 +758,39 @@ Note that the nested structure highlights the modules parent-child relationship.
 <span class="normal"><a href="#__codelineno-8-14">14</a></span>
 <span class="normal"><a href="#__codelineno-8-15">15</a></span>
 <span class="normal"><a href="#__codelineno-8-16">16</a></span>
-<span class="normal"><a href="#__codelineno-8-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># Import the add_line_item function from the modeling service</span>
+<span class="normal"><a href="#__codelineno-8-17">17</a></span>
+<span class="normal"><a href="#__codelineno-8-18">18</a></span>
+<span class="normal"><a href="#__codelineno-8-19">19</a></span>
+<span class="normal"><a href="#__codelineno-8-20">20</a></span>
+<span class="normal"><a href="#__codelineno-8-21">21</a></span>
+<span class="normal"><a href="#__codelineno-8-22">22</a></span>
+<span class="normal"><a href="#__codelineno-8-23">23</a></span>
+<span class="normal"><a href="#__codelineno-8-24">24</a></span>
+<span class="normal"><a href="#__codelineno-8-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># Import the add_line_item function from the modeling service</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">add_line_item</span><span class="p">,</span> <span class="n">pull_model_information</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="c1"># Define the required data</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;0xe50deb&#39;</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="n">module_id</span> <span class="o">=</span> <span class="s1">&#39;0xe51235&#39;</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="n">line_item_name</span> <span class="o">=</span> <span class="s1">&#39;new line item&#39;</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="n">line_item_order</span> <span class="o">=</span> <span class="mi">10</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8"></a>
-<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="c1"># Get the caseID from the modelID</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="n">case_id</span> <span class="o">=</span> <span class="n">pull_model_information</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">uid</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="c1"># Add the new line item, which returns a new line line object.</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="n">new_line_item</span> <span class="o">=</span> <span class="n">add_line_item</span><span class="p">(</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13"></a>    <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="p">,</span> 
-<a id="__codelineno-8-14" name="__codelineno-8-14"></a>    <span class="n">case_id</span> <span class="o">=</span> <span class="n">case_id</span><span class="p">,</span> 
-<a id="__codelineno-8-15" name="__codelineno-8-15"></a>    <span class="n">module_id</span> <span class="o">=</span> <span class="n">module_id</span><span class="p">,</span> 
-<a id="__codelineno-8-16" name="__codelineno-8-16"></a>    <span class="n">name</span> <span class="o">=</span> <span class="n">line_item_name</span><span class="p">,</span> 
-<a id="__codelineno-8-17" name="__codelineno-8-17"></a>    <span class="n">order</span> <span class="o">=</span> <span class="n">line_item_order</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="c1"># Define the modelID</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="n">model_id</span> <span class="o">=</span> <span class="s1">&#39;0xe50deb&#39;</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="c1"># Define the module ID of the module the line item is to be added to</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="n">module_id</span> <span class="o">=</span> <span class="s1">&#39;0xe51235&#39;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="c1"># Define the name of the new line item</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="n">line_item_name</span> <span class="o">=</span> <span class="s1">&#39;new line item&#39;</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12"></a>
+<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="c1"># Define the order in the module of the new line item</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="n">line_item_order</span> <span class="o">=</span> <span class="mi">10</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15"></a>
+<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="c1"># Get the caseID from the modelID</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="n">case_id</span> <span class="o">=</span> <span class="n">pull_model_information</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">uid</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18"></a>
+<a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="c1"># Add the new line item, which returns a new line line object.</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20"></a><span class="n">new_line_item</span> <span class="o">=</span> <span class="n">add_line_item</span><span class="p">(</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21"></a>    <span class="n">model_id</span> <span class="o">=</span> <span class="n">model_id</span><span class="p">,</span> 
+<a id="__codelineno-8-22" name="__codelineno-8-22"></a>    <span class="n">case_id</span> <span class="o">=</span> <span class="n">case_id</span><span class="p">,</span> 
+<a id="__codelineno-8-23" name="__codelineno-8-23"></a>    <span class="n">module_id</span> <span class="o">=</span> <span class="n">module_id</span><span class="p">,</span> 
+<a id="__codelineno-8-24" name="__codelineno-8-24"></a>    <span class="n">name</span> <span class="o">=</span> <span class="n">line_item_name</span><span class="p">,</span> 
+<a id="__codelineno-8-25" name="__codelineno-8-25"></a>    <span class="n">order</span> <span class="o">=</span> <span class="n">line_item_order</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 Note that adding the same line item multiple times will result in an error.</p>
 

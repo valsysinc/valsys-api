@@ -1,5 +1,5 @@
-from valsys.utils import logger
 from valsys.inttests.config import TestModelConfig
+from valsys.utils import logger
 
 
 def run_spawn_model():

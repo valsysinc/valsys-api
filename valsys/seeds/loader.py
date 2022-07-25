@@ -1,8 +1,8 @@
 from typing import List
 
+from .exceptions import TemplateNotFoundException
 from .models import CompanyConfig
 from .service import load_company_configs, load_templates
-from .exceptions import TemplateNotFoundException
 
 
 class SeedsLoader:

@@ -2,8 +2,9 @@ from unittest import mock
 
 import pytest
 
-from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.exceptions import TemplateNotFoundException
+from valsys.seeds.loader import SeedsLoader
+
 
 MODULE_PREFIX = "valsys.seeds.loader"
 

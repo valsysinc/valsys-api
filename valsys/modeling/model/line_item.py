@@ -4,9 +4,6 @@ from typing import List
 from .fact import Fact
 
 
-# from valsys.modeling.service import edit_format, add_child_module, edit_formula
-
-
 @dataclass
 class LineItem:
     uid: str

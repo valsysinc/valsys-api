@@ -1,6 +1,7 @@
 import json
+
 from valsys.spawn.models import MasterPopulateModulesConfig, ModelSpawnConfigs
-from valsys.spawn.service import spawn_models, populate_models_with_modules
+from valsys.spawn.service import populate_models_with_modules, spawn_models
 
 
 def main_run_spawn_models(args):

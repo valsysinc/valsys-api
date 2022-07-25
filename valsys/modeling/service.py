@@ -18,6 +18,7 @@ from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
+
 CODE_POST_SUCCESS = 200
 CREATE_MODEL_ACTION = "CREATE_MODEL"
 
@@ -85,16 +86,7 @@ def share_model(model_id: str,
     """
 
     client = new_client(auth_token)
-    if permission == Permissions.VIEW:
-        permissions = {
-            "view": True,
-        }
-    elif permission == Permissions.EDIT:
-        permissions = {
-            "edit": True,
-        }
-    else:
-        raise NotImplementedError(f"invalid permission: {permission}")
+    permissions = Permissions.get_body(permission)
 
     try:
         client.post(

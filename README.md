@@ -2,20 +2,21 @@
 
 Purpose: library to spawn and populate Valsys models via the API.
 
-
-## Installation via `pip`
+## Installation
+### **Recommended**: installation via `pip`
 For this, recommend that you're in a virtual environment; there is a requirement that you have python `>=3.6` installed.
 ```
 pip install git+https://github.com/valsysinc/valsys-api
 ```
-**TODO: update path and login function**
+The first time you use the system you'll have to `login`: this stores your Valsys credentials for use in authenticating with the Valsys API. In a python script (e.g., directly in the command line, inside a `Jupyter` notebook, or the repl), execute
+```python
+from valsys.admin import login
+login()
 ```
-from valsys.admin.login import main
-main()
-```
-## Installation via source
+This will have to be done whenever your password changes.
+### Installation via source
 This assumes you have some system python version. 
-### Mac/linux
+#### Mac/linux
 On a linux-type system, execute
 ```
 make install

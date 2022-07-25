@@ -3,7 +3,8 @@
 from distutils.core import setup
 
 from setuptools import find_namespace_packages
-
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
 setup(
     name='valsys',
     packages=find_namespace_packages(include=['valsys.*']),
@@ -13,6 +14,7 @@ setup(
     author='Jonathan Pearson',
     author_email='jonathan.pearson@valsys.com',
     url='https://valsys.io/',
+    install_requires=required,
     classifiers=[
         # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
         'Development Status :: 3 - Alpha',

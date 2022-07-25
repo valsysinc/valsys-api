@@ -125,7 +125,7 @@ def populate_modules(config: PopulateModulesConfig) -> PopulatedModules:
         model_info = pull_model_information(model_id)
 
         case_id = model_info.first.uid
-        case = pull_case(uid=case_id)
+        case = pull_case(case_id=case_id)
         populated_modules_report.add_model(model_id, case.case)
         root_module = case.pull_module(config.parent_module_name)
 

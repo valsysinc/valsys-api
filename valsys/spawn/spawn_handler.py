@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from valsys.auth.service import authenticate
-from valsys.config import API_PASSWORD, API_USERNAME
+from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.exceptions import ShareModelException, TagModelException
 from valsys.modeling.service import share_model, spawn_model, tag_model
 from valsys.seeds.model import ModelSeedConfigurationData

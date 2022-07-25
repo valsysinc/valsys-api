@@ -108,7 +108,7 @@ def populate_models_with_modules(
 
         spawner_report.add_populated_modules(pmc_rep)
 
-    logger.info(spawner_report)
+    #logger.info(spawner_report)
     return spawner_report
 
 

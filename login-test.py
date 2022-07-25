@@ -1,5 +1,5 @@
 from valsys.config.env import get_envfiles
-from valsys.admin.login import create_env_file
+from valsys.admin.service import create_env_file
 
 
 def main():

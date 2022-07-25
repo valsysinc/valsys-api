@@ -1,1 +1,3 @@
-from valsys.admin.login import login
+def login():
+    from valsys.admin.service import _login
+    _login()

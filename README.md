@@ -14,6 +14,8 @@ from valsys.admin import login
 login()
 ```
 This will have to be done whenever your password changes.
+
+Once done, it is worth visiting our [documentation](`https://valsysinc.github.io/valsys-api/`).
 ### Installation via source
 This assumes you have some system python version. 
 #### Mac/linux

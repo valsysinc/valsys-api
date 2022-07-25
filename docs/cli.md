@@ -1,5 +1,5 @@
-# CLI
-The valsys library can be used from source via a CLI.
+# Command line interface
+The valsys library can be used from source via a command line interface (CLI).
 
 This works by providing (via command line arguments) the path to a configuration file to the `main.py` python entry point:
 ```
@@ -148,7 +148,7 @@ This provides a valid example of a configuration file which can be passed to the
     ]
 }
 ```
-there are two main chunks of config:
+There are two main chunks of config:
 
 * `spawnModelsConfig` which controls the overal models to be spawned,
 * `populateModulesConfig` which controls the module population of the models.

@@ -3,7 +3,7 @@
 This is a collection of examples of how to use the Valsys library.
 
 ## Spawn a model
-This is one of the most involved processes, in terms of the required data.
+This workflow allows a model to be spawned from a template.
 
 In the below example, we show how to spawn a `SBUX` model and obtain its model `uid`. 
 
@@ -37,15 +37,18 @@ TemplateNotFoundException: template not found for template_name: dcf-standard2
 ```
 
 ## Append tags to an existing model
-This assumes knowledge of the models `uid`.
+Tags can be added or appended to existing models; this assumes knowledge of the models `uid`.
 ```python linenums="1" 
 # Import the append_tags function from the modeling service
 from valsys.modeling.service import append_tags
-# define the models uid
+
+# Define the models uid
 model_uid = "0xe50deb"
-# define the tags to be appended to the model
+
+# Define the tags to be appended to the model
 tags_to_append = ["t5", "t4"]
-# append the tags
+
+# Append the tags
 append_tags(model_uid, tags_to_append)
 ```
 
@@ -55,16 +58,20 @@ The API allows a model to be shared to another user. This is done by referencing
 ```python linenums="1"
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
+
 # Import the permissions types 
 from valsys.modeling.models import Permissions
 
-# define the models uid
+# Define the models uid
 model_uid = "0xe50deb"
-# define the email of the user the model is to be shared with
+
+# Define the email of the user the model is to be shared with
 email_to_share_to = "jack.fuller@valsys.io"
-# define the permissions for the user
+
+# Define the permissions for the user
 permission = Permissions.VIEW
-# share the model
+
+# Share the model
 share_model(model_uid, email_to_share_to, permission=permission)
 ```
 A model can only be shared with a given user once. Violating this will result in a `ShareModelException`.
@@ -72,19 +79,21 @@ A model can only be shared with a given user once. Violating this will result in
 ```python linenums="1"
 # Import the share_model function from the modeling service
 from valsys.modeling.service import share_model
+
 # Import the permissions types 
 from valsys.modeling.models import Permissions
 
-# define the models uid
+# Define the models uid
 model_uid = "0xe50deb"
-# define the list of emails of the users the model is to be shared with;
+
+# Define the list of emails of the users the model is to be shared with;
 # note that we are allowed to put different permissions per user.
 users = [
     ("jack.fuller@valsys.io", Permissions.VIEW),
     ("simon.bessey@valsys.io", Permissions.EDIT)
 ]
 
-# share the model
+# Share the model
 for email, permission in users:
     share_model(model_uid, email, permission=permission)
 ```
@@ -171,15 +180,20 @@ Adding a child module requires knowledge of the parent modules `uid`.
 ```python linenums="1"
 # Import the add_child_module function from the modeling service
 from valsys.modeling.service import add_child_module, pull_model_information
-# define the model id
+
+# Define the model id
 model_id = '0xe50deb'
-# define the id of the parent module
+
+# Define the id of the parent module
 parent_module_id = '0xe51235'
-# define the name of the new module
+
+# Define the name of the new module
 new_module_name = 'new module'
-# go get the case uid for the model
+
+# Go get the case uid for the model
 case_id = pull_model_information(model_id).first.uid
-# use the above data to add a child module
+
+# Use the above data to add a child module
 new_module = add_child_module(
     parent_module_id = parent_module_id, 
     name = new_module_name, 
@@ -192,14 +206,22 @@ This workflow allows a line item to be added to an existing module; it requires 
 ```python linenums="1"
 # Import the add_line_item function from the modeling service
 from valsys.modeling.service import add_line_item, pull_model_information
-# Define the required data
+
+# Define the modelID
 model_id = '0xe50deb'
+
+# Define the module ID of the module the line item is to be added to
 module_id = '0xe51235'
+
+# Define the name of the new line item
 line_item_name = 'new line item'
+
+# Define the order in the module of the new line item
 line_item_order = 10
 
 # Get the caseID from the modelID
 case_id = pull_model_information(model_id).first.uid
+
 # Add the new line item, which returns a new line line object.
 new_line_item = add_line_item(
     model_id = model_id, 

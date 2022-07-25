@@ -5,7 +5,9 @@ Purpose: library to spawn and populate Valsys models via the API.
 
 
 ## Installation
-This assumes you have some system python version. On a linux-type system, execute
+This assumes you have some system python version. 
+
+On a linux-type system, execute
 ```
 make install
 ```

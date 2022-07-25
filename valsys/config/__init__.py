@@ -1,1 +1,1 @@
-from valsys.config.config import BASE_SCK, BASE_URL, API_PASSWORD, API_USERNAME
+#from valsys.config.config import BASE_SCK, BASE_URL, API_PASSWORD, API_USERNAME

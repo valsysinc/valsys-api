@@ -27,7 +27,7 @@ inttest:
 	python main.py --inttests
 
 login:
-	python login.py
+	python main.py --login
 
 update:
 	pip install -r requirements.txt

@@ -20,8 +20,7 @@ def main_run_spawn_models(config_file):
     return spawned_models
 
 
-def main_run_spawn_models_from_file(args):
-    config_filename = args[0]
+def main_run_spawn_models_from_file(config_filename: str):
     with open(config_filename, "r") as file:
         config_file = json.loads(file.read())
     return main_run_spawn_models(config_file)

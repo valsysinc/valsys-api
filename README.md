@@ -8,7 +8,11 @@ For this, recommend that you're in a virtual environment; there is a requirement
 ```
 pip install git+https://github.com/valsysinc/valsys-api
 ```
-
+**TODO: update path and login function**
+```
+from valsys.admin.login import main
+main()
+```
 ## Installation via source
 This assumes you have some system python version. 
 ### Mac/linux

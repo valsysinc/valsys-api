@@ -65,7 +65,7 @@ def create_env_file(username: str,
     write_env(creds, envfiles.creds)
 
 
-def main():
+def login():
     print(pyfiglet.figlet_format("ValsysLogin"), f"{' '*10} v{VERSION}")
 
     print('Please enter your Valsys credentials when prompted:')
@@ -80,4 +80,4 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    login()

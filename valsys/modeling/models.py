@@ -4,6 +4,7 @@ from typing import Dict
 class Permissions:
     VIEW = 'view'
     EDIT = 'edit'
+    FULL_ACCESS = 'fullAccess'
 
     @classmethod
     def get_body(cls, permission: str) -> Dict[str, bool]:
@@ -14,10 +15,12 @@ class Permissions:
         given, a `NotImplementedError` is thrown."""
         if permission == cls.VIEW:
             return {
-                "view": True,
+                cls.VIEW: True,
             }
         elif permission == cls.EDIT:
             return {
-                "edit": True,
+                cls.EDIT: True,
             }
+        elif permission == cls.FULL_ACCESS:
+            return {cls.FULL_ACCESS: True}
         raise NotImplementedError(f"invalid permission: {permission}")

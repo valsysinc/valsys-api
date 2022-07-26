@@ -6,7 +6,6 @@ import pytest
 
 from valsys.spawn.service import ValsysSpawn, spawn_models
 
-
 MODULE_PREFIX = "valsys.spawn.service"
 
 
@@ -29,13 +28,13 @@ class TestSpawnModels:
         sp = spawn_models(FakeModelSpawnConfigs.create(count=0))
         assert len(sp.processes) == 0
 
-    @mock.patch(f"{MODULE_PREFIX}.spawn_models_same_dcf_periods")
-    def test_with_configs(self, mock_spawn_models_same_dcf_periods):
+    @mock.patch(f"{MODULE_PREFIX}.spawn_models_same_template_periods")
+    def test_with_configs(self, mock_spawn_models_same_template_periods):
         fake_configs_count = 5
         fake_spawned_count = 2
         cfgs = FakeModelSpawnConfigs.create(count=fake_configs_count)
 
-        mock_spawn_models_same_dcf_periods.return_value = [
+        mock_spawn_models_same_template_periods.return_value = [
             i for i in range(fake_spawned_count)
         ]
         sp = spawn_models(cfgs)

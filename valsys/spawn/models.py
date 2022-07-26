@@ -166,19 +166,6 @@ class ModelSpawnConfig:
 
 
 @dataclass
-class ModelSpawnConfigs:
-    configs: List[ModelSpawnConfig] = field(default_factory=list)
-
-    @classmethod
-    def from_json(cls, data: List[Dict[str, Any]]):
-        return cls(configs=[ModelSpawnConfig.from_json(cfg) for cfg in data])
-
-    def __iter__(self):
-        for cfg in self.configs:
-            yield cfg
-
-
-@dataclass
 class SpawnProgress:
     model_id: str = ""
     ticker: str = ""

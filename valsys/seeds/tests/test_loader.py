@@ -5,7 +5,6 @@ import pytest
 from valsys.seeds.exceptions import TemplateNotFoundException
 from valsys.seeds.loader import SeedsLoader
 
-
 MODULE_PREFIX = "valsys.seeds.loader"
 
 
@@ -23,7 +22,7 @@ class TestSeedsLoader:
         mock_load_company_configs.return_value = []
         tickers = ['t1', 't2']
         loader = SeedsLoader()
-        assert loader.company_configs_by_ticker(tickers) == []
+        assert loader.company_configs_by_ticker(tickers) == {}
         mock_load_company_configs.assert_called_once()
 
     @mock.patch(f"{MODULE_PREFIX}.load_company_configs")
@@ -36,7 +35,7 @@ class TestSeedsLoader:
         }]
         tickers = ['t1', 't2']
         loader = SeedsLoader()
-        assert loader.company_configs_by_ticker(tickers) == []
+        assert loader.company_configs_by_ticker(tickers) == {}
         mock_load_company_configs.assert_called_once()
 
     @mock.patch(f"{MODULE_PREFIX}.load_company_configs")
@@ -57,7 +56,8 @@ class TestSeedsLoader:
         company_configs = loader.company_configs_by_ticker(tickers)
         mock_load_company_configs.assert_called_once()
         assert len(company_configs) == 2
-        tickers_found = [cc.ticker for cc in company_configs]
+
+        tickers_found = [cc.ticker for cc in company_configs.values()]
         assert set(tickers) == set(tickers_found)
 
     @mock.patch(f"{MODULE_PREFIX}.load_templates")

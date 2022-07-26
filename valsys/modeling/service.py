@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 
 from valsys.modeling.client.exceptions import (
@@ -14,33 +15,36 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import Permissions
-from valsys.seeds.model import ModelSeedConfigurationData
+from valsys.seeds.models import OrchestratorConfig
+
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
 CODE_POST_SUCCESS = 200
-CREATE_MODEL_ACTION = "CREATE_MODEL"
+SPAWN_MODELS_ACTION = "SPAWN_MODELS"
 
 
-def spawn_model(config: ModelSeedConfigurationData,
-                auth_token: str = None) -> str:
-    """
-    Given a model config and authentication token, spawn a model.
-    Returns the model ID.
+@dataclass
+class SpawnedModelInfo:
+    model_id: str
+    ticker: str
 
-    Raises `ModelSpawnException` on errors.
-    """
-    config.action = CREATE_MODEL_ACTION
-    config.validate()
+    @classmethod
+    def from_json(cls, m):
+        return cls(model_id=m.get('modelID'), ticker=m.get('ticker'))
 
-    client = new_socket_client(auth_token=auth_token)
 
+def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
+    client = new_socket_client()
+    config.action = SPAWN_MODELS_ACTION
     try:
-        resp = client.post(url=VSURL.SCK_MODELING_CREATE,
-                           data=config.jsonify())
-        return resp["data"][Headers.UID]
+        resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
+        return [
+            SpawnedModelInfo.from_json(m) for m in resp.get('models')
+            if m.get('status') == 'success'
+        ]
     except (ModelingServiceGetException, Exception):
-        ModelSpawnException(f"error building model: {client.error}")
+        raise ModelSpawnException(f"error building model: {client.error}")
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):

@@ -11,13 +11,12 @@ class ModelingServiceSocketClient:
     auth_token: str = ""
     error: Any = None
 
-    def run(self,
-            url: str,
-            data: Dict[str, str] = None):
+    def run(self, url: str, data: Dict[str, str] = None):
         handler = SocketHandler(url=url,
                                 config=data,
                                 auth_token=self.auth_token,
                                 trace=False)
+
         handler.run()
 
         while True:

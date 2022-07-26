@@ -43,7 +43,7 @@ def new_client(auth_token: str = None,
     raise NotImplementedError(f"unknown client type {client}")
 
 
-def new_socket_client(auth_token: str) -> ModelingClient:
+def new_socket_client(auth_token: str = None) -> ModelingClient:
     """Build and return a new socket-type modeling service client object.
     """
     return new_client(auth_token=auth_token, client=ModelingClientTypes.SOCKET)

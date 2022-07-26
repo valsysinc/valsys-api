@@ -3,14 +3,9 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.service import (
-    CREATE_MODEL_ACTION,
-    add_line_item,
-    pull_case,
-    pull_model_information,
-    spawn_model,
-)
-
+from valsys.modeling.service import (SPAWN_MODELS_ACTION, add_line_item,
+                                     pull_case, pull_model_information,
+                                     spawn_model, SpawnedModelInfo)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -21,17 +16,24 @@ class TestSpawnModel:
     def test_works_ok(self, mock_new_socket_client):
         config = mock.MagicMock()
         mock_c = mock.MagicMock()
-        auth_token = '1234'
-        fake_post_ret = {'data': {'uid': 42}}
+        fake_model_id, fake_model_ticker = 'ghjkrhdg', 'TKR'
+        fake_post_ret = {
+            'models': [{
+                'modelID': fake_model_id,
+                'status': 'success',
+                'ticker': fake_model_ticker
+            }]
+        }
         mock_c.post.return_value = fake_post_ret
         mock_new_socket_client.return_value = mock_c
 
-        assert spawn_model(config,
-                           auth_token) == fake_post_ret.get('data').get('uid')
-        assert config.action == CREATE_MODEL_ACTION
-        config.validate.assert_called_once()
+        assert spawn_model(config) == [
+            SpawnedModelInfo(model_id=fake_model_id, ticker=fake_model_ticker)
+        ]
+        assert config.action == SPAWN_MODELS_ACTION
+
         config.jsonify.assert_called_once()
-        mock_new_socket_client.assert_called_with(auth_token=auth_token)
+        mock_new_socket_client.assert_called_once()
 
 
 class TestPullModelInformation:

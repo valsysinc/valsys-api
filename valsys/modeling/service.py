@@ -18,7 +18,6 @@ from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
-
 CODE_POST_SUCCESS = 200
 CREATE_MODEL_ACTION = "CREATE_MODEL"
 
@@ -86,7 +85,7 @@ def share_model(model_id: str,
     """
 
     client = new_client(auth_token)
-    permissions = Permissions.get_body(permission)
+    permissions = Permissions(permission)
 
     try:
         client.post(
@@ -95,7 +94,7 @@ def share_model(model_id: str,
                 "email": email,
                 Headers.MODEL_ID: model_id,
             },
-            data=permissions,
+            data=permissions.jsonify(),
         )
     except ModelingServicePostException as err:
         raise ShareModelException(f"failed to share models {str(err)}")

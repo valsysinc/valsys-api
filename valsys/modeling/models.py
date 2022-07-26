@@ -1,26 +1,39 @@
 from typing import Dict
 
 
-class Permissions:
+class PermissionTypes:
     VIEW = 'view'
     EDIT = 'edit'
     FULL_ACCESS = 'fullAccess'
 
     @classmethod
-    def get_body(cls, permission: str) -> Dict[str, bool]:
+    def types(cls):
+        return [cls.VIEW, cls.EDIT, cls.FULL_ACCESS]
+
+    @classmethod
+    def valid(cls, p):
+        return p in cls.types()
+
+
+class Permissions:
+
+    def __init__(self, permission: str):
+        self.permission = permission
+
+    def jsonify(self) -> Dict[str, bool]:
         """Generate a permissions body from the
         provided permissions string.
         
         If an invalid permission string is
         given, a `NotImplementedError` is thrown."""
-        if permission == cls.VIEW:
+        if self.permission == PermissionTypes.VIEW:
             return {
-                cls.VIEW: True,
+                PermissionTypes.VIEW: True,
             }
-        elif permission == cls.EDIT:
+        elif self.permission == PermissionTypes.EDIT:
             return {
-                cls.EDIT: True,
+                PermissionTypes.EDIT: True,
             }
-        elif permission == cls.FULL_ACCESS:
-            return {cls.FULL_ACCESS: True}
-        raise NotImplementedError(f"invalid permission: {permission}")
+        elif self.permission == PermissionTypes.FULL_ACCESS:
+            return {PermissionTypes.FULL_ACCESS: True}
+        raise NotImplementedError(f"invalid permission: {self.permission}")

@@ -13,3 +13,4 @@ code-docs/
 *.DS_Store
 site/*
 .valsys-env/
+tmp.py

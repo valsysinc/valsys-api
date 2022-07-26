@@ -25,6 +25,7 @@ The model is shared to the user with specified permissions; the allowed values a
 
 * `permission` = `view`
 * `permission` = `edit`
+* `permission` = `fullAccess`
   
 Any other permission value will result in a `NotImplementedError` exception being thrown.
 

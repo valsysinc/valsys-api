@@ -14,13 +14,24 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import Permissions
+from valsys.seeds.models import OrchestratorConfig
 from valsys.seeds.model import ModelSeedConfigurationData
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
-
 CODE_POST_SUCCESS = 200
 CREATE_MODEL_ACTION = "CREATE_MODEL"
+SPAWN_MODELS_ACTION = "SPAWN_MODELS"
+
+
+def spawn_model_orchestrator(config: OrchestratorConfig):
+    client = new_socket_client()
+    config.action = SPAWN_MODELS_ACTION
+    try:
+        resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
+        return resp  #["data"]  #[Headers.UID]
+    except (ModelingServiceGetException, Exception):
+        raise ModelSpawnException(f"error building model: {client.error}")
 
 
 def spawn_model(config: ModelSeedConfigurationData,
@@ -41,7 +52,7 @@ def spawn_model(config: ModelSeedConfigurationData,
                            data=config.jsonify())
         return resp["data"][Headers.UID]
     except (ModelingServiceGetException, Exception):
-        ModelSpawnException(f"error building model: {client.error}")
+        raise ModelSpawnException(f"error building model: {client.error}")
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):

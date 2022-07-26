@@ -16,7 +16,7 @@ class ModelingServiceSocketClient:
                                 config=data,
                                 auth_token=self.auth_token,
                                 trace=False)
-        print(url)
+
         handler.run()
 
         while True:

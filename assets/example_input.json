@@ -5,8 +5,8 @@
                 "SBUX"
             ],
             "templateName": "dcf-standard",
-            "histPeriod": 2,
-            "projPeriod": 3,
+            "numForecastYears": 2,
+            "numHistoricalYears": 3,
             "tags": [
                 "t1"
             ],
@@ -19,8 +19,8 @@
                 "BYND"
             ],
             "templateName": "dcf-standard",
-            "histPeriod": 2,
-            "projPeriod": 3,
+            "numForecastYears": 2,
+            "numHistoricalYears": 3,
             "tags": [
                 "t2"
             ],

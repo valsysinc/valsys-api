@@ -24,8 +24,8 @@ This provides a valid example of a configuration file which can be passed to the
                 "SBUX"
             ],
             "templateName": "dcf-standard",
-            "histPeriod": 2,
-            "projPeriod": 3,
+            "numForecastYears": 2,
+            "numHistoricalYears": 3,
             "tags": [
                 "t1"
             ],
@@ -38,8 +38,8 @@ This provides a valid example of a configuration file which can be passed to the
                 "BYND"
             ],
             "templateName": "dcf-standard",
-            "histPeriod": 2,
-            "projPeriod": 3,
+            "numForecastYears": 2,
+            "numHistoricalYears": 3,
             "tags": [
                 "t2"
             ],
@@ -160,10 +160,15 @@ The fields which can be configured are:
 
 * `tickers` A list of tickers to whom this configuration applies
 * `templateName` The name of the template (invalid entries will have errors thrown)
-* `histPeriod`
-* `projPeriod`
+* `numForecastYears` The number of forecast years
+* `numHistoricalYears` The number of historical years
 * `tags` A list of tags which will be applied to the models
 * `emails` A list of user emails to whom the models will be shared
+
+By default,
+
+* `periodType` is set to `ANNUAL`
+* `startDate` is set the current date/time
 
 ### `populateModulesConfig`
 A list of module configurations, where every ticker in a given configuration chunk will be configured identically. This will add a child module to a parent module in the model.

@@ -16,10 +16,10 @@ class SeedsLoader:
         the valsys modeling service API."""
         if len(tickers) == 0:
             return []
-        ret = []
+        ret = {}
         for cfg in load_company_configs():
             if cfg.get("ticker") in tickers:
-                ret.append(CompanyConfig.from_json_modeling(cfg))
+                ret[cfg.get("ticker")] = CompanyConfig.from_json_modeling(cfg)
         return ret
 
     @classmethod

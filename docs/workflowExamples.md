@@ -9,29 +9,29 @@ In the below example, we show how to spawn a `SBUX` model and obtain its model `
 
 
 ```python linenums="1"
-# Import the spawn_model function from the modeling service
-from valsys.modeling.service import spawn_model
+# Import the spawn_model function from the spawn service
+from valsys.spawn.service import spawn_models
 
 # Import the class for the model seed configuration data
-from valsys.seeds.model import ModelSeedConfigurationData
+from valsys.seeds.models import OrchestratorConfig
 
 # Define the model seed configuration data
-model_seed_config = ModelSeedConfigurationData(
-    company_name = 'STARBUCKS CORP',
-    ticker = 'SBUX',
-    template_name = 'dcf-standard',
-    proj_period = 3,
-    hist_period = 2,
-    industry_group = 'RETAIL-EATING \u0026 DRINKING PLACES',
-    start_period = 2019,
-    start_date = "2022-07-08T14:18:33.050Z"
-)
+seed_config = {
+    'templateName':'dcf-standard',
+    'numForecastYears':3,
+    'numHistoricalYears':2,
+    'tickers':['SBUX', 'BYND']
+}
+model_seed_config = OrchestratorConfig.from_json(seed_config)
 
 # Spawn the model and obtain the new modelID
-spawned_model_id = spawn_model(model_seed_config)
+spawn_progresses = spawn_models([model_seed_config])
+
+# Extract a list of modelID/tickers from the spawned model data
+models = [{'modelID': p.model_id, 'ticker': p.ticker} for p in spawn_progresses]
 ```
 
-If the `template_name` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 
+If the `templateName` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 
 ```
 TemplateNotFoundException: template not found for template_name: dcf-standard2
 ```

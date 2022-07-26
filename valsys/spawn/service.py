@@ -9,12 +9,11 @@ from valsys.modeling.service import (
     pull_case,
     pull_model_information,
 )
+from valsys.seeds.models import OrchestratorConfig
 from valsys.seeds.loader import SeedsLoader
-from valsys.seeds.model import ModelSeedConfigurationData
+
 from valsys.spawn.models import (
     MasterPopulateModulesConfig,
-    ModelSpawnConfig,
-    ModelSpawnConfigs,
     PopulateModulesConfig,
     PopulatedModules,
     SpawnProgress,
@@ -29,7 +28,7 @@ class ValsysSpawn:
     into the Valsys platform."""
 
     @staticmethod
-    def spawn_models(config: ModelSpawnConfigs):
+    def spawn_models(config):
         try:
             return spawn_models(config)
         except Exception as err:
@@ -41,8 +40,8 @@ class ValsysSpawn:
         return populate_modules(config)
 
 
-def spawn_models_same_dcf_periods(
-        model_spawn_config: ModelSpawnConfig) -> List[SpawnProgress]:
+def spawn_models_same_template_periods(
+        model_spawn_config: OrchestratorConfig) -> List[SpawnProgress]:
     """
     Spawn a set of models, each of which has the same 
     - template name,
@@ -53,42 +52,32 @@ def spawn_models_same_dcf_periods(
     """
 
     tickers = model_spawn_config.tickers
-    template_name = model_spawn_config.template_name
-    proj_period = model_spawn_config.proj_period
-    hist_period = model_spawn_config.hist_period
 
-    logger.info(f"running spawn with {model_spawn_config.jsonify()}")
+    logger.info(f"running spawn with {model_spawn_config.tickers}")
 
     company_configs = SeedsLoader.company_configs_by_ticker(tickers)
-    template_id = SeedsLoader.template_id_by_name(template_name=template_name)
 
-    seeds: List[ModelSeedConfigurationData] = []
-    for config in company_configs:
-        seeds.append(
-            ModelSeedConfigurationData.from_model_spawn_config(
-                config,
-                proj_period=proj_period,
-                hist_period=hist_period,
-                template_id=template_id,
-            ))
+    template_id = SeedsLoader.template_id_by_name(
+        template_name=model_spawn_config.template_name)
 
-    return SpawnHandler.build_and_spawn_models(
-        seeds=seeds,
-        tags=model_spawn_config.tags,
-        emails=model_spawn_config.emails,
-    )
+    for config in model_spawn_config.model_configs:
+        config.update(company_configs[config.ticker])
+        config.template_id = template_id
+
+    return SpawnHandler.orchestrate_model_spawns(seeds=model_spawn_config)
 
 
-def spawn_models(configs: ModelSpawnConfigs, check_any=False) -> SpawnedModels:
+def spawn_models(configs: List[OrchestratorConfig],
+                 check_any=False) -> SpawnedModels:
     """Spawn models from the provided configuration.
 
     If `check_any` is `True`, then a `ValueError` is raised if no models
     have been spawned.
     `check_any` is False by default.
     """
-    rep = SpawnedModels()
+    rep = SpawnedModels(verbose=True)
     for cfg in configs:
-        [rep.append(proc) for proc in spawn_models_same_dcf_periods(cfg)]
+        [rep.append(proc) for proc in spawn_models_same_template_periods(cfg)]
 
     if check_any and len(rep.spawned_models) == 0:
         raise ValueError(f"no models spawned")

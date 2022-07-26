@@ -9,24 +9,37 @@ def run_spawn_model():
     logger.info(f'running: run_spawn_model')
     # Import the spawn_model function from the modeling service
     from valsys.modeling.service import spawn_model
+    from valsys.config.config import API_PASSWORD, API_USERNAME
+
+    from valsys.seeds.loader import SeedsLoader
 
     # Import the class for the model seed configuration data
-    from valsys.seeds.model import ModelSeedConfigurationData
+    from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
+    user, password = API_USERNAME, API_PASSWORD
+
+    template_id = SeedsLoader.template_id_by_name(
+        TestModelConfig.MODEL.get('templateName'))
 
     # Define the model seed configuration data
-    model_seed_config = ModelSeedConfigurationData(
-        company_name=TestModelConfig.MODEL.get('company_name'),
-        ticker=TestModelConfig.MODEL.get('ticker'),
-        template_name=TestModelConfig.MODEL.get('template_name'),
-        proj_period=TestModelConfig.MODEL.get('proj_period'),
-        hist_period=TestModelConfig.MODEL.get('hist_period'),
-        industry_group=TestModelConfig.MODEL.get('industry_group'),
-        start_period=TestModelConfig.MODEL.get('start_period'),
-        start_date=TestModelConfig.MODEL.get('start_date'))
-
+    model_seed_config = OrchestratorConfig(
+        username=user,
+        password=password,
+        num_forecast_years=TestModelConfig.MODEL.get('numForecastYears'),
+        num_historical_years=TestModelConfig.MODEL.get('numHistoricalYears'),
+        start_date=TestModelConfig.MODEL.get('startDate'),
+        model_configs=[
+            OrchestratorModelConfig(
+                template_id=template_id,
+                company_name=TestModelConfig.MODEL.get('companyName'),
+                ticker=TestModelConfig.MODEL.get('ticker'),
+                industry=TestModelConfig.MODEL.get('industry'),
+                start_period=TestModelConfig.MODEL.get('startPeriod'),
+            )
+        ])
+    print(model_seed_config.jsonify())
     # Spawn the model and obtain the new modelID
     spawned_model_id = spawn_model(model_seed_config)
-    assert isinstance(spawned_model_id, str)
+    assert isinstance(spawned_model_id, list)
     return spawned_model_id
 
 
@@ -109,7 +122,9 @@ def run_add_line_item(model_id, module_id):
 
 def run_inttests():
     logger.info('running integration tests')
-    model_id = run_spawn_model()
+    spawned_models = run_spawn_model()
+    print(spawned_models)
+    model_id = spawned_models[0].model_id
     model_id = run_tag_model(model_id)
     model_id = run_share_model(model_id)
     model_id, module_id = run_get_module_information(model_id)

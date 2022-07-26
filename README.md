@@ -15,7 +15,7 @@ login()
 ```
 This will have to be done whenever your password changes.
 
-Once done, it is worth visiting our [documentation](`https://valsysinc.github.io/valsys-api/`).
+Once done, it is worth visiting our [documentation](`https://valsysinc.github.io/valsys-api/`) to find out how to use.
 ### Installation via source
 This assumes you have some system python version. 
 #### Mac/linux
@@ -36,14 +36,10 @@ make login
 
 From within powershell,
 ```
-set-executionpolicy RemoteSigned # can only run as admin
 python -m venv .venv
 .venv\Scripts\activate.ps1
-pip install -r requirements.txt
 ```
-```
-$Env:VALSYS_API_BUILD='test'
-```
+On windows you may not have preivelidged to excecute  the second line. If this is the case, `set-executionpolicy RemoteSigned`  as admin .
 ## Usage
 Once installed, start the python environment via
 ```
@@ -64,4 +60,4 @@ make docserver
 ```
 then visit `http://localhost:8989/` in a browser.
 
-To see the public-facing docs, visit `https://valsysinc.github.io/valsys-api/`
+To see the public-facing docs, visit [here](https://valsysinc.github.io/valsys-api/).

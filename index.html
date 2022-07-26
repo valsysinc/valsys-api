@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#valsys" class="md-skip">
+        <a href="#getting-started" class="md-skip">
           Skip to content
         </a>
       
@@ -95,7 +95,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Valsys
+              Getting started
             
           </span>
         </div>
@@ -191,12 +191,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Valsys
+          Getting started
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        Valsys
+        Getting started
       </a>
       
         
@@ -321,12 +321,14 @@
                 
 
 
-<h1 id="valsys">Valsys</h1>
-<p>Documentation hub</p>
+<h1 id="getting-started">Getting started</h1>
+<p>From a Jupyter notebook, connect to a python kernel (recommended that its a virtual environment, rather than the global python kernel). Install the valsys python package from within a cell via
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">valsysinc</span><span class="o">/</span><span class="n">valsys</span><span class="o">-</span><span class="n">api</span>
+</code></pre></div></p>
 <h2 id="login">Login</h2>
 <p>Once the library has been installed (e.g., via <code>pip</code>), the first task is to login.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">valsys.admin</span> <span class="kn">import</span> <span class="n">login</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">login</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">valsys.admin</span> <span class="kn">import</span> <span class="n">login</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">login</span><span class="p">()</span>
 </code></pre></div>
 Below we provide a screenshot of a jupyter notebook showing the expected screen and output.</p>
 <p><img alt="" src="images/jupyter_login.png" title="Jupyter login" /></p>

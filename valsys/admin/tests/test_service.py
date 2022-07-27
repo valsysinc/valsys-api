@@ -1,7 +1,7 @@
 from unittest import mock
 
-from valsys.admin.service import gen_login_url, try_login
-
+from valsys.admin.service import gen_login_url, try_login, gen_fields
+import pytest
 
 MODULE_PREFIX = "valsys.admin.service"
 
@@ -27,3 +27,26 @@ class TestTryLogin:
         mock_authenticate2.side_effect = Exception
 
         assert try_login(base, user, password) is False
+
+
+class TestGenFields:
+
+    @pytest.mark.parametrize("protocol,host,genfields",
+                             [('http', 'you.com', {
+                                 'VALSYS_API_SOCKET': 'ws://you.com',
+                                 'VALSYS_API_SERVER': 'http://you.com'
+                             }),
+                              ('https', 'you.com', {
+                                  'VALSYS_API_SOCKET': 'wss://you.com',
+                                  'VALSYS_API_SERVER': 'https://you.com'
+                              }),
+                              ('http', 'http://you.com', {
+                                  'VALSYS_API_SOCKET': 'ws://you.com',
+                                  'VALSYS_API_SERVER': 'http://you.com'
+                              }),
+                              ('https', 'https://you.com', {
+                                  'VALSYS_API_SOCKET': 'wss://you.com',
+                                  'VALSYS_API_SERVER': 'https://you.com'
+                              })])
+    def test_works_ok(self, protocol, host, genfields):
+        assert gen_fields(protocol=protocol, host=host) == genfields

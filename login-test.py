@@ -6,6 +6,8 @@ def main():
 
     create_env_file(username='any',
                     password='any',
+                    protocol='any',
+                    host='any',
                     envfiles=get_envfiles('test'),
                     verify=False)
 

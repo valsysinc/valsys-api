@@ -1,6 +1,6 @@
 # Getting started
 ## Create a python virtual environment
-We recommended to install the `valsys` library into a python virtual (local) environment, rather than into the global python environment. This requires you have a system-wide installation of `python` (below we assume that `python` corresponds to a `>=3.6`.). Other environment management systems are available.
+We recommended that you install the `valsys` library into a python virtual (local) environment, rather than into the global python environment. This requires you have a system-wide installation of `python` (below we assume that `python` corresponds to a `>=3.6`.). Other environment management systems are available.
 
 To create a python virtual environment in the current directory, execute
 ```

@@ -32,6 +32,9 @@ If the `templateName` is incorrectly entered (e.g., typo, or something that does
 TemplateNotFoundException: template not found for template_name: dcf-standard2
 ```
 
+Below is a screenshot from a jupyter notebook of exactly this process, the output, and a printout of the `models` built information.
+![](images/spawn.png "Model spawning")
+
 ## Append tags to an existing model
 Tags can be added or appended to existing models; this assumes knowledge of the models `uid`.
 ```python linenums="1" 

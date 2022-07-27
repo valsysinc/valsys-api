@@ -1,6 +1,6 @@
 # Getting started
 ### Create a python virtual environment
-We recommended to install the `valsys` library into a python virtual environment, rather than the global python kernel. This requires you have a system-wide installation of `python` (below we assume that `python` corresponds to a `v3.x`). Other environment management systems are available.
+We recommended to install the `valsys` library into a python virtual environment, rather than the global python kernel. This requires you have a system-wide installation of `python` (below we assume that `python` corresponds to a `>=3.6`.). Other environment management systems are available.
 
 To create a python virtual environment in the current directory, execute
 ```

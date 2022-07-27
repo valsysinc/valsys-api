@@ -508,8 +508,8 @@ The above is an example input configuration file which should be inspected to un
 <a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">                </span><span class="s2">&quot;SBUX&quot;</span><span class="w"></span>
 <a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="p">],</span><span class="w"></span>
 <a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">            </span><span class="nt">&quot;templateName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dcf-standard&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">            </span><span class="nt">&quot;histPeriod&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="nt">&quot;projPeriod&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">            </span><span class="nt">&quot;numForecastYears&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="nt">&quot;numHistoricalYears&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
 <a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">                </span><span class="s2">&quot;t1&quot;</span><span class="w"></span>
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">            </span><span class="p">],</span><span class="w"></span>
@@ -522,8 +522,8 @@ The above is an example input configuration file which should be inspected to un
 <a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">                </span><span class="s2">&quot;BYND&quot;</span><span class="w"></span>
 <a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">            </span><span class="p">],</span><span class="w"></span>
 <a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="w">            </span><span class="nt">&quot;templateName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dcf-standard&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">            </span><span class="nt">&quot;histPeriod&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="w">            </span><span class="nt">&quot;projPeriod&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">            </span><span class="nt">&quot;numForecastYears&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="w">            </span><span class="nt">&quot;numHistoricalYears&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
 <a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="w">                </span><span class="s2">&quot;t2&quot;</span><span class="w"></span>
 <a id="__codelineno-1-26" name="__codelineno-1-26"></a><span class="w">            </span><span class="p">],</span><span class="w"></span>
@@ -643,10 +643,15 @@ There are two main chunks of config:</p>
 <ul>
 <li><code>tickers</code> A list of tickers to whom this configuration applies</li>
 <li><code>templateName</code> The name of the template (invalid entries will have errors thrown)</li>
-<li><code>histPeriod</code></li>
-<li><code>projPeriod</code></li>
+<li><code>numForecastYears</code> The number of forecast years</li>
+<li><code>numHistoricalYears</code> The number of historical years</li>
 <li><code>tags</code> A list of tags which will be applied to the models</li>
 <li><code>emails</code> A list of user emails to whom the models will be shared</li>
+</ul>
+<p>By default,</p>
+<ul>
+<li><code>periodType</code> is set to <code>ANNUAL</code></li>
+<li><code>startDate</code> is set the current date/time</li>
 </ul>
 <h3 id="populatemodulesconfig"><code>populateModulesConfig</code></h3>
 <p>A list of module configurations, where every ticker in a given configuration chunk will be configured identically. This will add a child module to a parent module in the model.</p>

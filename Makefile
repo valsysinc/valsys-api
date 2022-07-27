@@ -24,7 +24,7 @@ tidy:
 	importanize path valsys/
 
 inttest:
-	python main.py --inttests
+	export VALSYS_API_BUILD=local; python main.py --inttests
 
 login:
 	python main.py --login

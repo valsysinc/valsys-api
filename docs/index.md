@@ -23,7 +23,9 @@ pip install git+https://github.com/valsysinc/valsys-api
 ```
 Any other packages you require (e.g., `spark`, or `numpy`) will also need to be installed into the environment
 
-## Login
+## Environment setup
+To effectively use the library certain environment variables are required. These can be set in two ways: first via `login` process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).
+### Login
 Once the library has been installed, the first task is to login. From a python script (e.g., in the repl, or a jupyter notebook), execute
 ```python
 from valsys.admin import login
@@ -47,3 +49,15 @@ The login process will attempt to authenticate with these pieces of information.
 Below we provide a screenshot of a jupyter notebook showing the expected screen and output.
 
 ![](images/jupyter_login.png "Jupyter login")
+
+### Environment variables
+iIf the `login` function does not works for your system, you need to manually configure the following environment variables:
+
+* `VALSYS_API_BUILD`: this is your company identifier (contact valsys support to find this value)
+* `VALSYS_API_SOCKET`: the socket address (e.g., `wss://dev-api.valsys.io`)
+* `VALSYS_API_SERVER`: the http server address (e.g., `https://dev-api.valsys.io`)
+* `VALSYS_API_USER`: the username used to log into the valsys system
+* `VALSYS_API_PASSWORD`: the password used to log into the valsys system
+
+Your operating system or IDE will dictate the best method for setting these variables.
+

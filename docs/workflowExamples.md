@@ -10,25 +10,21 @@ In the below example, we show how to spawn a `SBUX` model and obtain its model `
 
 ```python linenums="1"
 # Import the spawn_model function from the spawn service
-from valsys.spawn.service import spawn_models
+from valsys.spawn.service import spawn_from_config
 
-# Import the class for the model seed configuration data
-from valsys.seeds.models import OrchestratorConfig
 
 # Define the model seed configuration data
 seed_config = {
-    'templateName':'dcf-standard',
-    'numForecastYears':3,
-    'numHistoricalYears':2,
-    'tickers':['SBUX', 'BYND']
+    'templateName': 'dcf-standard',
+    'numForecastYears': 3,
+    'numHistoricalYears': 2,
+    'tickers': ['SBUX', 'BYND']
 }
-model_seed_config = OrchestratorConfig.from_json(seed_config)
 
-# Spawn the model and obtain the new modelID
-spawn_progresses = spawn_models([model_seed_config])
+spawned_models = spawn_from_config(seed_config)
 
 # Extract a list of modelID/tickers from the spawned model data
-models = [{'modelID': p.model_id, 'ticker': p.ticker} for p in spawn_progresses]
+models = [{'modelID': p.model_id, 'ticker': p.ticker} for p in spawned_models]
 ```
 
 If the `templateName` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 

@@ -81,6 +81,10 @@ class OrchestratorConfig:
     def tickers(self):
         return [mc.ticker for mc in self.model_configs]
 
+    @property
+    def count_tickers(self):
+        return len(self.model_configs)
+
     def jsonify(self):
         return {
             "action": self.action,

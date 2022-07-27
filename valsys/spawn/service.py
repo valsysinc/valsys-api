@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Dict, Any
 
 from valsys.modeling.service import (
     add_child_module,
@@ -83,6 +83,13 @@ def spawn_models(configs: List[OrchestratorConfig],
         raise ValueError(f"no models spawned")
 
     return rep
+
+
+def spawn_from_config(seed_config: Dict[str, Any]):
+    model_seed_config = OrchestratorConfig.from_json(seed_config)
+
+    # Spawn the model and obtain the new modelID
+    return spawn_models([model_seed_config])
 
 
 def populate_models_with_modules(

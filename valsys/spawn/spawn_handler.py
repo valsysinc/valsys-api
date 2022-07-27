@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
-
+from datetime import datetime
+from valsys.utils import logger
 from valsys.auth.service import authenticate
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.exceptions import ShareModelException, TagModelException
 from valsys.modeling.service import share_model, tag_model, spawn_model, SpawnedModelInfo
 
-from valsys.spawn.exceptions import ModelSpawnException
 from valsys.spawn.models import SpawnProgress
 from valsys.seeds.models import OrchestratorConfig
 
@@ -58,43 +58,31 @@ class SpawnHandler:
                 self.progress.mark_shared(email, permission, err=err)
 
     @classmethod
-    def build_and_spawn_models(
+    def orchestrate_model_spawns(
         cls,
-        seeds: List[SpawnedModelInfo],
-        tags: List[str] = None,
-        emails: List[str] = None,
-        options: Dict[str, Any] = None,
+        seeds: OrchestratorConfig,
     ) -> List[SpawnProgress]:
         """Build and spawn models from the provided model configurations."""
+        seeds.username, seeds.password = API_USERNAME, API_PASSWORD
+        nmodels = seeds.count_tickers
+        t1 = datetime.now()
+        models = spawn_model(seeds)
+        t2 = datetime.now()
+        logger.info(
+            f"spawned {nmodels} models in {(t2-t1).total_seconds():.1f}s")
 
-        tags = tags or []
-        emails = emails or []
         options = options or {"verbose": True}
         user, password = API_USERNAME, API_PASSWORD
 
         progress = []
-
-        for config in seeds:
+        tags, emails = seeds.tags, seeds.emails
+        for model in models:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)
-            handler.model_id = config.model_id
-            handler.progress.mark_spawned(model_id=config.model_id)
-            handler.progress.ticker = config.ticker
+            handler.model_id = model.model_id
+            handler.progress.mark_spawned(model_id=model.model_id)
+            handler.progress.ticker = model.ticker
             handler.tag(tags=tags)
             handler.share(emails=emails)
-
             progress.append(handler.progress)
-
         return progress
-
-    @classmethod
-    def orchestrate_model_spawns(
-        cls,
-        seeds: OrchestratorConfig,
-    ):
-        seeds.username, seeds.password = API_USERNAME, API_PASSWORD
-
-        models = spawn_model(seeds)
-        return cls.build_and_spawn_models(models,
-                                          tags=seeds.tags,
-                                          emails=seeds.emails)

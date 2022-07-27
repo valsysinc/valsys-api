@@ -58,10 +58,9 @@ class SpawnHandler:
                 self.progress.mark_shared(email, permission, err=err)
 
     @classmethod
-    def orchestrate_model_spawns(
-        cls,
-        seeds: OrchestratorConfig,
-    ) -> List[SpawnProgress]:
+    def orchestrate_model_spawns(cls,
+                                 seeds: OrchestratorConfig,
+                                 options=None) -> List[SpawnProgress]:
         """Build and spawn models from the provided model configurations."""
         seeds.username, seeds.password = API_USERNAME, API_PASSWORD
         nmodels = seeds.count_tickers

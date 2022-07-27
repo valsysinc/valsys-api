@@ -1,6 +1,6 @@
 # Workflow examples
 
-This is a collection of examples of how to use the Valsys library.
+This is a collection of examples of how to use the Valsys library..
 
 ## Spawn a model
 This workflow allows a model to be spawned from a template.

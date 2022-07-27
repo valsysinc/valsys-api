@@ -61,12 +61,12 @@ def run_share_model(model_uid):
     # Import the share_model function from the modeling service
     from valsys.modeling.service import share_model
     # Import the permissions types
-    from valsys.modeling.models import Permissions
+    from valsys.modeling.models import PermissionTypes
 
     # define the email of the user the model is to be shared with
     email_to_share_to = TestModelConfig.EMAIL
     # define the permissions for the user
-    permission = Permissions.VIEW
+    permission = PermissionTypes.VIEW
     # share the model
     share_model(model_uid, email_to_share_to, permission=permission)
     return model_uid

@@ -59,7 +59,7 @@ The API allows a model to be shared to another user. This is done by referencing
 from valsys.modeling.service import share_model
 
 # Import the permissions types 
-from valsys.modeling.models import Permissions
+from valsys.modeling.models import PermissionTypes
 
 # Define the models uid
 model_uid = "0xe50deb"
@@ -68,7 +68,7 @@ model_uid = "0xe50deb"
 email_to_share_to = "jack.fuller@valsys.io"
 
 # Define the permissions for the user
-permission = Permissions.VIEW
+permission = PermissionTypes.VIEW
 
 # Share the model
 share_model(model_uid, email_to_share_to, permission=permission)
@@ -80,7 +80,7 @@ A model can only be shared with a given user once. Violating this will result in
 from valsys.modeling.service import share_model
 
 # Import the permissions types 
-from valsys.modeling.models import Permissions
+from valsys.modeling.models import PermissionTypes
 
 # Define the models uid
 model_uid = "0xe50deb"
@@ -88,8 +88,8 @@ model_uid = "0xe50deb"
 # Define the list of emails of the users the model is to be shared with;
 # note that we are allowed to put different permissions per user.
 users = [
-    ("jack.fuller@valsys.io", Permissions.VIEW),
-    ("simon.bessey@valsys.io", Permissions.EDIT)
+    ("jack.fuller@valsys.io", PermissionTypes.VIEW),
+    ("simon.bessey@valsys.io", PermissionTypes.EDIT)
 ]
 
 # Share the model

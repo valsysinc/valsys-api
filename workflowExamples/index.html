@@ -522,7 +522,7 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">share_model</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3"></a>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="c1"># Import the permissions types </span>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">PermissionTypes</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6"></a>
 <a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="c1"># Define the models uid</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
@@ -531,7 +531,7 @@
 <a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="n">email_to_share_to</span> <span class="o">=</span> <span class="s2">&quot;jack.fuller@valsys.io&quot;</span>
 <a id="__codelineno-3-12" name="__codelineno-3-12"></a>
 <a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="c1"># Define the permissions for the user</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="n">permission</span> <span class="o">=</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="n">permission</span> <span class="o">=</span> <span class="n">PermissionTypes</span><span class="o">.</span><span class="n">VIEW</span>
 <a id="__codelineno-3-15" name="__codelineno-3-15"></a>
 <a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="c1"># Share the model</span>
 <a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="n">share_model</span><span class="p">(</span><span class="n">model_uid</span><span class="p">,</span> <span class="n">email_to_share_to</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">permission</span><span class="p">)</span>
@@ -560,7 +560,7 @@ A model can only be shared with a given user once. Violating this will result in
 <a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kn">from</span> <span class="nn">valsys.modeling.service</span> <span class="kn">import</span> <span class="n">share_model</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3"></a>
 <a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Import the permissions types </span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">Permissions</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="kn">from</span> <span class="nn">valsys.modeling.models</span> <span class="kn">import</span> <span class="n">PermissionTypes</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6"></a>
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="c1"># Define the models uid</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">model_uid</span> <span class="o">=</span> <span class="s2">&quot;0xe50deb&quot;</span>
@@ -568,8 +568,8 @@ A model can only be shared with a given user once. Violating this will result in
 <a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="c1"># Define the list of emails of the users the model is to be shared with;</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="c1"># note that we are allowed to put different permissions per user.</span>
 <a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="n">users</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13"></a>    <span class="p">(</span><span class="s2">&quot;jack.fuller@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">VIEW</span><span class="p">),</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14"></a>    <span class="p">(</span><span class="s2">&quot;simon.bessey@valsys.io&quot;</span><span class="p">,</span> <span class="n">Permissions</span><span class="o">.</span><span class="n">EDIT</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a>    <span class="p">(</span><span class="s2">&quot;jack.fuller@valsys.io&quot;</span><span class="p">,</span> <span class="n">PermissionTypes</span><span class="o">.</span><span class="n">VIEW</span><span class="p">),</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a>    <span class="p">(</span><span class="s2">&quot;simon.bessey@valsys.io&quot;</span><span class="p">,</span> <span class="n">PermissionTypes</span><span class="o">.</span><span class="n">EDIT</span><span class="p">)</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="p">]</span>
 <a id="__codelineno-4-16" name="__codelineno-4-16"></a>
 <a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="c1"># Share the model</span>

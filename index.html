@@ -229,9 +229,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#environment-setup" class="md-nav__link">
+    Environment setup
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#login" class="md-nav__link">
     Login
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    Environment variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -329,9 +349,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#environment-setup" class="md-nav__link">
+    Environment setup
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#login" class="md-nav__link">
     Login
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    Environment variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -351,7 +391,7 @@
 
 <h1 id="getting-started">Getting started</h1>
 <h2 id="create-a-python-virtual-environment">Create a python virtual environment</h2>
-<p>We recommended to install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. This requires you have a system-wide installation of <code>python</code> (below we assume that <code>python</code> corresponds to a <code>&gt;=3.6</code>.). Other environment management systems are available.</p>
+<p>We recommended that you install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. This requires you have a system-wide installation of <code>python</code> (below we assume that <code>python</code> corresponds to a <code>&gt;=3.6</code>.). Other environment management systems are available.</p>
 <p>To create a python virtual environment in the current directory, execute
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python -m venv .venv
 </code></pre></div>
@@ -369,7 +409,9 @@ The activation of the virtual environment is slightly different on windows and m
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">valsysinc</span><span class="o">/</span><span class="n">valsys</span><span class="o">-</span><span class="n">api</span>
 </code></pre></div>
 Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>) will also need to be installed into the environment</p>
-<h2 id="login">Login</h2>
+<h2 id="environment-setup">Environment setup</h2>
+<p>To effectively use the library certain environment variables are required. These can be set in two ways: first via <code>login</code> process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).</p>
+<h3 id="login">Login</h3>
 <p>Once the library has been installed, the first task is to login. From a python script (e.g., in the repl, or a jupyter notebook), execute
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">valsys.admin</span> <span class="kn">import</span> <span class="n">login</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">login</span><span class="p">()</span>
@@ -387,6 +429,16 @@ Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>)
 <p>The login process will attempt to authenticate with these pieces of information.</p>
 <p>Below we provide a screenshot of a jupyter notebook showing the expected screen and output.</p>
 <p><img alt="" src="images/jupyter_login.png" title="Jupyter login" /></p>
+<h3 id="environment-variables">Environment variables</h3>
+<p>iIf the <code>login</code> function does not works for your system, you need to manually configure the following environment variables:</p>
+<ul>
+<li><code>VALSYS_API_BUILD</code>: this is your company identifier (contact valsys support to find this value)</li>
+<li><code>VALSYS_API_SOCKET</code>: the socket address (e.g., <code>wss://dev-api.valsys.io</code>)</li>
+<li><code>VALSYS_API_SERVER</code>: the http server address (e.g., <code>https://dev-api.valsys.io</code>)</li>
+<li><code>VALSYS_API_USER</code>: the username used to log into the valsys system</li>
+<li><code>VALSYS_API_PASSWORD</code>: the password used to log into the valsys system</li>
+</ul>
+<p>Your operating system or IDE will dictate the best method for setting these variables.</p>
 
               
             </article>

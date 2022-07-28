@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from valsys.modeling.service import (
     add_child_module,
@@ -9,9 +9,8 @@ from valsys.modeling.service import (
     pull_case,
     pull_model_information,
 )
-from valsys.seeds.models import OrchestratorConfig
 from valsys.seeds.loader import SeedsLoader
-
+from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.models import (
     MasterPopulateModulesConfig,
     PopulateModulesConfig,

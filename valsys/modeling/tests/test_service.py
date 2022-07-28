@@ -3,9 +3,15 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.service import (SPAWN_MODELS_ACTION, add_line_item,
-                                     pull_case, pull_model_information,
-                                     spawn_model, SpawnedModelInfo)
+from valsys.modeling.service import (
+    SPAWN_MODELS_ACTION,
+    SpawnedModelInfo,
+    add_line_item,
+    pull_case,
+    pull_model_information,
+    spawn_model,
+)
+
 
 MODULE_PREFIX = "valsys.modeling.service"
 

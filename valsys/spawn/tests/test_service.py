@@ -6,6 +6,7 @@ import pytest
 
 from valsys.spawn.service import ValsysSpawn, spawn_models
 
+
 MODULE_PREFIX = "valsys.spawn.service"
 
 

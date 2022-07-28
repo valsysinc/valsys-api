@@ -1,7 +1,9 @@
 from unittest import mock
 
-from valsys.admin.service import gen_login_url, try_login, gen_fields
 import pytest
+
+from valsys.admin.service import gen_fields, gen_login_url, try_login
+
 
 MODULE_PREFIX = "valsys.admin.service"
 

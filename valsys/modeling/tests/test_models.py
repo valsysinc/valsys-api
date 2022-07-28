@@ -1,5 +1,6 @@
-from valsys.modeling.models import Permissions, PermissionTypes
 import pytest
+
+from valsys.modeling.models import PermissionTypes, Permissions
 
 
 class TestPermissions:

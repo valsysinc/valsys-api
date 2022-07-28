@@ -6,7 +6,6 @@ import websocket
 
 from valsys.utils import logger
 
-
 TRACE_DEFAULT = False
 
 
@@ -47,7 +46,8 @@ class SocketHandler:
                  url: str,
                  config: Dict[str, str],
                  auth_token: str,
-                 trace: bool = TRACE_DEFAULT) -> None:
+                 trace: bool = TRACE_DEFAULT,
+                 after_token=None) -> None:
 
         self.config = config
         self.error = None
@@ -60,15 +60,17 @@ class SocketHandler:
         self.url = url
         logger.debug(f"connecting to socket {self.url}")
         socketpath = f"{self.url}" + auth_token
+        if after_token is not None:
+            socketpath += '/' + after_token
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
-            on_open=self.create_model,
+            on_open=self.send_data,
             on_message=self.msg_handler,
             on_close=self.on_close,
             on_error=self.on_error,
         )
 
-    def create_model(self, ws: websocket.WebSocketApp):
+    def send_data(self, ws: websocket.WebSocketApp):
         ws.send(json.dumps(self.config))
 
     def on_error(self, ws: websocket.WebSocketApp, err: Exception):

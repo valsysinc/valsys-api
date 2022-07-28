@@ -19,7 +19,6 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
-
 CODE_POST_SUCCESS = 200
 SPAWN_MODELS_ACTION = "SPAWN_MODELS"
 
@@ -104,6 +103,16 @@ def share_model(model_id: str,
         raise ShareModelException(f"failed to share models {str(err)}")
 
 
+def dynamic_updates():
+    client = new_socket_client()
+
+    resp = client.get(url=VSURL.SCK_ORCHESTRATOR,
+                      headers={
+                          "action": "DYNAMIC_UPDATES",
+                      })
+    return resp
+
+
 def pull_model_information(model_id: str) -> ModelInformation:
     """Pulls the model information for the `model_id`.
     
@@ -123,6 +132,11 @@ def pull_model_information(model_id: str) -> ModelInformation:
     cases = resp["data"]["model"]
 
     return ModelInformation.from_json(model_id, cases)
+
+
+def pull_model_datasources(model_id) -> str:
+    """Pull the model data source string for the `model_id`."""
+    return pull_model_information(model_id).data_sources
 
 
 def pull_case(case_id: str) -> Case:
@@ -157,14 +171,14 @@ def append_tags(uid: str, tags: List[str]):
 
 def recalculate_model(model_id: str):
     """Recalculates the model"""
-    client = new_client()
+    client = new_socket_client()
 
-    resp = client.get(
-        url=VSURL.RECALC_MODEL,
-        headers={
-            Headers.UID: model_id,
-        },
-    )
+    resp = client.get(url=VSURL.RECALC_MODEL,
+                      headers={
+                          "action": "RECALCULATE_MODEL",
+                          "uid": model_id
+                      },
+                      after_token=model_id)
     return resp
 
 
@@ -213,6 +227,9 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
         if module["name"] == name:
             return Module.from_json(module)
     raise ValueError(f"Error adding child module")
+
+
+#def edit_data(model_id)
 
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,

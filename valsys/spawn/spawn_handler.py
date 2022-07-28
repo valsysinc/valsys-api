@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from random import seed
 from typing import List
 
 from valsys.auth.service import authenticate
@@ -66,7 +67,10 @@ class SpawnHandler:
     def orchestrate_model_spawns(cls,
                                  seeds: OrchestratorConfig,
                                  options=None) -> List[SpawnProgress]:
-        """Build and spawn models from the provided model configurations."""
+        """Build and spawn models from the provided model configurations.
+        
+        This will put on the username and password.
+        """
         seeds.username, seeds.password = API_USERNAME, API_PASSWORD
         nmodels = seeds.count_tickers
         t1 = datetime.now()
@@ -80,6 +84,7 @@ class SpawnHandler:
 
         progress = []
         tags, emails = seeds.tags, seeds.emails
+        permission = seeds.permission
         for model in models:
             auth_token = authenticate(username=user, password=password)
             handler = SpawnHandler(auth_token)
@@ -87,6 +92,6 @@ class SpawnHandler:
             handler.progress.mark_spawned(model_id=model.model_id)
             handler.progress.ticker = model.ticker
             handler.tag(tags=tags)
-            handler.share(emails=emails)
+            handler.share(emails=emails, permission=permission)
             progress.append(handler.progress)
         return progress

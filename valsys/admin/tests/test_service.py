@@ -4,7 +4,6 @@ import pytest
 
 from valsys.admin.service import gen_fields, gen_login_url, try_login
 
-
 MODULE_PREFIX = "valsys.admin.service"
 
 
@@ -16,7 +15,7 @@ class TestTryLogin:
         user = 'user'
         password = 'pw'
         mock_authenticate2.return_value = True
-        assert try_login(base, user, password) is True
+        assert try_login(base, user, password) is None
         mock_authenticate2.assert_called_once_with(user,
                                                    password,
                                                    url=gen_login_url(base))
@@ -28,7 +27,8 @@ class TestTryLogin:
         password = 'pw'
         mock_authenticate2.side_effect = Exception
 
-        assert try_login(base, user, password) is False
+        with pytest.raises(Exception):
+            try_login(base, user, password)
 
 
 class TestGenFields:

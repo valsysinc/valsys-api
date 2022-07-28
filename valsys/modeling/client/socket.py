@@ -11,11 +11,12 @@ class ModelingServiceSocketClient:
     auth_token: str = ""
     error: Any = None
 
-    def run(self, url: str, data: Dict[str, str] = None):
+    def run(self, url: str, data: Dict[str, str] = None, after_token=None):
         handler = SocketHandler(url=url,
                                 config=data,
                                 auth_token=self.auth_token,
-                                trace=False)
+                                trace=False,
+                                after_token=after_token)
 
         handler.run()
 
@@ -29,8 +30,8 @@ class ModelingServiceSocketClient:
                 return handler.resp
             break
 
-    def get(self, url: str, data: Dict[str, str] = None):
-        return self.run(url, data)
+    def get(self, url: str, data: Dict[str, str] = None, after_token=None):
+        return self.run(url, data, after_token=after_token)
 
-    def post(self, url: str, data: Dict[str, str] = None):
-        return self.run(url, data)
+    def post(self, url: str, data: Dict[str, str] = None, after_token=None):
+        return self.run(url, data, after_token=after_token)

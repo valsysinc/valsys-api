@@ -1,18 +1,42 @@
-# Command line interface
+# Model spawning
+
+
+This is a pre-defined set of actions which will be executed given the provided configuration data. The workflow is as follows:
+
+1)  **Spawn a set of models based on a collection of tickers.** Collection of lists of tickers, each of which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails of users with whom the models are shared).
+
+
+2) **Populate the spawned models with additional modules.** Each model can be populated with different modules (based on a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.
+
+The workflow requires a configuration; the structure of the configuration is explained below.
+
+The spawn process can be started in two ways: via the command line, or via a python function call.
+
+### Run via code
+If you have a config file on disk use the `run_spawn_models_from_file` function, and pass the full path to file as an argument
+```python
+from valsys.workflows.service import run_spawn_models_from_file
+run_spawn_models_from_file('config_file.json')
+```
+
+Alternatively, if you have the configuration in memory as a dict, then use the `run_spawn_models` function (passing the config dict as an argument):
+```python
+from valsys.workflows.service import run_spawn_models
+
+config = {"spawnModelsConfig":[...],"populateModulesConfig":[...]}
+
+run_spawn_models(config)
+```
+
+### Run via command line
 The valsys library can be used from source via a command line interface (CLI).
 
 This works by providing (via command line arguments) the path to a configuration file to the `main.py` python entry point:
 ```
 python main.py --spawn assets/example_input.json
 ```
-The above is an example input configuration file which should be inspected to understand whats required. See below.
-
-This is a pre-defined set of actions which will be executed given the provided configuration data. The workflow is as follows:
-
-1)  **Spawn a set of models based off a collection of tickers.** Collection of lists of tickers, each of which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails of users with whom the models are shared).
 
 
-2) **Populate the spawned models with modules.** Each model can be populated with different modules (based off a parent module), each with given line items, each of which can be formatted. Each fact (indexed by period) can have its formula provided.
 
 ## Example input configuration
 This provides a valid example of a configuration file which can be passed to the spawner CLI.

@@ -13,6 +13,10 @@ class InvalidCredentialsException(Exception):
     pass
 
 
+class InvalidURLException(Exception):
+    pass
+
+
 def gen_login_url(base: str) -> str:
     return f"{base}/users/login"
 
@@ -20,9 +24,10 @@ def gen_login_url(base: str) -> str:
 def try_login(base: str, user: str, password: str) -> bool:
     try:
         authenticate2(user, password, url=gen_login_url(base))
-        return True
-    except Exception:
-        return False
+    except NotImplementedError:
+        raise
+    except ValueError:
+        raise
 
 
 def backup_existing_file(fn):
@@ -77,12 +82,18 @@ def create_env_file(username: str,
 
     fields = gen_fields(protocol, host)
     creds = gen_creds(username, password)
-    if verify and not try_login(base=fields.get('VALSYS_API_SERVER'),
-                                user=creds.get('VALSYS_API_USER'),
-                                password=creds.get('VALSYS_API_PASSWORD')):
-        raise InvalidCredentialsException(
-            f"cannot login on {fields.get('VALSYS_API_SERVER')}: invalid credentials for user {username}"
-        )
+    base = fields.get('VALSYS_API_SERVER')
+    if verify:
+        try:
+            try_login(base=base,
+                      user=creds.get('VALSYS_API_USER'),
+                      password=creds.get('VALSYS_API_PASSWORD'))
+        except NotImplementedError:
+            raise InvalidURLException(f"cannot connect to url={base}")
+        except Exception:
+            raise InvalidCredentialsException(
+                f"cannot login on {base}: invalid credentials for user {username}"
+            )
 
     ensure_dir(ENV_ROOT)
     write_env(fields, envfiles.config)

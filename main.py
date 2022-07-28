@@ -17,9 +17,9 @@ def main(args):
     elif mode == '--spawn':
         from valsys.utils import logger
         logger.info(f"start")
-        from valsys.workflows.service import main_run_spawn_models_from_file
+        from valsys.workflows.service import run_spawn_models_from_file
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-        res = main_run_spawn_models_from_file(config_filename=args[1])
+        res = run_spawn_models_from_file(config_filename=args[1])
         if res.has_errors:
             logger.info(f'done with errors')
         else:

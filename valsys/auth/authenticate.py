@@ -13,13 +13,15 @@ def authenticate2(username: str, password: str, url) -> str:
 
     Returns an authentication token."""
     # make the request
-
-    response = requests.get(url=url,
-                            headers={
-                                "username": username,
-                                "password": password
-                            },
-                            data=None)
+    try:
+        response = requests.get(url=url,
+                                headers={
+                                    "username": username,
+                                    "password": password
+                                },
+                                data=None)
+    except requests.exceptions.ConnectionError:
+        raise NotImplementedError(f"cannot connect to url {url}")
     if response.status_code != HTTPStatus.OK:
         raise ValueError(
             f"cannot send auth request; code={response.status_code}")

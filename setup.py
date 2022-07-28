@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 setup(
     name='valsys',
     packages=find_packages(),
-    version="0.2.0",
+    version="0.3.0",
     license='MIT',
     description='Valsys python library',
     author='Jonathan Pearson',

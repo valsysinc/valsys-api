@@ -25,6 +25,11 @@ class ModelInformation:
     uid: str
     tags: List[str] = field(default_factory=list)
     cases: List[CaseInformation] = field(default_factory=list)
+    data_sources: str = ''
+
+    @property
+    def case_id(self):
+        return self.first.uid
 
     @property
     def first(self):
@@ -34,10 +39,11 @@ class ModelInformation:
 
     @classmethod
     def from_json(cls, uid, input_json):
+
         tags = input_json.get('modelTags', '').split(',')
-        return cls(
-            uid=uid,
-            tags=[t for t in tags if t],
-            cases=list(map(CaseInformation.from_json,
+        return cls(uid=uid,
+                   tags=[t for t in tags if t],
+                   cases=list(
+                       map(CaseInformation.from_json,
                            input_json.get("cases"))),
-        )
+                   data_sources=input_json.get('dataSources', ''))

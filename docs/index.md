@@ -51,11 +51,11 @@ Below we provide a screenshot of a jupyter notebook showing the expected screen 
 ![](images/jupyter_login.png "Jupyter login")
 
 ### Environment variables
-iIf the `login` function does not works for your system, you need to manually configure the following environment variables:
+If the `login` function does not works for your system, you will need to manually configure the following environment variables:
 
 * `VALSYS_API_BUILD`: this is your company identifier (contact valsys support to find this value)
 * `VALSYS_API_SOCKET`: the socket address (e.g., `wss://dev-api.valsys.io`)
-* `VALSYS_API_SERVER`: the http server address (e.g., `https://dev-api.valsys.io`)
+* `VALSYS_API_SERVER`: the http(s) server address (e.g., `https://dev-api.valsys.io`)
 * `VALSYS_API_USER`: the username used to log into the valsys system
 * `VALSYS_API_PASSWORD`: the password used to log into the valsys system
 

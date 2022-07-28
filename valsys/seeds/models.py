@@ -2,7 +2,6 @@ import datetime
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -37,9 +36,17 @@ class OrchestratorModelConfig:
     industry: str = ''
     geography: str = ''
     currency: str = 'USD'
+    start_date: str = ''
     start_period: int = 0
     title: str = ''
     template_id: str = ''
+    source: str = ''
+    period_type: str = 'ANNUAL'
+    valuation_type: str = 'Perpetual Growth'
+    company_type: str = "Public"
+    target_variable: str = 'Implied share price'
+    cash_flow_type: str = 'FCFF'
+    type: str = "DEFAULT"
 
     def update(self, company_info: CompanyConfig):
         self.company_name = company_info.company_name
@@ -51,13 +58,27 @@ class OrchestratorModelConfig:
         return {
             "title": self.title,
             "ticker": self.ticker,
+            "templateID": self.template_id,
             "companyName": self.company_name,
             "industry": self.industry,
             "geography": self.geography,
             "currency": self.currency,
             "startPeriod": self.start_period,
-            "templateID": self.template_id,
+            "startDate": self.start_date,
+            "type": self.type,
+            "periodType": self.period_type,
+            "cashFlowType": self.cash_flow_type,
+            "valuationType": self.valuation_type,
+            "companyType": self.company_type,
+            "targetVariable": self.target_variable,
+            "variables": {
+                "INTERNAL_SOURCE": self.source
+            },
         }
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(ticker=j.get('ticker'), source=j.get('source', ''))
 
 
 @dataclass
@@ -77,6 +98,53 @@ class OrchestratorConfig:
 
     tags: List[str] = field(default_factory=list)
     emails: List[str] = field(default_factory=list)
+    permission: str = 'view'
+
+    def add_model_config(
+        self,
+        company_name,
+        ticker,
+        template_id,
+        industry,
+        start_period,
+        source,
+        start_date=None,
+        type="DEFAULT",
+        period_type="ANNUAL",
+        cash_flow_type="FCFF",
+        valuation_type="Perpetual Growth",
+        company_type="Public",
+        target_variable="Implied share price",
+    ):
+        """Add a model config;
+        provide all the required model data.
+        
+        If `start_date` is left out, it is defaulted to the current date-time stamp.
+        """
+        self.model_configs.append(
+            OrchestratorModelConfig(
+                company_name=company_name,
+                ticker=ticker,
+                template_id=template_id,
+                industry=industry,
+                start_period=start_period,
+                start_date=start_date
+                or datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                type=type,
+                period_type=period_type,
+                cash_flow_type=cash_flow_type,
+                valuation_type=valuation_type,
+                company_type=company_type,
+                target_variable=target_variable,
+                source=source))
+
+    def add_tag(self, tag: str):
+        """Append a tag."""
+        self.tags.append(tag)
+
+    def set_share_permission(self, emails: List[str], permission: str):
+        self.permission = permission
+        self.emails = emails
 
     @property
     def tickers(self):
@@ -110,5 +178,6 @@ class OrchestratorConfig:
                        datetime.datetime.now().strftime(DATETIME_FORMAT)),
                    emails=ij.get('emails', []),
                    model_configs=[
-                       OrchestratorModelConfig(t) for t in ij.get('tickers')
+                       OrchestratorModelConfig.from_json(t)
+                       for t in ij.get('tickers')
                    ])

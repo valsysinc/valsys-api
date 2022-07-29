@@ -104,10 +104,11 @@ def share_model(model_id: str,
 
 
 def dynamic_updates():
+    """Requests dynamic updates are executed."""
     client = new_socket_client()
 
     resp = client.get(url=VSURL.SCK_ORCHESTRATOR,
-                      headers={
+                      data={
                           "action": "DYNAMIC_UPDATES",
                       })
     return resp
@@ -170,11 +171,15 @@ def append_tags(uid: str, tags: List[str]):
 
 
 def recalculate_model(model_id: str):
-    """Recalculates the model"""
+    """Recalculates the model.
+    
+    Args:
+        model_id: The ID of the model to be recalculated.
+    """
     client = new_socket_client()
 
     resp = client.get(url=VSURL.RECALC_MODEL,
-                      headers={
+                      data={
                           "action": "RECALCULATE_MODEL",
                           "uid": model_id
                       },

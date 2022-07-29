@@ -271,8 +271,8 @@
   
   
     <li class="md-nav__item">
-      <a href="cli/" class="md-nav__link">
-        Command line interface
+      <a href="exposedFunctions/" class="md-nav__link">
+        Exposed modeling functions
       </a>
     </li>
   
@@ -286,8 +286,8 @@
   
   
     <li class="md-nav__item">
-      <a href="exposedFunctions/" class="md-nav__link">
-        Exposed modeling functions
+      <a href="modelSpawn/" class="md-nav__link">
+        Model spawning
       </a>
     </li>
   
@@ -391,16 +391,16 @@
 
 <h1 id="getting-started">Getting started</h1>
 <h2 id="create-a-python-virtual-environment">Create a python virtual environment</h2>
-<p>We recommended that you install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. This requires you have a system-wide installation of <code>python</code> (below we assume that <code>python</code> corresponds to a <code>&gt;=3.6</code>.). Other environment management systems are available.</p>
+<p>We recommended that you install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. This requires you to have a system-wide installation of <code>python</code> (below we assume that your version of <code>python</code> is version <code>3.6</code> or later.). Other environment management systems are available.</p>
 <p>To create a python virtual environment in the current directory, execute
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python -m venv .venv
 </code></pre></div>
 The activation of the virtual environment is slightly different on windows and mac:</p>
 <ul>
-<li>If on windows,
+<li>If on windows, use
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>.venv\Scripts\activate.ps1
 </code></pre></div></li>
-<li>If on linux/mac
+<li>If on linux/mac, use
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>source .venv/bin/activate
 </code></pre></div></li>
 </ul>
@@ -422,7 +422,7 @@ Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>)
 <p>Either way, you will be prompted to enter the following information:</p>
 <ul>
 <li><strong>Valsys host</strong>: the base part of the valsys url (if unsure, contact valsys support)</li>
-<li><strong>Valsys protocol</strong>: whether using <code>http</code> or <code>https</code>.</li>
+<li><strong>Valsys protocol</strong>: whether using <code>http</code> or <code>https</code>. </li>
 <li><strong>Valsys username</strong>: this is the username used to login to the valsys system </li>
 <li><strong>Valsys password</strong>: this is the password used to login to the valsys system</li>
 </ul>
@@ -430,11 +430,11 @@ Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>)
 <p>Below we provide a screenshot of a jupyter notebook showing the expected screen and output.</p>
 <p><img alt="" src="images/jupyter_login.png" title="Jupyter login" /></p>
 <h3 id="environment-variables">Environment variables</h3>
-<p>iIf the <code>login</code> function does not works for your system, you need to manually configure the following environment variables:</p>
+<p>If the <code>login</code> function does not works for your system, you will need to manually configure the following environment variables:</p>
 <ul>
 <li><code>VALSYS_API_BUILD</code>: this is your company identifier (contact valsys support to find this value)</li>
 <li><code>VALSYS_API_SOCKET</code>: the socket address (e.g., <code>wss://dev-api.valsys.io</code>)</li>
-<li><code>VALSYS_API_SERVER</code>: the http server address (e.g., <code>https://dev-api.valsys.io</code>)</li>
+<li><code>VALSYS_API_SERVER</code>: the http(s) server address (e.g., <code>https://dev-api.valsys.io</code>)</li>
 <li><code>VALSYS_API_USER</code>: the username used to log into the valsys system</li>
 <li><code>VALSYS_API_PASSWORD</code>: the password used to log into the valsys system</li>
 </ul>
@@ -455,13 +455,13 @@ Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>)
       
       
         
-        <a href="cli/" class="md-footer__link md-footer__link--next" aria-label="Next: Command line interface" rel="next">
+        <a href="exposedFunctions/" class="md-footer__link md-footer__link--next" aria-label="Next: Exposed modeling functions" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Command line interface
+              Exposed modeling functions
             </div>
           </div>
           <div class="md-footer__button md-icon">

@@ -91,6 +91,10 @@ def spawn_from_config(seed_config: Dict[str, Any]):
     return spawn_models([model_seed_config])
 
 
+def orchestrate_model_spawns(orchestrator_configuration: OrchestratorConfig):
+    return SpawnHandler.orchestrate_model_spawns(orchestrator_configuration)
+
+
 def populate_models_with_modules(
         modules_config: MasterPopulateModulesConfig,
         spawner_report: SpawnedModels) -> SpawnedModels:

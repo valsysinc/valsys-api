@@ -18,9 +18,9 @@ class VSURL:
     EDIT_FORMULA = f"{BASE_URL}/modeling/edit-formula"
     USERS_SHARE_MODEL = f"{BASE_URL}/users/share-model"
     USERS_MODELS = f"{BASE_URL}/users/models"
+    RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
-    RECALC_MODEL = f"{BASE_SCK}/modeling/edit-data/"
     SCK_ORCHESTRATOR = f"{BASE_SCK}:5800/orchestrator/connect/"
 
     @classmethod

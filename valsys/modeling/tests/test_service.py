@@ -12,6 +12,7 @@ from valsys.modeling.service import (
     spawn_model,
 )
 
+from valsys.modeling.exceptions import AddLineItemException
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -129,6 +130,6 @@ class TestAddLineItem:
         fake_line_item = FakeLineItem(name='garbage')
         mock_module.line_items = [fake_line_item]
         mock_from_json.return_value = mock_module
-        with pytest.raises(ValueError) as err:
+        with pytest.raises(AddLineItemException) as err:
             add_line_item(case_id, model_id, module_id, name, order)
         assert name in str(err)

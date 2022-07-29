@@ -1,16 +1,11 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from random import seed
 from typing import List
 
 from valsys.auth.service import authenticate
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.exceptions import ShareModelException, TagModelException
-from valsys.modeling.service import (
-    share_model,
-    spawn_model,
-    tag_model,
-)
+from valsys.modeling.service import share_model, spawn_model, tag_model
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.models import SpawnProgress
 from valsys.utils import logger

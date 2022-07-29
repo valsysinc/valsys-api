@@ -28,6 +28,11 @@ class ModelInformation:
     cases: List[CaseInformation] = field(default_factory=list)
     data_sources: str = ''
 
+    class fields:
+        TAGS = 'modelTags'
+        CASES = 'cases'
+        DATA_SOURCES = 'dataSources'
+
     @property
     def case_id(self):
         return self.first.uid
@@ -41,10 +46,10 @@ class ModelInformation:
     @classmethod
     def from_json(cls, uid, input_json):
 
-        tags = input_json.get('modelTags', '').split(',')
+        tags = input_json.get(cls.fields.TAGS, '').split(',')
         return cls(uid=uid,
                    tags=[t for t in tags if t],
                    cases=list(
                        map(CaseInformation.from_json,
-                           input_json.get("cases", []))),
-                   data_sources=input_json.get('dataSources', ''))
+                           input_json.get(cls.fields.CASES, []))),
+                   data_sources=input_json.get(cls.fields.DATA_SOURCES, ''))

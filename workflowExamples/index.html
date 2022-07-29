@@ -451,7 +451,11 @@
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
 <span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># Import the spawn_model function from the spawn service</span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># Import the spawn_model function from the spawn service</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">valsys.spawn.service</span> <span class="kn">import</span> <span class="n">spawn_from_config</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4"></a>
@@ -460,13 +464,17 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7"></a>    <span class="s1">&#39;templateName&#39;</span><span class="p">:</span> <span class="s1">&#39;dcf-standard&#39;</span><span class="p">,</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a>    <span class="s1">&#39;numForecastYears&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a>    <span class="s1">&#39;numHistoricalYears&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="s1">&#39;tickers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SBUX&#39;</span><span class="p">,</span> <span class="s1">&#39;BYND&#39;</span><span class="p">]</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="p">}</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="n">spawned_models</span> <span class="o">=</span> <span class="n">spawn_from_config</span><span class="p">(</span><span class="n">seed_config</span><span class="p">)</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="c1"># Extract a list of modelID/tickers from the spawned model data</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;modelID&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">ticker</span><span class="p">}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">spawned_models</span><span class="p">]</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="s1">&#39;tickers&#39;</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="s1">&#39;SBUX&#39;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>    <span class="p">},</span> <span class="p">{</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>        <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="s1">&#39;BYND&#39;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="p">}]</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="p">}</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="n">spawned_models</span> <span class="o">=</span> <span class="n">spawn_from_config</span><span class="p">(</span><span class="n">seed_config</span><span class="p">)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="c1"># Extract a list of modelID/tickers from the spawned model data</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;modelID&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="s1">&#39;ticker&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">ticker</span><span class="p">}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">spawned_models</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
 <p>If the <code>templateName</code> is incorrectly entered (e.g., typo, or something that doesnt exist), a <code>TemplateNotFoundException</code> is thrown explaining 
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>TemplateNotFoundException: template not found for template_name: dcf-standard2

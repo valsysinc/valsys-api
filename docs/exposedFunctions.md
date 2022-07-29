@@ -69,7 +69,8 @@ pull_case(case_id: str)
 ```python linenums="1"
 recalculate_model(model_id: str)
 ```
-Recalculates the model
+:::valsys.modeling.service.recalculate_model
+
 
 ## Add a child module
 ```python linenums="1"
@@ -84,3 +85,15 @@ add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int)                      
 ```
 :::valsys.modeling.service.add_line_item
+
+## Dynamic updates
+```python linenums="1"
+dynamic_updates()                      
+```
+:::valsys.modeling.service.dynamic_updates
+
+## Edit formula
+```python linenums="1"
+edit_formula(case_id: str, model_id: str, facts: List[Fact])                      
+```
+:::valsys.modeling.service.edit_formula

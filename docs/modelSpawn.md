@@ -1,6 +1,8 @@
 # Model spawning
 
+Models can be spawned on the valsys system in a variety of ways. This page explains a few of the common usecases.
 
+## Using the workflow
 This is a pre-defined set of actions which will be executed given the provided configuration data. The workflow is as follows:
 
 1)  **Spawn a set of models based on a collection of tickers.** Collection of lists of tickers, each of which will all have the same `templateName`, `histPeriod`, `projPeriod`, `tags`, and `emails` (the `emails` are the list of emails of users with whom the models are shared).
@@ -27,6 +29,8 @@ config = {"spawnModelsConfig":[...],"populateModulesConfig":[...]}
 
 run_spawn_models(config)
 ```
+
+
 
 ### Run via command line
 The valsys library can be used from source via a command line interface (CLI).
@@ -204,3 +208,72 @@ The fields which can be configured are:
 * `moduleName` The name of the new module
 * `keyMetricsConfig` Information regarding  formatting of certain key line items which may (or may not) exist in the module; Any line item whose name appears in the `metrics` list will be formatted according to `format`.
 * `lineItems` A list of line items which will be added to the module. A line item is specified by its `name`, `order` inside the module, and a list of `formulaEdits`: these are a list of data used to identify which formulae to change/add.
+
+## Manual configuration
+
+Finally, it is possible to construct custom configuration objects.
+
+It may be the case that some other routine provides a list of model seeds; the key thing is that it contains data which can be interpreted in the following way
+```python
+# Example model seed data structure
+from dataclasses import dataclass
+@dataclass
+class SampleModelSeed:
+    companyName: str
+    ticker: str
+    template_id: str
+    IndustryGroup: str
+    fiscalYear: str
+    source: str
+```
+Using this data structure we then assemble a list of `SampleModelSeed`s
+```python
+model_seeds = [
+    SampleModelSeed(companyName='STARBUCKS CORP',
+                    ticker='SBUX',
+                    IndustryGroup='RETAIL-EATING & DRINKING PLACES',
+                    template_id='d87b8446-38a1-4fd4-ad71-a40c3ef77b0f',
+                    fiscalYear=2019,
+                    source='SBUX_US|JP')
+]
+
+```
+We are now in a position to create the full `OrchestratorConfig` object; we must also provide the number of historical and forecast years:
+```python
+import datetime
+from valsys.seeds.models import OrchestratorConfig
+
+# Create an orchestrator config object
+orchestrator_configuration = OrchestratorConfig(
+    num_forecast_years=11,
+    num_historical_years=5,
+    start_date=datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+    period_type='ANNUAL')
+
+# Add the model seeds to the orchestrator config
+for row in model_seeds:
+    orchestrator_configuration.add_model_config(
+        company_name=row.companyName,
+        ticker=row.ticker,
+        template_id=row.template_id,
+        industry=row.IndustryGroup,
+        start_period=row.fiscalYear,
+        source=row.source,
+    )
+```
+Now that the configuration object has been fully constructed, it can be passed to a function to spawn the models, from which the spawned modelIDs can be extracted
+```python
+from valsys.spawn.service import orchestrate_model_spawns
+
+# Pass the orchestrator config to be spawned
+model_spawns = orchestrate_model_spawns(orchestrator_configuration)
+
+# Collect together a list of modelIDs that successfully spawned
+model_ids = []
+for m in model_spawns:
+    if m.spawned:
+        model_ids.append(m.model_id)
+```
+
+Below is a complete list of configurable options for the `add_model_config` method.
+:::valsys.seeds.models.OrchestratorConfig.add_model_config

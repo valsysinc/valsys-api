@@ -6,6 +6,7 @@ import websocket
 
 from valsys.utils import logger
 
+
 TRACE_DEFAULT = False
 
 

@@ -25,7 +25,7 @@ class ModelingServiceSocketClient:
                 continue
             if handler.error is not None:
                 self.error = handler.error
-                raise ModelingServiceGetException(f"{handler.error}")
+                raise Exception(f"{handler.error}")
             elif handler.resp is not None:
                 return handler.resp
             break

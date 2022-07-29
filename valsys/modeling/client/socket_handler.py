@@ -6,7 +6,6 @@ import websocket
 
 from valsys.utils import logger
 
-
 TRACE_DEFAULT = False
 
 
@@ -58,9 +57,12 @@ class SocketHandler:
         self.state = States.IN_PROGRESS
         # enable trace in dev for debugging
         websocket.enableTrace(trace)
+        if not url.endswith('/'):
+            url = f"{url}/"
         self.url = url
         logger.debug(f"connecting to socket {self.url}")
-        socketpath = f"{self.url}" + auth_token
+
+        socketpath = f"{self.url}{auth_token}"
         if after_token is not None:
             socketpath += '/' + after_token
         self.wsapp = websocket.WebSocketApp(

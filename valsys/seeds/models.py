@@ -2,7 +2,6 @@ import datetime
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -50,6 +49,13 @@ class OrchestratorModelConfig:
     type: str = "DEFAULT"
 
     def update(self, company_info: CompanyConfig):
+        """Update the config with some given `CompanyConfig` data. This will update:
+        
+        * `company_name`
+        * `industry`
+        * `geography`
+        * `start_period`
+        """
         self.company_name = company_info.company_name
         self.industry = company_info.industry
         self.geography = company_info.geography
@@ -161,11 +167,13 @@ class OrchestratorConfig:
         self.emails = emails
 
     @property
-    def tickers(self):
+    def tickers(self) -> List[str]:
+        """Rerturn a list of tickers in the config"""
         return [mc.ticker for mc in self.model_configs]
 
     @property
     def count_tickers(self):
+        """Return a count of tickers in the config"""
         return len(self.model_configs)
 
     def jsonify(self):
@@ -181,7 +189,7 @@ class OrchestratorConfig:
         }
 
     @classmethod
-    def from_json(cls, ij):
+    def from_json(cls, ij: Dict[str, Any]):
         return cls(template_name=ij.get('templateName'),
                    num_forecast_years=ij.get('numForecastYears'),
                    num_historical_years=ij.get('numHistoricalYears'),

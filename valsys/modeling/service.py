@@ -207,10 +207,10 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     """Add a new module to the parent module.
 
     Args:
-        parent_module_id: the moduleID of the parent
-        name: the name of the new module
-        model_id: the ID of the model into which the module is to be inserted
-        case_id: the caseID of the module.
+        parent_module_id: The moduleID of the parent
+        name: The name of the new module
+        model_id: The ID of the model into which the module is to be inserted
+        case_id: The caseID of the module.
 
     Returns:
         The newly constructed `Module` object.
@@ -234,19 +234,16 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     raise ValueError(f"Error adding child module")
 
 
-#def edit_data(model_id)
-
-
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int) -> LineItem:
     """Add a line item to an existing module.
     
     Args:
-        case_id: caseID of the model
-        model_id: modelID
-        module_id: ID of the module for the new line item
-        name: name of the line item
-        order: order of the line item in the module
+        case_id: The caseID of the model
+        model_id: The modelID
+        module_id: The ID of the module for the new line item
+        name: Name of the line item
+        order: Order of the line item in the module
 
     Returns:
         The newly created `LineItem` object.
@@ -298,7 +295,13 @@ def edit_format(case_id: str, model_id: str, facts: List[Fact]):
 
 
 def edit_formula(case_id: str, model_id: str, facts: List[Fact]):
-    """Edit the formula on the supplied facts."""
+    """Edit the formula on the supplied facts.
+    
+    Args:
+        case_id: The caseID for where the facts live.
+        model_id: The modelID for where the facts live.
+        facts: The list of facts whose formulae are to be edited.
+    """
     return edit_facts(url=VSURL.EDIT_FORMULA,
                       case_id=case_id,
                       model_id=model_id,

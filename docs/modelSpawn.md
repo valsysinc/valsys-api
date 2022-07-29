@@ -214,7 +214,7 @@ The fields which can be configured are:
 Finally, it is possible to construct custom configuration objects.
 
 It may be the case that some other routine provides a list of model seeds; the key thing is that it contains data which can be interpreted in the following way
-```python
+```python linenums="1"
 # Example model seed data structure
 from dataclasses import dataclass
 @dataclass
@@ -227,7 +227,7 @@ class SampleModelSeed:
     source: str
 ```
 Using this data structure we then assemble a list of `SampleModelSeed`s
-```python
+```python linenums="1"
 model_seeds = [
     SampleModelSeed(companyName='STARBUCKS CORP',
                     ticker='SBUX',
@@ -239,7 +239,7 @@ model_seeds = [
 
 ```
 We are now in a position to create the full `OrchestratorConfig` object; we must also provide the number of historical and forecast years:
-```python
+```python linenums="1"
 import datetime
 from valsys.seeds.models import OrchestratorConfig
 
@@ -262,7 +262,7 @@ for row in model_seeds:
     )
 ```
 Now that the configuration object has been fully constructed, it can be passed to a function to spawn the models, from which the spawned modelIDs can be extracted
-```python
+```python linenums="1"
 from valsys.spawn.service import orchestrate_model_spawns
 
 # Pass the orchestrator config to be spawned

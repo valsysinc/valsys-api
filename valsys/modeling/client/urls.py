@@ -21,7 +21,7 @@ class VSURL:
     RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
-    SCK_ORCHESTRATOR = f"{BASE_SCK}:5800/orchestrator/connect/"
+    SCK_ORCHESTRATOR = f"{BASE_SCK}/orchestrator/connect/"
 
     @classmethod
     def login(cls, base):

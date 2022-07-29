@@ -7,6 +7,7 @@ from valsys.modeling.client.socket_handler import (
     Status,
 )
 
+
 MODULE_PREFIX = "valsys.modeling.client.socket_handler"
 
 

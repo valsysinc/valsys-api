@@ -71,6 +71,13 @@ recalculate_model(model_id: str)
 ```
 :::valsys.modeling.service.recalculate_model
 
+## Remove a module
+```python linenums="1"
+remove_module(model_id: str, case_id: str, module_id: str,
+                  parent_module_id: str)
+```
+:::valsys.modeling.service.remove_module
+
 
 ## Add a child module
 ```python linenums="1"

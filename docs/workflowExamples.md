@@ -18,7 +18,11 @@ seed_config = {
     'templateName': 'dcf-standard',
     'numForecastYears': 3,
     'numHistoricalYears': 2,
-    'tickers': ['SBUX', 'BYND']
+    'tickers': [{
+        'ticker': 'SBUX'
+    }, {
+        'ticker': 'BYND'
+    }]
 }
 
 spawned_models = spawn_from_config(seed_config)

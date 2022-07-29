@@ -7,7 +7,11 @@ from valsys.modeling.client.exceptions import (
 )
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
-from valsys.modeling.exceptions import ShareModelException, TagModelException
+from valsys.modeling.exceptions import (AddChildModuleException,
+                                        RemoveModuleException,
+                                        ShareModelException, TagModelException,
+                                        AddLineItemException,
+                                        PullModelInformationException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
@@ -18,7 +22,6 @@ from valsys.modeling.models import Permissions
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
-
 
 CODE_POST_SUCCESS = 200
 SPAWN_MODELS_ACTION = "SPAWN_MODELS"
@@ -125,14 +128,17 @@ def pull_model_information(model_id: str) -> ModelInformation:
         The `ModelInformation` object for the model.
     """
     client = new_client()
-    resp = client.get(
-        url=VSURL.MODEL_INFO,
-        headers={
-            Headers.MODEL_ID: model_id,
-        },
-    )
-    cases = resp["data"]["model"]
-
+    try:
+        resp = client.get(
+            url=VSURL.MODEL_INFO,
+            headers={
+                Headers.MODEL_ID: model_id,
+            },
+        )
+        cases = resp["data"]["model"]
+    except Exception as err:
+        raise PullModelInformationException(
+            f"could not pull model info for model={model_id}")
     return ModelInformation.from_json(model_id, cases)
 
 
@@ -177,30 +183,38 @@ def recalculate_model(model_id: str):
     Args:
         model_id: The ID of the model to be recalculated.
     """
-    client = new_socket_client()
-
-    resp = client.get(url=VSURL.RECALC_MODEL,
-                      data={
-                          "action": "RECALCULATE_MODEL",
-                          "uid": model_id
-                      },
-                      after_token=model_id)
+    client = new_client()
+    resp = client.get(url=VSURL.RECALC_MODEL, headers={Headers.UID: model_id})
     return resp
 
 
 def remove_module(model_id: str, case_id: str, module_id: str,
                   parent_module_id: str):
+    """Removes the specified module from the model.
+    
+    Args:
+        model_id: The ID of the model.
+        case_id: The ID of the case containing the module.
+        module_id: The ID of the module to be removed.
+        parent_module_id: The ID of the parent of the module to be removed.
+    """
 
     client = new_client()
-    client.post(
-        url=VSURL.DELETE_MODULE,
-        data={
-            Headers.CASE_ID: case_id,
-            Headers.MODEL_ID: model_id,
-            Headers.PARENT_MODULE_ID: parent_module_id,
-            Headers.UID: module_id,
-        },
-    )
+    try:
+        client.post(
+            url=VSURL.DELETE_MODULE,
+            data={
+                Headers.CASE_ID: case_id,
+                Headers.MODEL_ID: model_id,
+                Headers.PARENT_MODULE_ID: parent_module_id,
+                Headers.UID: module_id,
+            },
+        )
+    except ModelingServicePostException as err:
+        if err.data.get('message') == 'could not find fact':
+            raise RemoveModuleException('could not find module to delete')
+        raise
+    return True
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -232,7 +246,7 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     for module in child_modules:
         if module["name"] == name:
             return Module.from_json(module)
-    raise ValueError(f"Error adding child module")
+    raise AddChildModuleException(f"Error adding child module")
 
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
@@ -265,12 +279,15 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
     except ModelingServicePostException as err:
         logger.exception(err)
         raise
+    except Exception as err:
+        raise AddLineItemException(
+            f"error adding line item to model={model_id} module={module_id}")
 
     module = Module.from_json(resp["data"]["module"])
     for l in module.line_items:
         if l.name == name:
             return l
-    raise ValueError(f"cannot find module with name {name}")
+    raise AddLineItemException(f"cannot find module with name {name}")
 
 
 def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):

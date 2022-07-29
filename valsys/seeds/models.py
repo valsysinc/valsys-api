@@ -102,24 +102,37 @@ class OrchestratorConfig:
 
     def add_model_config(
         self,
-        company_name,
-        ticker,
-        template_id,
-        industry,
-        start_period,
-        source,
-        start_date=None,
-        type="DEFAULT",
-        period_type="ANNUAL",
-        cash_flow_type="FCFF",
-        valuation_type="Perpetual Growth",
-        company_type="Public",
-        target_variable="Implied share price",
+        company_name: str,
+        ticker: str,
+        template_id: str,
+        industry: str,
+        start_period: int,
+        source: str = '',
+        start_date: str = None,
+        type: str = "DEFAULT",
+        period_type: str = "ANNUAL",
+        cash_flow_type: str = "FCFF",
+        valuation_type: str = "Perpetual Growth",
+        company_type: str = "Public",
+        target_variable: str = "Implied share price",
     ):
         """Add a model config;
         provide all the required model data.
-        
-        If `start_date` is left out, it is defaulted to the current date-time stamp.
+
+        Args:
+            company_name: The name of the company
+            ticker: The name of the ticker
+            template_id: The ID of the template to use
+            industry: The industry of the company
+            start_period: The start period; usually a year
+            source: The data source identifier
+            start_date: The start date - if none given, it is defaulted to the current date-time stamp.
+            type: The type
+            period_type: The type of periods
+            cash_flow_type: The cash flow type
+            valuation_type: The valuation type
+            company_type: The company type
+            target_variable: The target variable
         """
         self.model_configs.append(
             OrchestratorModelConfig(

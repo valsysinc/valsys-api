@@ -114,58 +114,6 @@ class MasterPopulateModulesConfig:
 
 
 @dataclass
-class ModelSpawnConfig:
-    tickers: List[str]
-    template_name: str
-    hist_period: int
-    proj_period: int
-    tags: List[str] = field(default_factory=list)
-    emails: List[str] = field(default_factory=list)
-
-    class fields:
-        TICKERS = 'tickers'
-        TEMPLATE_NAME = 'templateName'
-        HIST_PERIOD = 'histPeriod'
-        PROJ_PERIOD = 'projPeriod'
-        TAGS = 'tags'
-        EMAILS = 'emails'
-
-    def validate(self):
-        if len(self.tickers) == 0:
-            raise ValueError(f'need {self.fields.TICKERS}')
-        if self.template_name == "":
-            raise ValueError(f'need a {self.fields.TEMPLATE_NAME}')
-        if self.hist_period is None:
-            raise ValueError(f'need {self.fields.HIST_PERIOD}')
-        if self.proj_period is None:
-            raise ValueError(f'need {self.fields.PROJ_PERIOD}')
-
-    def __post_init__(self):
-        self.validate()
-
-    @classmethod
-    def from_json(cls, spawn_config):
-        return cls(
-            tickers=spawn_config.get(cls.fields.TICKERS, []),
-            template_name=spawn_config.get(cls.fields.TEMPLATE_NAME),
-            hist_period=spawn_config.get(cls.fields.HIST_PERIOD, None),
-            proj_period=spawn_config.get(cls.fields.PROJ_PERIOD, None),
-            tags=spawn_config.get(cls.fields.TAGS, []),
-            emails=spawn_config.get(cls.fields.EMAILS, []),
-        )
-
-    def jsonify(self):
-        return {
-            self.fields.TICKERS: self.tickers,
-            self.fields.TEMPLATE_NAME: self.template_name,
-            self.fields.HIST_PERIOD: self.hist_period,
-            self.fields.PROJ_PERIOD: self.proj_period,
-            self.fields.TAGS: self.tags,
-            self.fields.EMAILS: self.emails
-        }
-
-
-@dataclass
 class SpawnProgress:
     model_id: str = ""
     ticker: str = ""

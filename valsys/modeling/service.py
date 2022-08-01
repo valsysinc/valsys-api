@@ -11,7 +11,8 @@ from valsys.modeling.exceptions import (AddChildModuleException,
                                         RemoveModuleException,
                                         ShareModelException, TagModelException,
                                         AddLineItemException,
-                                        PullModelInformationException)
+                                        PullModelInformationException,
+                                        RecalculateModelException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
@@ -23,8 +24,15 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
+from valsys.config.config import API_PASSWORD, API_USERNAME
+
 CODE_POST_SUCCESS = 200
 SPAWN_MODELS_ACTION = "SPAWN_MODELS"
+
+
+class ModelingActions:
+    SPAWN_MODELS = "SPAWN_MODELS"
+    DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
 
 
 @dataclass
@@ -39,15 +47,16 @@ class SpawnedModelInfo:
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
     client = new_socket_client()
-    config.action = SPAWN_MODELS_ACTION
+    config.action = ModelingActions.SPAWN_MODELS
     try:
         resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
         return [
             SpawnedModelInfo.from_json(m) for m in resp.get('models')
             if m.get('status') == 'success'
         ]
-    except (ModelingServiceGetException, Exception):
-        raise ModelSpawnException(f"error building model: {client.error}")
+    except (ModelingServiceGetException, Exception) as err:
+        raise ModelSpawnException(
+            f"error building model: {client.error} {str(err)}")
 
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
@@ -113,7 +122,9 @@ def dynamic_updates():
 
     resp = client.get(url=VSURL.SCK_ORCHESTRATOR,
                       data={
-                          "action": "DYNAMIC_UPDATES",
+                          "action": ModelingActions.DYNAMIC_UPDATES,
+                          "username": API_USERNAME,
+                          "password": API_PASSWORD
                       })
     return resp
 
@@ -184,8 +195,12 @@ def recalculate_model(model_id: str):
         model_id: The ID of the model to be recalculated.
     """
     client = new_client()
-    resp = client.get(url=VSURL.RECALC_MODEL, headers={Headers.UID: model_id})
-    return resp
+    try:
+        resp = client.get(url=VSURL.RECALC_MODEL,
+                          headers={Headers.UID: model_id})
+        return resp
+    except ModelingServiceGetException as err:
+        raise RecalculateModelException(str(err))
 
 
 def remove_module(model_id: str, case_id: str, module_id: str,

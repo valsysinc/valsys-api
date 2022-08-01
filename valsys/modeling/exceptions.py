@@ -20,3 +20,7 @@ class AddLineItemException(Exception):
 
 class PullModelInformationException(Exception):
     pass
+
+
+class RecalculateModelException(Exception):
+    pass

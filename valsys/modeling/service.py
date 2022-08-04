@@ -19,7 +19,7 @@ from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
-from valsys.modeling.models import Permissions
+from valsys.modeling.models import Permissions, ModelGroups
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -127,6 +127,52 @@ def dynamic_updates():
                           "password": API_PASSWORD
                       })
     return resp
+
+
+def pull_model_groups() -> ModelGroups:
+    """Pulls model groups.
+    
+    Returns a list of `ModelGroup` objects under the `groups` attribute. 
+    Each `ModelGroup` has a `uid`, `name`, `user_id`, `model_ids`
+
+    Returns:
+        ModelGroups
+    """
+    client = new_client()
+    try:
+        g = client.get(url=VSURL.USERS_GROUPS)
+    except ModelingServiceGetException:
+        raise
+    mg = ModelGroups.from_json(g.get('data'))
+    mg.status = g.get('status')
+    return mg
+
+
+def update_model_groups(uid: str, name: str,
+                        model_ids: List[str]) -> ModelGroups:
+    """Updates the models groups.
+    
+    Args:
+        uid: The UID of the model
+        name: The name of the model group
+        model_ids: The IDs
+    
+    Returns:
+        ModelGroups
+    """
+    client = new_client()
+    try:
+        g = client.post(url=VSURL.USERS_UPDATE_GROUP,
+                        data={
+                            'name': name,
+                            'uid': uid,
+                            'modelIDs': model_ids
+                        })
+    except ModelingServicePostException:
+        raise
+    mg = ModelGroups.from_json(g.get('data'))
+    mg.status = g.get('status')
+    return mg
 
 
 def pull_model_information(model_id: str) -> ModelInformation:

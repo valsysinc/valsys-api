@@ -37,6 +37,13 @@ So, for example, `Permissions.VIEW` could be provided to the `share_model` funct
 
 If you attempt to share the model with a user that dosent exist, a `ShareModelException` will be thrown.
 
+## Get model groups
+:::valsys.modeling.service.pull_model_groups
+
+## Update model groups
+:::valsys.modeling.service.update_model_groups
+
+
 ## Get model information
 ```python linenums="1"                
 pull_model_information(model_id: str)                

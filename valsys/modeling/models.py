@@ -1,4 +1,5 @@
-from typing import Dict
+from dataclasses import dataclass, field
+from typing import Dict, List
 
 
 class PermissionTypes:
@@ -37,3 +38,48 @@ class Permissions:
         elif self.permission == PermissionTypes.FULL_ACCESS:
             return {PermissionTypes.FULL_ACCESS: True}
         raise NotImplementedError(f"invalid permission: {self.permission}")
+
+
+@dataclass
+class ModelGroup:
+    uid: str
+    name: str
+    user_id: str
+    model_ids: List[str] = field(default_factory=list)
+
+    def jsonify(self):
+        return {
+            'uid': self.uid,
+            'name': self.name,
+            'userID': self.user_id,
+            'modelIDs': self.model_ids
+        }
+
+    @classmethod
+    def from_json(cls, ij):
+        return cls(uid=ij.get('uid'),
+                   name=ij.get('name'),
+                   user_id=ij.get('userID'),
+                   model_ids=ij.get('modelIDs'))
+
+
+@dataclass
+class ModelGroups:
+    groups: List[ModelGroup] = field(default_factory=list)
+    status: str = ''
+
+    def __iter__(self):
+        for g in self.groups:
+            yield g
+
+    def jsonify(self):
+        return {
+            'groups': [g.jsonify() for g in self.groups],
+            'status': self.status
+        }
+
+    @classmethod
+    def from_json(cls, ij):
+        mg = cls()
+        [mg.groups.append(ModelGroup.from_json(mj)) for mj in ij]
+        return mg

@@ -4,8 +4,7 @@ from unittest import mock
 
 import pytest
 
-from valsys.spawn.service import ValsysSpawn, spawn_models
-
+from valsys.spawn.service import ValsysSpawn, spawn_models, orchestrate_model_spawns
 
 MODULE_PREFIX = "valsys.spawn.service"
 
@@ -21,6 +20,16 @@ class FakeModelSpawnConfigs:
     @classmethod
     def create(cls, count=1):
         return cls(configs=[str(i) for i in range(0, count)])
+
+
+class TestOrchestrateSpawnModels:
+
+    @mock.patch(f"{MODULE_PREFIX}.SpawnHandler.orchestrate_model_spawns")
+    def test_works_ok(self, mock_oms):
+        cfg = {'data': 42}
+        mock_oms.return_value = 93
+        assert orchestrate_model_spawns(cfg) == 93
+        mock_oms.assert_called_once_with(cfg)
 
 
 class TestSpawnModels:

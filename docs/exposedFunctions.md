@@ -15,6 +15,8 @@ tag_model(model_id: str, tags: List[str])
 
 ::: valsys.modeling.service.tag_model
 
+
+
 ## Model sharing
 ```python linenums="1"
 share_model(model_id: str, email: str, permission: str)
@@ -98,8 +100,14 @@ add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str)
 add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int)                      
 ```
-:::valsys.modeling.service.add_line_item
+::: valsys.modeling.service.add_line_item
 
+
+## Tag a line item
+```python linenums="1"
+tag_line_item(model_id: str, line_item_id: str, tags: List[str])                    
+```
+:::valsys.modeling.service.tag_line_item
 ## Dynamic updates
 ```python linenums="1"
 dynamic_updates()                      

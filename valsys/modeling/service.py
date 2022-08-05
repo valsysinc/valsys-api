@@ -96,10 +96,10 @@ def tag_line_item(model_id: str, line_item_id: str,
     
     Args:
         model_id: The ID of the model containing the line item
-        line_item_uid: The ID of the line item
+        line_item_id: The ID of the line item
         tags: The tags to give to the line item
     
-    Response:
+    Returns:
         TaggedLineItemResponse
 
     """

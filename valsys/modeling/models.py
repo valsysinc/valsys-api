@@ -66,20 +66,27 @@ class ModelGroup:
 @dataclass
 class ModelGroups:
     groups: List[ModelGroup] = field(default_factory=list)
-    status: str = ''
 
     def __iter__(self):
         for g in self.groups:
             yield g
 
     def jsonify(self):
-        return {
-            'groups': [g.jsonify() for g in self.groups],
-            'status': self.status
-        }
+        return {'groups': [g.jsonify() for g in self.groups]}
 
     @classmethod
     def from_json(cls, ij):
         mg = cls()
         [mg.groups.append(ModelGroup.from_json(mj)) for mj in ij]
         return mg
+
+
+@dataclass
+class TaggedLineItemResponse:
+    uid: str
+    name: str
+    tags: List[str] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(uid=j.get('uid'), name=j.get('name'), tags=j.get('tags'))

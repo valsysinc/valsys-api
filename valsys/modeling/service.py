@@ -19,7 +19,7 @@ from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
-from valsys.modeling.models import Permissions, ModelGroups
+from valsys.modeling.models import Permissions, ModelGroups, TaggedLineItemResponse
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -88,6 +88,37 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
         )
 
 
+def tag_line_item(model_id: str, line_item_id: str,
+                  tags: List[str]) -> TaggedLineItemResponse:
+    """Tag a line item.
+
+    Note that this replaces any existing tags on the line item.
+    
+    Args:
+        model_id: The ID of the model containing the line item
+        line_item_uid: The ID of the line item
+        tags: The tags to give to the line item
+    
+    Response:
+        TaggedLineItemResponse
+
+    """
+    client = new_client()
+    try:
+        ait = client.post(
+            url=VSURL.ADD_ITEM_TAGS,
+            data={
+                Headers.MODEL_ID: model_id,
+                'uid': line_item_id,
+                "tags": tags
+            },
+        )
+    except ModelingServicePostException:
+        raise
+    return TaggedLineItemResponse.from_json(
+        ait.get('data').get('lineItems')[0])
+
+
 def share_model(model_id: str,
                 email: str,
                 permission: str,
@@ -143,9 +174,7 @@ def pull_model_groups() -> ModelGroups:
         g = client.get(url=VSURL.USERS_GROUPS)
     except ModelingServiceGetException:
         raise
-    mg = ModelGroups.from_json(g.get('data'))
-    mg.status = g.get('status')
-    return mg
+    return ModelGroups.from_json(g.get('data'))
 
 
 def update_model_groups(uid: str, name: str,
@@ -170,9 +199,8 @@ def update_model_groups(uid: str, name: str,
                         })
     except ModelingServicePostException:
         raise
-    mg = ModelGroups.from_json(g.get('data'))
-    mg.status = g.get('status')
-    return mg
+
+    return ModelGroups.from_json(g.get('data'))
 
 
 def pull_model_information(model_id: str) -> ModelInformation:

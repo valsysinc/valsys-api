@@ -85,6 +85,7 @@ class SocketHandler:
         close = response.get("Close")
         step = response.get("step")
         self.status = status
+        self.on_close(ws, websocket.STATUS_NORMAL, message)
 
         if not self.succesful:
             self.error = err
@@ -93,10 +94,8 @@ class SocketHandler:
         if err != "":
             self.error = err
             self.status = Status.FAILED
-            self.on_close(ws, websocket.STATUS_NORMAL, message)
         elif close is True:
             self.resp = response
-            self.on_close(ws, websocket.STATUS_NORMAL, message)
 
     def on_close(self, ws, close_status_code, close_msg):
         self.state = States.COMPLETE

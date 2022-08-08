@@ -2,6 +2,16 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 
+@dataclass
+class SpawnedModelInfo:
+    model_id: str
+    ticker: str
+
+    @classmethod
+    def from_json(cls, m):
+        return cls(model_id=m.get('modelID'), ticker=m.get('ticker'))
+
+
 class PermissionTypes:
     VIEW = 'view'
     EDIT = 'edit'

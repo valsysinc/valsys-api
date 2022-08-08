@@ -20,6 +20,7 @@ class VSURL:
     USERS_SHARE_MODEL = f"{BASE_URL}/users/share-model"
     USERS_MODELS = f"{BASE_URL}/users/models"
     USERS_GROUPS = f"{BASE_URL}/users/groups"
+    USERS_GROUP = f"{BASE_URL}/users/group"
     USERS_UPDATE_GROUP = f"{BASE_URL}/users/update-group"
     RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
 

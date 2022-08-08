@@ -177,6 +177,28 @@ def pull_model_groups() -> ModelGroups:
     return ModelGroups.from_json(g.get('data'))
 
 
+def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
+    """Add a new model group.
+    
+    Args:
+        group_name: The name of the new model group
+        model_ids: The IDs of the models to go into the group
+
+    Returns:
+        ModelGroups
+    """
+    client = new_client()
+    try:
+        g = client.post(url=VSURL.USERS_GROUP,
+                        data={
+                            'name': group_name,
+                            'modelIDs': model_ids
+                        })
+    except ModelingServicePostException:
+        raise
+    return ModelGroups.from_json(g.get('data'))
+
+
 def update_model_groups(uid: str, name: str,
                         model_ids: List[str]) -> ModelGroups:
     """Updates the models groups.

@@ -3,16 +3,21 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.service import (SPAWN_MODELS_ACTION, SpawnedModelInfo,
-                                     add_line_item, pull_case,
-                                     pull_model_information, spawn_model,
-                                     new_model_groups)
-
-from valsys.modeling.exceptions import AddLineItemException
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
+from valsys.modeling.exceptions import AddLineItemException
+from valsys.modeling.service import (
+    SPAWN_MODELS_ACTION,
+    SpawnedModelInfo,
+    add_line_item,
+    new_model_groups,
+    pull_case,
+    pull_model_information,
+    spawn_model,
+)
+
 
 MODULE_PREFIX = "valsys.modeling.service"
 

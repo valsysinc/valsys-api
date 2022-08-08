@@ -4,7 +4,12 @@ from unittest import mock
 
 import pytest
 
-from valsys.spawn.service import ValsysSpawn, spawn_models, orchestrate_model_spawns
+from valsys.spawn.service import (
+    ValsysSpawn,
+    orchestrate_model_spawns,
+    spawn_models,
+)
+
 
 MODULE_PREFIX = "valsys.spawn.service"
 

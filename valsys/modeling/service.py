@@ -1,30 +1,37 @@
-from dataclasses import dataclass
 from typing import List
 
+from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
-from valsys.modeling.exceptions import (AddChildModuleException,
-                                        RemoveModuleException,
-                                        ShareModelException, TagModelException,
-                                        AddLineItemException,
-                                        PullModelInformationException,
-                                        RecalculateModelException)
+from valsys.modeling.exceptions import (
+    AddChildModuleException,
+    AddLineItemException,
+    PullModelInformationException,
+    RecalculateModelException,
+    RemoveModuleException,
+    ShareModelException,
+    TagModelException,
+)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
-from valsys.modeling.models import Permissions, ModelGroups, TaggedLineItemResponse
+from valsys.modeling.models import (
+    ModelGroups,
+    Permissions,
+    SpawnedModelInfo,
+    TaggedLineItemResponse,
+)
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
-from valsys.config.config import API_PASSWORD, API_USERNAME
 
 CODE_POST_SUCCESS = 200
 SPAWN_MODELS_ACTION = "SPAWN_MODELS"
@@ -33,16 +40,6 @@ SPAWN_MODELS_ACTION = "SPAWN_MODELS"
 class ModelingActions:
     SPAWN_MODELS = "SPAWN_MODELS"
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
-
-
-@dataclass
-class SpawnedModelInfo:
-    model_id: str
-    ticker: str
-
-    @classmethod
-    def from_json(cls, m):
-        return cls(model_id=m.get('modelID'), ticker=m.get('ticker'))
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:

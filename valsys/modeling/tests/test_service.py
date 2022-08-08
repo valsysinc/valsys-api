@@ -3,16 +3,16 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.service import (
-    SPAWN_MODELS_ACTION,
-    SpawnedModelInfo,
-    add_line_item,
-    pull_case,
-    pull_model_information,
-    spawn_model,
-)
+from valsys.modeling.service import (SPAWN_MODELS_ACTION, SpawnedModelInfo,
+                                     add_line_item, pull_case,
+                                     pull_model_information, spawn_model,
+                                     new_model_groups)
 
 from valsys.modeling.exceptions import AddLineItemException
+from valsys.modeling.client.exceptions import (
+    ModelingServiceGetException,
+    ModelingServicePostException,
+)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -133,3 +133,36 @@ class TestAddLineItem:
         with pytest.raises(AddLineItemException) as err:
             add_line_item(case_id, model_id, module_id, name, order)
         assert name in str(err)
+
+
+class TestAddNewModelGroups:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.ModelGroups.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        group_name = 'groupName'
+        model_ids = ['1', '2']
+        mock_client = mock.MagicMock()
+        mock_new_model_groups_data = mock.MagicMock()
+        mock_new_client.return_value = mock_client
+        mock_client.post.return_value = mock_new_model_groups_data
+        nmg = new_model_groups(group_name, model_ids)
+        mock_new_client.assert_called_once()
+        mock_client.post.assert_called_once()
+        _, kww = mock_client.post.call_args
+        sent_data = kww.get('data')
+        assert 'name' in sent_data
+        assert sent_data['name'] == group_name
+        assert 'modelIDs' in sent_data
+        assert sent_data['modelIDs'] == model_ids
+        mock_from_json.assert_called_once()
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        group_name = 'groupName'
+        model_ids = ['1', '2']
+        mock_client = mock.MagicMock()
+        mock_new_client.return_value = mock_client
+        mock_client.post.side_effect = Exception
+        with pytest.raises(Exception):
+            nmg = new_model_groups(group_name, model_ids)

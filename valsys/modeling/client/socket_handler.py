@@ -6,7 +6,6 @@ import websocket
 
 from valsys.utils import logger
 
-
 TRACE_DEFAULT = False
 
 
@@ -99,7 +98,6 @@ class SocketHandler:
         if err != "":
             self.error = err
             self.status = Status.FAILED
-            self.on_close(ws, websocket.STATUS_NORMAL, message)
         elif close is True:
             self.on_close(ws, websocket.STATUS_NORMAL, message)
 

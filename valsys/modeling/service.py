@@ -33,10 +33,6 @@ from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 
 
-CODE_POST_SUCCESS = 200
-SPAWN_MODELS_ACTION = "SPAWN_MODELS"
-
-
 class ModelingActions:
     SPAWN_MODELS = "SPAWN_MODELS"
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
@@ -81,7 +77,7 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
         )
     except ModelingServicePostException as err:
         raise TagModelException(
-            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {err.status_code} expected {CODE_POST_SUCCESS}; message={err.data}'
+            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {err.status_code}; message={err.data}'
         )
 
 

@@ -3,13 +3,9 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.client.exceptions import (
-    ModelingServiceGetException,
-    ModelingServicePostException,
-)
 from valsys.modeling.exceptions import AddLineItemException
 from valsys.modeling.service import (
-    SPAWN_MODELS_ACTION,
+    ModelingActions,
     SpawnedModelInfo,
     add_line_item,
     new_model_groups,
@@ -17,7 +13,6 @@ from valsys.modeling.service import (
     pull_model_information,
     spawn_model,
 )
-
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -42,7 +37,7 @@ class TestSpawnModel:
         assert spawn_model(config) == [
             SpawnedModelInfo(model_id=fake_model_id, ticker=fake_model_ticker)
         ]
-        assert config.action == SPAWN_MODELS_ACTION
+        assert config.action == ModelingActions.SPAWN_MODELS
 
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()

@@ -24,3 +24,15 @@ class PullModelInformationException(Exception):
 
 class RecalculateModelException(Exception):
     pass
+
+
+class PullModelGroupsException(Exception):
+    pass
+
+
+class NewModelGroupsException(Exception):
+    pass
+
+
+class UpdateModelGroupsException(Exception):
+    pass

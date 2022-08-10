@@ -8,14 +8,11 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException,
-    AddLineItemException,
-    PullModelInformationException,
-    RecalculateModelException,
-    RemoveModuleException,
-    ShareModelException,
-    TagModelException,
-)
+    AddChildModuleException, AddLineItemException,
+    PullModelInformationException, RecalculateModelException,
+    RemoveModuleException, ShareModelException, TagModelException,
+    PullModelGroupsException, NewModelGroupsException,
+    UpdateModelGroupsException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
@@ -165,8 +162,9 @@ def pull_model_groups() -> ModelGroups:
     client = new_client()
     try:
         g = client.get(url=VSURL.USERS_GROUPS)
-    except ModelingServiceGetException:
-        raise
+    except ModelingServiceGetException as err:
+        raise PullModelGroupsException(
+            f"error pulling model groups: {str(err)}")
     return ModelGroups.from_json(g.get('data'))
 
 
@@ -187,8 +185,8 @@ def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
                             'name': group_name,
                             'modelIDs': model_ids
                         })
-    except ModelingServicePostException:
-        raise
+    except ModelingServicePostException as err:
+        raise NewModelGroupsException(str(err))
     return ModelGroups.from_json(g.get('data'))
 
 
@@ -212,8 +210,8 @@ def update_model_groups(uid: str, name: str,
                             'uid': uid,
                             'modelIDs': model_ids
                         })
-    except ModelingServicePostException:
-        raise
+    except ModelingServicePostException as err:
+        raise UpdateModelGroupsException(str(err))
 
     return ModelGroups.from_json(g.get('data'))
 

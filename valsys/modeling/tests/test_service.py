@@ -2,14 +2,24 @@ from dataclasses import dataclass
 from unittest import mock
 
 import pytest
-from valsys.modeling.client.exceptions import ModelingServiceGetException
 
-from valsys.modeling.exceptions import AddLineItemException, PullModelGroupsException
-from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
-                                     add_line_item, new_model_groups,
-                                     pull_case, pull_model_information,
-                                     spawn_model, dynamic_updates,
-                                     pull_model_groups)
+from valsys.modeling.client.exceptions import ModelingServiceGetException
+from valsys.modeling.exceptions import (
+    AddLineItemException,
+    PullModelGroupsException,
+)
+from valsys.modeling.service import (
+    ModelingActions,
+    SpawnedModelInfo,
+    add_line_item,
+    dynamic_updates,
+    new_model_groups,
+    pull_case,
+    pull_model_groups,
+    pull_model_information,
+    spawn_model,
+)
+
 
 MODULE_PREFIX = "valsys.modeling.service"
 

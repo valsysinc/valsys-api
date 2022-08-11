@@ -8,18 +8,11 @@ from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
 )
-from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_line_item,
-    dynamic_updates,
-    new_model_groups,
-    pull_case,
-    pull_model_groups,
-    pull_model_information,
-    spawn_model,
-)
-
+from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
+                                     add_line_item, dynamic_updates,
+                                     new_model_groups, pull_case,
+                                     pull_model_groups, pull_model_information,
+                                     spawn_model, update_model_groups)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -219,3 +212,19 @@ class TestPullModelGroups:
         assert str(err_data) in str(err)
         assert str(err_code) in str(err)
         assert err_url in str(err)
+
+
+class TestUpdateModelGroups:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.ModelGroups.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        uid, name, model_ids = '01x', 'groupName', ['02x', '03x']
+        mock_client = mock.MagicMock()
+        fake_return_data = mock.MagicMock()
+
+        mock_client.post.return_value = fake_return_data
+        mock_new_client.return_value = mock_client
+        pmg = update_model_groups(uid, name, model_ids)
+        mock_client.post.assert_called_once()
+        mock_from_json.assert_called_once_with(fake_return_data.get('data'))

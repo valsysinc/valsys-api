@@ -36,7 +36,6 @@ def run_spawn_model():
                 start_period=TestModelConfig.MODEL.get('startPeriod'),
             )
         ])
-    print(model_seed_config.jsonify())
     # Spawn the model and obtain the new modelID
     spawned_model_id = spawn_model(model_seed_config)
     assert isinstance(spawned_model_id, list)
@@ -123,7 +122,6 @@ def run_add_line_item(model_id, module_id):
 def run_inttests():
     logger.info('running integration tests')
     spawned_models = run_spawn_model()
-    print(spawned_models)
     model_id = spawned_models[0].model_id
     model_id = run_tag_model(model_id)
     model_id = run_share_model(model_id)

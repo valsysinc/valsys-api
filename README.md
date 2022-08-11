@@ -1,3 +1,5 @@
+![alt text](coverage.svg "Coverage")
+
 # Valsys API library
 
 Purpose: library to build and interact with Valsys models via the API. See our [documentation](https://valsysinc.github.io/valsys-api/).

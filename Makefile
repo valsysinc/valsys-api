@@ -2,12 +2,15 @@ test:
 	export VALSYS_API_BUILD=test; python login-test.py; pytest . --disable-warnings
 
 coverage-ci:
+	rm coverage.svg
 	export VALSYS_API_BUILD=test; python login-test.py; coverage run --omit="*/test*" --source=. -m pytest . 
-	
+	coverage-badge -o coverage.svg
+
 coverage:
 	make coverage-ci
 	coverage html
 	open htmlcov/index.html
+	
 
 docserver:
 	mkdocs serve -a localhost:8989 --livereload

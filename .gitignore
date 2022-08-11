@@ -9,7 +9,6 @@ htmlcov/
 code-docs/
 *.ipynb
 *.bak
-*.svg
 *.DS_Store
 site/*
 .valsys-env/

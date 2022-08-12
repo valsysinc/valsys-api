@@ -80,7 +80,7 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
         )
     except ModelingServicePostException as err:
         raise TagModelException(
-            f'failed to tag models via call {VSURL.MODELING_MODEL_PROPERTIES}; got {err.status_code}; message={err.data}'
+            f'error tagging model via call {VSURL.MODELING_MODEL_PROPERTIES}; got {err.status_code}; message={err.data}'
         )
 
 

@@ -3,10 +3,11 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.client.exceptions import ModelingServiceGetException
+from valsys.modeling.client.exceptions import ModelingServiceGetException, ModelingServicePostException
 from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
+    TagModelException,
 )
 from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
                                      add_line_item, dynamic_updates,
@@ -104,7 +105,7 @@ class TestSpawnModel:
 class TestTagModel:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
-    def test_works_ok(self, mock_new_client):
+    def test_works_ok_without_auth_token(self, mock_new_client):
 
         mock_c = mock.MagicMock()
         mock_post_ret = mock.MagicMock()
@@ -114,7 +115,34 @@ class TestTagModel:
         model_id, tags = valid_uid(), valid_tags()
         assert tag_model(model_id, tags) == mock_post_ret
 
-        mock_new_client.assert_called_once()
+        mock_new_client.assert_called_once_with(None)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_with_auth_token(self, mock_new_client):
+
+        mock_c = mock.MagicMock()
+        mock_post_ret = mock.MagicMock()
+
+        mock_c.post.return_value = mock_post_ret
+        mock_new_client.return_value = mock_c
+        model_id, tags, auth_token = valid_uid(), valid_tags(), 't0k3n'
+        assert tag_model(model_id, tags,
+                         auth_token=auth_token) == mock_post_ret
+
+        mock_new_client.assert_called_once_with(auth_token)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+
+        mock_c = mock.MagicMock()
+        mock_post_ret = mock.MagicMock()
+        d, c, u = 42, 42, 'www'
+        mock_c.post.side_effect = ModelingServicePostException(d, c, u)
+        mock_new_client.return_value = mock_c
+        model_id, tags = valid_uid(), valid_tags()
+        with pytest.raises(TagModelException) as err:
+            tag_model(model_id, tags)
+        assert 'error tagging model' in str(err)
 
 
 class TestPullCase:

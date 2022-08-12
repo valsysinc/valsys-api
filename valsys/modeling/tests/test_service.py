@@ -7,6 +7,7 @@ from valsys.modeling.client.exceptions import ModelingServiceGetException, Model
 from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
+    TagLineItemException,
     TagModelException,
 )
 from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
@@ -14,7 +15,7 @@ from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
                                      new_model_groups, pull_case,
                                      pull_model_groups, pull_model_information,
                                      spawn_model, update_model_groups,
-                                     tag_model)
+                                     tag_model, tag_line_item)
 from valsys.spawn.exceptions import ModelSpawnException
 from .factories import valid_uid, valid_tags, valid_ticker, valid_uids
 
@@ -310,3 +311,44 @@ class TestUpdateModelGroups:
         pmg = update_model_groups(uid, name, model_ids)
         mock_client.post.assert_called_once()
         mock_from_json.assert_called_once_with(fake_return_data.get('data'))
+
+
+class TestTagLineItem:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.TaggedLineItemResponse.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        model_id = valid_uid()
+        line_item_id = valid_uid()
+        tags = valid_tags()
+        fake_return_data = mock.MagicMock()
+
+        mock_client = mock.MagicMock()
+        mock_client.post.return_value = fake_return_data
+
+        mock_new_client.return_value = mock_client
+        tli = tag_line_item(model_id, line_item_id, tags)
+
+        mock_new_client.assert_called_once()
+        _, kw = mock_client.post.call_args
+        assert 'data' in kw
+        assert kw.get('data').get('uid') == line_item_id
+        assert kw.get('data').get('modelID') == model_id
+        assert kw.get('data').get('tags') == tags
+        mock_from_json.assert_called_once_with(
+            fake_return_data.get('data').get('lineItems')[0])
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        model_id = valid_uid()
+        line_item_id = valid_uid()
+        tags = valid_tags()
+        d, s, u = 42, 4, 'www'
+
+        mock_client = mock.MagicMock()
+        mock_client.post.side_effect = ModelingServicePostException(d, s, u)
+
+        mock_new_client.return_value = mock_client
+        with pytest.raises(TagLineItemException) as err:
+            tag_line_item(model_id, line_item_id, tags)
+        assert 'error tagging line item' in str(err)

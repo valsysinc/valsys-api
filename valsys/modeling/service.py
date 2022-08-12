@@ -8,17 +8,10 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException,
-    AddLineItemException,
-    NewModelGroupsException,
-    PullModelGroupsException,
-    PullModelInformationException,
-    RecalculateModelException,
-    RemoveModuleException,
-    ShareModelException,
-    TagModelException,
-    UpdateModelGroupsException,
-)
+    AddChildModuleException, AddLineItemException, NewModelGroupsException,
+    PullModelGroupsException, PullModelInformationException,
+    RecalculateModelException, RemoveModuleException, ShareModelException,
+    TagModelException, UpdateModelGroupsException, TagLineItemException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
@@ -109,8 +102,8 @@ def tag_line_item(model_id: str, line_item_id: str,
                 "tags": tags
             },
         )
-    except ModelingServicePostException:
-        raise
+    except ModelingServicePostException as err:
+        raise TagLineItemException(f"error tagging line item: {str(err)}")
     return TaggedLineItemResponse.from_json(
         ait.get('data').get('lineItems')[0])
 

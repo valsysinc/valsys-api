@@ -36,3 +36,7 @@ class NewModelGroupsException(Exception):
 
 class UpdateModelGroupsException(Exception):
     pass
+
+
+class TagLineItemException(Exception):
+    pass

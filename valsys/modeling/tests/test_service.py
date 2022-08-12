@@ -7,6 +7,7 @@ from valsys.modeling.client.exceptions import ModelingServiceGetException, Model
 from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
+    TagLineItemException,
     TagModelException,
 )
 from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
@@ -334,4 +335,20 @@ class TestTagLineItem:
         assert kw.get('data').get('uid') == line_item_id
         assert kw.get('data').get('modelID') == model_id
         assert kw.get('data').get('tags') == tags
-        mock_from_json.assert_called_once_with(fake_return_data.get('data').get('lineItems')[0])
+        mock_from_json.assert_called_once_with(
+            fake_return_data.get('data').get('lineItems')[0])
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        model_id = valid_uid()
+        line_item_id = valid_uid()
+        tags = valid_tags()
+        d, s, u = 42, 4, 'www'
+
+        mock_client = mock.MagicMock()
+        mock_client.post.side_effect = ModelingServicePostException(d, s, u)
+
+        mock_new_client.return_value = mock_client
+        with pytest.raises(TagLineItemException) as err:
+            tag_line_item(model_id, line_item_id, tags)
+        assert 'error tagging line item' in str(err)

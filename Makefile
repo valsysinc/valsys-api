@@ -11,7 +11,6 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 	
-
 docserver:
 	mkdocs serve -a localhost:8989 --livereload
 
@@ -34,3 +33,7 @@ login:
 
 update:
 	pip install -r requirements.txt
+
+deploy:
+	git push github master
+	make docdeploy

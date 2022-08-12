@@ -13,3 +13,4 @@ code-docs/
 site/*
 .valsys-env/
 tmp.py
+lcov.info

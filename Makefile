@@ -10,6 +10,7 @@ coverage:
 	make coverage-ci
 	coverage html
 	open htmlcov/index.html
+	coverage-lcov
 	
 docserver:
 	mkdocs serve -a localhost:8989 --livereload

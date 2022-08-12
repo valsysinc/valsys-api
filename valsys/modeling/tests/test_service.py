@@ -8,20 +8,14 @@ from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
 )
-from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_line_item,
-    dynamic_updates,
-    new_model_groups,
-    pull_case,
-    pull_model_groups,
-    pull_model_information,
-    spawn_model,
-    update_model_groups,
-)
+from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
+                                     add_line_item, dynamic_updates,
+                                     new_model_groups, pull_case,
+                                     pull_model_groups, pull_model_information,
+                                     spawn_model, update_model_groups,
+                                     tag_model)
 from valsys.spawn.exceptions import ModelSpawnException
-
+from .factories import valid_uid, valid_tags, valid_ticker, valid_uids
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -32,7 +26,7 @@ class TestSpawnModel:
     def test_works_ok(self, mock_new_socket_client):
         config = mock.MagicMock()
         mock_c = mock.MagicMock()
-        fake_model_id, fake_model_ticker = 'ghjkrhdg', 'TKR'
+        fake_model_id, fake_model_ticker = valid_uid(), valid_ticker()
         fake_post_ret = {
             'models': [{
                 'modelID': fake_model_id,
@@ -55,7 +49,7 @@ class TestSpawnModel:
     def test_works_ok_no_success(self, mock_new_socket_client):
         config = mock.MagicMock()
         mock_c = mock.MagicMock()
-        fake_model_id, fake_model_ticker = 'ghjkrhdg', 'TKR'
+        fake_model_id, fake_model_ticker = 'ghjkrhdg', valid_ticker()
         fake_post_ret = {
             'models': [{
                 'modelID': fake_model_id,
@@ -88,8 +82,9 @@ class TestSpawnModel:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelInformation.from_json")
-    def test_works_ok(self, mock_ModelInformation_from_json, mock_new_client):
-        uid = '1234'
+    def test_works_ok_frm_json(self, mock_ModelInformation_from_json,
+                               mock_new_client):
+        uid = valid_uid()
         mock_get = mock.MagicMock()
         mock_cases = mock.MagicMock()
         mock_model_info = mock.MagicMock()
@@ -106,12 +101,28 @@ class TestSpawnModel:
         assert model_info == mock_model_info
 
 
+class TestTagModel:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+
+        mock_c = mock.MagicMock()
+        mock_post_ret = mock.MagicMock()
+
+        mock_c.post.return_value = mock_post_ret
+        mock_new_client.return_value = mock_c
+        model_id, tags = valid_uid(), valid_tags()
+        assert tag_model(model_id, tags) == mock_post_ret
+
+        mock_new_client.assert_called_once()
+
+
 class TestPullCase:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Case.from_json")
     def test_works_ok(self, mock_Case_from_json, mock_new_client):
-        uid = '1234'
+        uid = valid_uid()
         mock_get = mock.MagicMock()
         mock_cases = mock.MagicMock()
         mock_model_info = mock.MagicMock()
@@ -182,7 +193,8 @@ class TestAddNewModelGroups:
     @mock.patch(f"{MODULE_PREFIX}.ModelGroups.from_json")
     def test_works_ok(self, mock_from_json, mock_new_client):
         group_name = 'groupName'
-        model_ids = ['1', '2']
+        count_model_ids = 2
+        model_ids = valid_uids(count_model_ids)
         mock_client = mock.MagicMock()
         mock_new_model_groups_data = mock.MagicMock()
         mock_new_client.return_value = mock_client
@@ -201,7 +213,8 @@ class TestAddNewModelGroups:
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises(self, mock_new_client):
         group_name = 'groupName'
-        model_ids = ['1', '2']
+        count_model_ids = 2
+        model_ids = valid_uids(count_model_ids)
         mock_client = mock.MagicMock()
         mock_new_client.return_value = mock_client
         mock_client.post.side_effect = Exception
@@ -260,7 +273,7 @@ class TestUpdateModelGroups:
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelGroups.from_json")
     def test_works_ok(self, mock_from_json, mock_new_client):
-        uid, name, model_ids = '01x', 'groupName', ['02x', '03x']
+        uid, name, model_ids = valid_uid(), 'groupName', ['02x', '03x']
         mock_client = mock.MagicMock()
         fake_return_data = mock.MagicMock()
 

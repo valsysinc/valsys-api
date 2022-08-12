@@ -3,21 +3,42 @@ from unittest import mock
 
 import pytest
 
-from valsys.modeling.client.exceptions import ModelingServiceGetException, ModelingServicePostException
+from valsys.modeling.client.exceptions import (
+    ModelingServiceGetException,
+    ModelingServicePostException,
+)
 from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
+    ShareModelException,
     TagLineItemException,
     TagModelException,
 )
-from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
-                                     add_line_item, dynamic_updates,
-                                     new_model_groups, pull_case,
-                                     pull_model_groups, pull_model_information,
-                                     spawn_model, update_model_groups,
-                                     tag_model, tag_line_item)
+from valsys.modeling.service import (
+    ModelingActions,
+    SpawnedModelInfo,
+    add_line_item,
+    dynamic_updates,
+    new_model_groups,
+    pull_case,
+    pull_model_groups,
+    pull_model_information,
+    share_model,
+    spawn_model,
+    tag_line_item,
+    tag_model,
+    update_model_groups,
+)
 from valsys.spawn.exceptions import ModelSpawnException
-from .factories import valid_uid, valid_tags, valid_ticker, valid_uids
+
+from .factories import (
+    valid_email,
+    valid_permission,
+    valid_tags,
+    valid_ticker,
+    valid_uid,
+    valid_uids,
+)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -352,3 +373,54 @@ class TestTagLineItem:
         with pytest.raises(TagLineItemException) as err:
             tag_line_item(model_id, line_item_id, tags)
         assert 'error tagging line item' in str(err)
+
+
+class TestShareModel:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_no_auth_token(self, mock_new_client):
+        model_id = valid_uid()
+
+        email, permission = 'e', valid_permission()
+        fake_return_data = mock.MagicMock()
+
+        mock_client = mock.MagicMock()
+        mock_client.post.return_value = fake_return_data
+
+        mock_new_client.return_value = mock_client
+        share_model(model_id, email, permission.permission)
+
+        mock_new_client.assert_called_once()
+        _, kw = mock_client.post.call_args
+        assert kw.get('headers').get('email') == email
+        assert kw.get('headers').get('modelID') == model_id
+        assert kw.get('data') == permission.jsonify()
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        model_id = valid_uid()
+
+        email, permission = valid_email(), valid_permission()
+
+        mock_client = mock.MagicMock()
+        d, s, u = 42, 4, 'www'
+
+        mock_client.post.side_effect = ModelingServicePostException(d, s, u)
+
+        mock_new_client.return_value = mock_client
+        with pytest.raises(ShareModelException) as err:
+            share_model(model_id, email, permission.permission)
+        assert 'failed to share models' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_bad_permission(self, mock_new_client):
+        model_id = valid_uid()
+
+        email, permission = valid_email(), 'garbagge'
+
+        mock_client = mock.MagicMock()
+
+        mock_new_client.return_value = mock_client
+        with pytest.raises(NotImplementedError) as err:
+            share_model(model_id, email, permission)
+        assert permission in str(err)

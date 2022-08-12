@@ -13,6 +13,7 @@ from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
                                      new_model_groups, pull_case,
                                      pull_model_groups, pull_model_information,
                                      spawn_model, update_model_groups)
+from valsys.spawn.exceptions import ModelSpawnException
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -42,8 +43,40 @@ class TestSpawnModel:
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()
 
+    @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
+    def test_works_ok_no_success(self, mock_new_socket_client):
+        config = mock.MagicMock()
+        mock_c = mock.MagicMock()
+        fake_model_id, fake_model_ticker = 'ghjkrhdg', 'TKR'
+        fake_post_ret = {
+            'models': [{
+                'modelID': fake_model_id,
+                'status': 'garbage',
+                'ticker': fake_model_ticker
+            }]
+        }
+        mock_c.post.return_value = fake_post_ret
+        mock_new_socket_client.return_value = mock_c
 
-class TestPullModelInformation:
+        assert spawn_model(config) == []
+        assert config.action == ModelingActions.SPAWN_MODELS
+
+        config.jsonify.assert_called_once()
+        mock_new_socket_client.assert_called_once()
+
+    @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
+    def test_raises(self, mock_new_socket_client):
+        config = mock.MagicMock()
+        mock_c = mock.MagicMock()
+        data, code, url = 42, 1, 'www'
+        mock_c.post.side_effect = ModelingServiceGetException(data, code, url)
+        mock_new_socket_client.return_value = mock_c
+        with pytest.raises(ModelSpawnException) as err:
+            spawn_model(config)
+        assert 'error building model' in str(err)
+        assert str(data) in str(err)
+        assert str(code) in str(err)
+        assert url in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelInformation.from_json")

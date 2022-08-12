@@ -8,12 +8,20 @@ from valsys.modeling.exceptions import (
     AddLineItemException,
     PullModelGroupsException,
 )
-from valsys.modeling.service import (ModelingActions, SpawnedModelInfo,
-                                     add_line_item, dynamic_updates,
-                                     new_model_groups, pull_case,
-                                     pull_model_groups, pull_model_information,
-                                     spawn_model, update_model_groups)
+from valsys.modeling.service import (
+    ModelingActions,
+    SpawnedModelInfo,
+    add_line_item,
+    dynamic_updates,
+    new_model_groups,
+    pull_case,
+    pull_model_groups,
+    pull_model_information,
+    spawn_model,
+    update_model_groups,
+)
 from valsys.spawn.exceptions import ModelSpawnException
+
 
 MODULE_PREFIX = "valsys.modeling.service"
 

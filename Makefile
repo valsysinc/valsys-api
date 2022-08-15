@@ -3,7 +3,7 @@ test:
 
 coverage-ci:
 	rm coverage.svg
-	export VALSYS_API_BUILD=test; python login-test.py; coverage run --omit="*/test*" --source=. -m pytest . 
+	export VALSYS_API_BUILD=test; python login-test.py; coverage run  --source=. -m pytest . 
 	coverage-badge -o coverage.svg
 
 coverage:

@@ -193,7 +193,8 @@ def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
                             'modelIDs': model_ids
                         })
     except ModelingServicePostException as err:
-        raise NewModelGroupsException(str(err))
+        raise NewModelGroupsException(
+            f"error adding new model groups: {str(err)}")
     return ModelGroups.from_json(g.get('data'))
 
 

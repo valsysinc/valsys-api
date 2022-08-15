@@ -15,7 +15,7 @@ from valsys.modeling.service import (
     ModelingActions, SpawnedModelInfo, add_line_item, dynamic_updates,
     new_model_groups, pull_case, pull_model_groups, pull_model_information,
     share_model, spawn_model, tag_line_item, tag_model, update_model_groups,
-    pull_model_datasources)
+    pull_model_datasources, get_model_tags, append_tags)
 from valsys.spawn.exceptions import ModelSpawnException
 
 from .factories import (
@@ -465,3 +465,43 @@ class TestPullModelDatasources:
         mock_pull_model_information.return_value.data_sources = mock_ds
         assert pull_model_datasources(model_id) == mock_ds
         mock_pull_model_information.assert_called_once_with(model_id)
+
+
+class TestGetModelTags:
+
+    @mock.patch(f"{MODULE_PREFIX}.pull_model_information")
+    def test_works_ok(self, mock_pull_model_information):
+        uid = valid_uid()
+        mock_tags = mock.MagicMock()
+        mock_pull_model_information.return_value.tags = mock_tags
+        assert get_model_tags(uid) == mock_tags
+        mock_pull_model_information.assert_called_once_with(uid)
+
+
+class TestAppendlTags:
+
+    @mock.patch(f"{MODULE_PREFIX}.tag_model")
+    @mock.patch(f"{MODULE_PREFIX}.get_model_tags")
+    def test_works_ok(self, mock_get_model_tags, mock_tag_model):
+        uid = valid_uid()
+        tags = valid_tags(count=5)
+        mock_get_model_tags.return_value = valid_tags(count=2)
+        append_tags(uid, tags)
+        a, _ = mock_tag_model.call_args
+        mock_tag_model.assert_called_once
+        call_uid, tags = a[0], a[1]
+        assert call_uid == uid
+        assert len(tags) == 5 + 2
+
+    @mock.patch(f"{MODULE_PREFIX}.tag_model")
+    @mock.patch(f"{MODULE_PREFIX}.get_model_tags")
+    def test_works_ensure_union(self, mock_get_model_tags, mock_tag_model):
+        uid = valid_uid()
+        tags = valid_tags(count=5)
+        mock_get_model_tags.return_value = tags
+        append_tags(uid, tags)
+        a, _ = mock_tag_model.call_args
+        mock_tag_model.assert_called_once
+        call_uid, tags = a[0], a[1]
+        assert call_uid == uid
+        assert len(tags) == 5

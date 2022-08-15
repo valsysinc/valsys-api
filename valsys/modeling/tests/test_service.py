@@ -9,7 +9,8 @@ from valsys.modeling.client.exceptions import (
 )
 from valsys.modeling.exceptions import (
     AddLineItemException, PullModelGroupsException, ShareModelException,
-    TagLineItemException, TagModelException, NewModelGroupsException)
+    UpdateModelGroupsException, TagLineItemException, TagModelException,
+    NewModelGroupsException)
 from valsys.modeling.service import (
     ModelingActions,
     SpawnedModelInfo,
@@ -282,6 +283,7 @@ class TestNewModelGroups:
             new_model_groups(group_name, model_ids)
         assert "error adding new model groups" in str(err)
 
+
 class TestDynamicUpdates:
 
     @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
@@ -342,6 +344,20 @@ class TestUpdateModelGroups:
         pmg = update_model_groups(uid, name, model_ids)
         mock_client.post.assert_called_once()
         mock_from_json.assert_called_once_with(fake_return_data.get('data'))
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_post_raises(self, mock_new_client):
+        mock_client = mock.MagicMock()
+        mock_new_client.return_value = mock_client
+        uid, name, model_ids = valid_uid(), 'groupName', ['02x', '03x']
+        err_data, err_code, err_url = 42, 400, 'http://www.'
+        mock_client.post.side_effect = ModelingServicePostException(
+            err_data, err_code, err_url)
+        with pytest.raises(UpdateModelGroupsException) as err:
+            update_model_groups(uid, name, model_ids)
+        assert str(err_data) in str(err)
+        assert str(err_code) in str(err)
+        assert err_url in str(err)
 
 
 class TestTagLineItem:

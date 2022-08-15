@@ -10,7 +10,7 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.exceptions import (
     AddLineItemException, PullModelGroupsException, ShareModelException,
     UpdateModelGroupsException, TagLineItemException, TagModelException,
-    NewModelGroupsException)
+    NewModelGroupsException, PullModelInformationException)
 from valsys.modeling.service import (
     ModelingActions,
     SpawnedModelInfo,
@@ -100,6 +100,9 @@ class TestSpawnModel:
         assert str(code) in str(err)
         assert url in str(err)
 
+
+class TestPullModelInformation:
+
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelInformation.from_json")
     def test_works_ok_frm_json(self, mock_ModelInformation_from_json,
@@ -119,6 +122,17 @@ class TestSpawnModel:
         mock_ModelInformation_from_json.assert_called_once_with(
             uid, mock_cases)
         assert model_info == mock_model_info
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        mock_c = mock.MagicMock()
+        d, c, u = 42, 42, 'www'
+        mock_c.get.side_effect = ModelingServiceGetException(d, c, u)
+        mock_new_client.return_value = mock_c
+        model_id = valid_uid(), valid_tags()
+        with pytest.raises(PullModelInformationException) as err:
+            pull_model_information(model_id)
+        assert 'could not pull model info for model' in str(err)
 
 
 class TestTagModel:

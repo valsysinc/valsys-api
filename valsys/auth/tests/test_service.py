@@ -6,7 +6,6 @@ import pytest
 
 from valsys.auth.service import Status, auth_headers, authenticate
 
-
 MODULE_PREFIX = "valsys.auth.service"
 
 
@@ -34,7 +33,7 @@ class TestAuthenticate:
             "password": password
         }
         assert isinstance(url, str)
-        assert url is not ""
+        assert url != ""
 
     @mock.patch(f"{MODULE_PREFIX}.requests.get")
     def test_req_not_200(self, mock_get):

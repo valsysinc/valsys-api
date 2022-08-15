@@ -12,20 +12,10 @@ from valsys.modeling.exceptions import (
     UpdateModelGroupsException, TagLineItemException, TagModelException,
     NewModelGroupsException, PullModelInformationException)
 from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_line_item,
-    dynamic_updates,
-    new_model_groups,
-    pull_case,
-    pull_model_groups,
-    pull_model_information,
-    share_model,
-    spawn_model,
-    tag_line_item,
-    tag_model,
-    update_model_groups,
-)
+    ModelingActions, SpawnedModelInfo, add_line_item, dynamic_updates,
+    new_model_groups, pull_case, pull_model_groups, pull_model_information,
+    share_model, spawn_model, tag_line_item, tag_model, update_model_groups,
+    pull_model_datasources)
 from valsys.spawn.exceptions import ModelSpawnException
 
 from .factories import (
@@ -464,3 +454,14 @@ class TestShareModel:
         with pytest.raises(NotImplementedError) as err:
             share_model(model_id, email, permission)
         assert permission in str(err)
+
+
+class TestPullModelDatasources:
+
+    @mock.patch(f"{MODULE_PREFIX}.pull_model_information")
+    def test_works_ok(self, mock_pull_model_information):
+        model_id = valid_uid()
+        mock_ds = mock.MagicMock()
+        mock_pull_model_information.return_value.data_sources = mock_ds
+        assert pull_model_datasources(model_id) == mock_ds
+        mock_pull_model_information.assert_called_once_with(model_id)

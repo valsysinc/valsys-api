@@ -242,7 +242,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
             },
         )
         cases = resp["data"]["model"]
-    except Exception as err:
+    except (ModelingServiceGetException, Exception) as err:
         raise PullModelInformationException(
             f"could not pull model info for model={model_id}")
     return ModelInformation.from_json(model_id, cases)

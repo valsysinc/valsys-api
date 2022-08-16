@@ -11,13 +11,13 @@ from valsys.modeling.exceptions import (
     AddLineItemException, PullModelGroupsException, ShareModelException,
     UpdateModelGroupsException, TagLineItemException, TagModelException,
     NewModelGroupsException, PullModelInformationException,
-    RecalculateModelException, RemoveModuleException)
+    RecalculateModelException, RemoveModuleException, AddChildModuleException)
 from valsys.modeling.service import (
     ModelingActions, SpawnedModelInfo, add_line_item, dynamic_updates,
     new_model_groups, pull_case, pull_model_groups, pull_model_information,
     share_model, spawn_model, tag_line_item, tag_model, update_model_groups,
     pull_model_datasources, get_model_tags, append_tags, recalculate_model,
-    remove_module)
+    remove_module, add_child_module)
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.headers import Headers
 from .factories import (
@@ -568,3 +568,77 @@ class TestRemoveModule:
         with pytest.raises(RemoveModuleException) as err:
             remove_module(model_id, case_id, module_id, parent_module_id)
         assert 'error removing module' in str(err)
+
+
+class TestAddChildModule:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        parent_module_id = valid_uid()
+        name = 'Name'
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_mod = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        mock_from_json.return_value = mock_new_mod
+        module = {'name': name, 'thing': 42}
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'childModules': [module]
+                }
+            }
+        }
+        assert add_child_module(parent_module_id, name, model_id,
+                                case_id) == mock_new_mod
+        mock_from_json.assert_called_once_with(module)
+        _, kw = mock_c.post.call_args
+        assert 'url' in kw
+        assert kw.get('data') == {
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            Headers.NAME: name,
+            Headers.PARENT_MODULE_ID: parent_module_id,
+        }
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_module_not_found(self, mock_new_client):
+        parent_module_id = valid_uid()
+        name = 'Name'
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'childModules': [{
+                        'name': 'any',
+                        'thing': 42
+                    }]
+                }
+            }
+        }
+        with pytest.raises(AddChildModuleException) as err:
+            add_child_module(parent_module_id, name, model_id, case_id)
+        assert f' could not find module with name {name}' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_incorrect_data_structure(self, mock_new_client):
+        parent_module_id = valid_uid()
+        name = 'Name'
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {'data': {}}
+        with pytest.raises(AddChildModuleException) as err:
+            add_child_module(parent_module_id, name, model_id, case_id)
+        assert 'Error adding child module: unexpected data structure' in str(
+            err)

@@ -350,12 +350,16 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
             Headers.PARENT_MODULE_ID: parent_module_id,
         },
     )
-
-    child_modules = resp["data"]["module"]["childModules"]
+    try:
+        child_modules = resp["data"]["module"]["childModules"]
+    except KeyError:
+        raise AddChildModuleException(
+            f"Error adding child module: unexpected data structure")
     for module in child_modules:
         if module["name"] == name:
             return Module.from_json(module)
-    raise AddChildModuleException(f"Error adding child module")
+    raise AddChildModuleException(
+        f"Error adding child module: could not find module with name {name}")
 
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,

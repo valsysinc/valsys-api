@@ -14,10 +14,11 @@ from valsys.modeling.exceptions import (
     RecalculateModelException, RemoveModuleException, AddChildModuleException)
 from valsys.modeling.service import (
     ModelingActions, SpawnedModelInfo, add_line_item, dynamic_updates,
-    new_model_groups, pull_case, pull_model_groups, pull_model_information,
-    share_model, spawn_model, tag_line_item, tag_model, update_model_groups,
-    pull_model_datasources, get_model_tags, append_tags, recalculate_model,
-    remove_module, add_child_module, add_line_item)
+    edit_format, new_model_groups, pull_case, pull_model_groups,
+    pull_model_information, share_model, spawn_model, tag_line_item, tag_model,
+    update_model_groups, pull_model_datasources, get_model_tags, append_tags,
+    recalculate_model, remove_module, add_child_module, add_line_item,
+    edit_facts, edit_formula)
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.headers import Headers
 from .factories import (valid_email, valid_permission, valid_tags,
@@ -726,3 +727,56 @@ class TestAddLineItem:
         assert 'error adding line item' in str(err)
         assert model_id in str(err)
         assert module_id in str(err)
+
+
+class TestEditFacts:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        url = 'www'
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        edit_facts(url, case_id, model_id, facts)
+        mock_new_client.assert_called_once()
+        mock_c.post.assert_called_once
+        _, kw = mock_c.post.call_args
+        assert kw.get('url') == url
+        assert kw.get('data') == {
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            "forecastIncrement": 1,
+            "facts": facts,
+        }
+
+
+class TestEditFormat:
+
+    @mock.patch(f"{MODULE_PREFIX}.edit_facts")
+    def test_works_ok(self, mock_edit_facts):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        edit_format(case_id, model_id, facts)
+        mock_edit_facts.assert_called_once()
+        _, kw = mock_edit_facts.call_args
+        assert kw.get('case_id') == case_id
+        assert kw.get('model_id') == model_id
+        assert kw.get('facts') == facts
+
+
+class TestEditFormula:
+
+    @mock.patch(f"{MODULE_PREFIX}.edit_facts")
+    def test_works_ok(self, mock_edit_facts):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        edit_formula(case_id, model_id, facts)
+        mock_edit_facts.assert_called_once()
+        _, kw = mock_edit_facts.call_args
+        assert kw.get('case_id') == case_id
+        assert kw.get('model_id') == model_id
+        assert kw.get('facts') == facts

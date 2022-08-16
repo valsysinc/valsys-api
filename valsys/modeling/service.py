@@ -295,7 +295,8 @@ def recalculate_model(model_id: str):
                           headers={Headers.UID: model_id})
         return resp
     except ModelingServiceGetException as err:
-        raise RecalculateModelException(str(err))
+        raise RecalculateModelException(
+            f"error recalculating model: {str(err)}")
 
 
 def remove_module(model_id: str, case_id: str, module_id: str,
@@ -321,9 +322,7 @@ def remove_module(model_id: str, case_id: str, module_id: str,
             },
         )
     except ModelingServicePostException as err:
-        if err.data.get('message') == 'could not find fact':
-            raise RemoveModuleException('could not find module to delete')
-        raise
+        raise RemoveModuleException(f'error removing module: {str(err)}')
     return True
 
 
@@ -351,12 +350,16 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
             Headers.PARENT_MODULE_ID: parent_module_id,
         },
     )
-
-    child_modules = resp["data"]["module"]["childModules"]
+    try:
+        child_modules = resp["data"]["module"]["childModules"]
+    except KeyError:
+        raise AddChildModuleException(
+            f"Error adding child module: unexpected data structure")
     for module in child_modules:
         if module["name"] == name:
             return Module.from_json(module)
-    raise AddChildModuleException(f"Error adding child module")
+    raise AddChildModuleException(
+        f"Error adding child module: could not find module with name {name}")
 
 
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
@@ -386,18 +389,24 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                 Headers.MODULE_ID: module_id,
             },
         )
-    except ModelingServicePostException as err:
+    except (ModelingServicePostException, Exception) as err:
         logger.exception(err)
-        raise
-    except Exception as err:
         raise AddLineItemException(
-            f"error adding line item to model={model_id} module={module_id}")
+            f"error adding line item to model={model_id} module={module_id}; {str(err)}"
+        )
 
-    module = Module.from_json(resp["data"]["module"])
-    for l in module.line_items:
-        if l.name == name:
-            return l
-    raise AddLineItemException(f"cannot find module with name {name}")
+    try:
+        line_items = resp["data"]["module"]['lineItems']
+    except KeyError as err:
+        raise AddLineItemException(
+            "error adding line item: invalid data structure")
+
+    for l in line_items:
+        if l['name'] == name:
+            return LineItem.from_json(l)
+
+    raise AddLineItemException(
+        f"error adding line item: cannot find module with name {name}")
 
 
 def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):

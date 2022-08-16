@@ -10,32 +10,19 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.exceptions import (
     AddLineItemException, PullModelGroupsException, ShareModelException,
     UpdateModelGroupsException, TagLineItemException, TagModelException,
-    NewModelGroupsException, PullModelInformationException)
+    NewModelGroupsException, PullModelInformationException,
+    RecalculateModelException, RemoveModuleException, AddChildModuleException)
 from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_line_item,
-    dynamic_updates,
-    new_model_groups,
-    pull_case,
-    pull_model_groups,
-    pull_model_information,
-    share_model,
-    spawn_model,
-    tag_line_item,
-    tag_model,
-    update_model_groups,
-)
+    ModelingActions, SpawnedModelInfo, add_line_item, dynamic_updates,
+    edit_format, new_model_groups, pull_case, pull_model_groups,
+    pull_model_information, share_model, spawn_model, tag_line_item, tag_model,
+    update_model_groups, pull_model_datasources, get_model_tags, append_tags,
+    recalculate_model, remove_module, add_child_module, add_line_item,
+    edit_facts, edit_formula)
 from valsys.spawn.exceptions import ModelSpawnException
-
-from .factories import (
-    valid_email,
-    valid_permission,
-    valid_tags,
-    valid_ticker,
-    valid_uid,
-    valid_uids,
-)
+from valsys.modeling.headers import Headers
+from .factories import (valid_email, valid_permission, valid_tags,
+                        valid_ticker, valid_uid, valid_uids, valid_name)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -464,3 +451,332 @@ class TestShareModel:
         with pytest.raises(NotImplementedError) as err:
             share_model(model_id, email, permission)
         assert permission in str(err)
+
+
+class TestPullModelDatasources:
+
+    @mock.patch(f"{MODULE_PREFIX}.pull_model_information")
+    def test_works_ok(self, mock_pull_model_information):
+        model_id = valid_uid()
+        mock_ds = mock.MagicMock()
+        mock_pull_model_information.return_value.data_sources = mock_ds
+        assert pull_model_datasources(model_id) == mock_ds
+        mock_pull_model_information.assert_called_once_with(model_id)
+
+
+class TestGetModelTags:
+
+    @mock.patch(f"{MODULE_PREFIX}.pull_model_information")
+    def test_works_ok(self, mock_pull_model_information):
+        uid = valid_uid()
+        mock_tags = mock.MagicMock()
+        mock_pull_model_information.return_value.tags = mock_tags
+        assert get_model_tags(uid) == mock_tags
+        mock_pull_model_information.assert_called_once_with(uid)
+
+
+class TestAppendlTags:
+
+    @mock.patch(f"{MODULE_PREFIX}.tag_model")
+    @mock.patch(f"{MODULE_PREFIX}.get_model_tags")
+    def test_works_ok(self, mock_get_model_tags, mock_tag_model):
+        uid = valid_uid()
+        tags = valid_tags(count=5)
+        mock_get_model_tags.return_value = valid_tags(count=2)
+        append_tags(uid, tags)
+        a, _ = mock_tag_model.call_args
+        mock_tag_model.assert_called_once
+        call_uid, tags = a[0], a[1]
+        assert call_uid == uid
+        assert len(tags) == 5 + 2
+
+    @mock.patch(f"{MODULE_PREFIX}.tag_model")
+    @mock.patch(f"{MODULE_PREFIX}.get_model_tags")
+    def test_works_ensure_union(self, mock_get_model_tags, mock_tag_model):
+        uid = valid_uid()
+        tags = valid_tags(count=5)
+        mock_get_model_tags.return_value = tags
+        append_tags(uid, tags)
+        a, _ = mock_tag_model.call_args
+        mock_tag_model.assert_called_once
+        call_uid, tags = a[0], a[1]
+        assert call_uid == uid
+        assert len(tags) == 5
+
+
+class TestRecalculateModel:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        model_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        mock_c.get.return_value = 42
+        assert recalculate_model(model_id) == 42
+        _, kw = mock_c.get.call_args
+        assert 'url' in kw
+        assert 'headers' in kw
+        assert kw.get('headers').get('uid') == model_id
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        model_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        d, s, u = 42, 4, 'www'
+        mock_c.get.side_effect = ModelingServiceGetException(d, s, u)
+        with pytest.raises(RecalculateModelException) as err:
+            recalculate_model(model_id)
+        assert 'error recalculating model' in str(err)
+
+
+class TestRemoveModule:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        model_id = valid_uid()
+        case_id = valid_uid()
+        module_id = valid_uid()
+        parent_module_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        assert remove_module(model_id, case_id, module_id, parent_module_id)
+        mock_c.post.assert_called_once()
+        _, kw = mock_c.post.call_args
+        assert kw.get('data') == {
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            Headers.PARENT_MODULE_ID: parent_module_id,
+            Headers.UID: module_id,
+        }
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises(self, mock_new_client):
+        model_id = valid_uid()
+        case_id = valid_uid()
+        module_id = valid_uid()
+        parent_module_id = valid_uid()
+        mock_c = mock.MagicMock()
+        d, s, u = 42, 4, 'www'
+        mock_c.post.side_effect = ModelingServicePostException(d, s, u)
+        mock_new_client.return_value = mock_c
+        with pytest.raises(RemoveModuleException) as err:
+            remove_module(model_id, case_id, module_id, parent_module_id)
+        assert 'error removing module' in str(err)
+
+
+class TestAddChildModule:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
+    def test_works_ok(self, mock_from_json, mock_new_client):
+        parent_module_id = valid_uid()
+        name = valid_name()
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_mod = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        mock_from_json.return_value = mock_new_mod
+        module = {'name': name, 'thing': 42}
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'childModules': [module]
+                }
+            }
+        }
+        assert add_child_module(parent_module_id, name, model_id,
+                                case_id) == mock_new_mod
+        mock_from_json.assert_called_once_with(module)
+        _, kw = mock_c.post.call_args
+        assert 'url' in kw
+        assert kw.get('data') == {
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            Headers.NAME: name,
+            Headers.PARENT_MODULE_ID: parent_module_id,
+        }
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_module_not_found(self, mock_new_client):
+        parent_module_id = valid_uid()
+        name = valid_name()
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'childModules': [{
+                        'name': 'any',
+                        'thing': 42
+                    }]
+                }
+            }
+        }
+        with pytest.raises(AddChildModuleException) as err:
+            add_child_module(parent_module_id, name, model_id, case_id)
+        assert f' could not find module with name {name}' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_incorrect_data_structure(self, mock_new_client):
+        parent_module_id = valid_uid()
+        name = valid_name()
+        model_id = valid_uid()
+        case_id = valid_uid()
+        mock_c = mock.MagicMock()
+
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {'data': {}}
+        with pytest.raises(AddChildModuleException) as err:
+            add_child_module(parent_module_id, name, model_id, case_id)
+        assert 'Error adding child module: unexpected data structure' in str(
+            err)
+
+
+class TestAddLineItem:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        expected_line_item_data = {'uid': '0x2', 'name': name, 'facts': []}
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'lineItems': [expected_line_item_data]
+                }
+            }
+        }
+        rl = add_line_item(case_id, model_id, module_id, name, order)
+        assert rl.name == name
+        assert rl.uid == expected_line_item_data.get('uid')
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_bad_data(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {'data': {}}
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert 'error adding line item: invalid data structure' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_cant_find_line_item(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        expected_line_item_data = {
+            'uid': '0x2',
+            'name': 'somethingElse',
+            'facts': []
+        }
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'lineItems': [expected_line_item_data]
+                }
+            }
+        }
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert f'error adding line item: cannot find module with name {name}' in str(
+            err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_client_raises(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        d, s, u = 42, 4, 'www'
+        mock_c.post.side_effect = ModelingServicePostException(d, s, u)
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert 'error adding line item' in str(err)
+        assert model_id in str(err)
+        assert module_id in str(err)
+
+
+class TestEditFacts:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        url = 'www'
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        edit_facts(url, case_id, model_id, facts)
+        mock_new_client.assert_called_once()
+        mock_c.post.assert_called_once
+        _, kw = mock_c.post.call_args
+        assert kw.get('url') == url
+        assert kw.get('data') == {
+            Headers.CASE_ID: case_id,
+            Headers.MODEL_ID: model_id,
+            "forecastIncrement": 1,
+            "facts": facts,
+        }
+
+
+class TestEditFormat:
+
+    @mock.patch(f"{MODULE_PREFIX}.edit_facts")
+    def test_works_ok(self, mock_edit_facts):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        edit_format(case_id, model_id, facts)
+        mock_edit_facts.assert_called_once()
+        _, kw = mock_edit_facts.call_args
+        assert kw.get('case_id') == case_id
+        assert kw.get('model_id') == model_id
+        assert kw.get('facts') == facts
+
+
+class TestEditFormula:
+
+    @mock.patch(f"{MODULE_PREFIX}.edit_facts")
+    def test_works_ok(self, mock_edit_facts):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        facts = [1, 2, 3]
+        edit_formula(case_id, model_id, facts)
+        mock_edit_facts.assert_called_once()
+        _, kw = mock_edit_facts.call_args
+        assert kw.get('case_id') == case_id
+        assert kw.get('model_id') == model_id
+        assert kw.get('facts') == facts

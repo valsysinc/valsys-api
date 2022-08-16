@@ -26,3 +26,7 @@ def valid_permission():
 
 def valid_email():
     return 'you@me.com'
+
+
+def valid_name():
+    return 'gkrhgkherjkeh'

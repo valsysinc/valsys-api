@@ -295,7 +295,8 @@ def recalculate_model(model_id: str):
                           headers={Headers.UID: model_id})
         return resp
     except ModelingServiceGetException as err:
-        raise RecalculateModelException(str(err))
+        raise RecalculateModelException(
+            f"error recalculating model: {str(err)}")
 
 
 def remove_module(model_id: str, case_id: str, module_id: str,
@@ -321,9 +322,7 @@ def remove_module(model_id: str, case_id: str, module_id: str,
             },
         )
     except ModelingServicePostException as err:
-        if err.data.get('message') == 'could not find fact':
-            raise RemoveModuleException('could not find module to delete')
-        raise
+        raise RemoveModuleException(f'error removing module: {str(err)}')
     return True
 
 

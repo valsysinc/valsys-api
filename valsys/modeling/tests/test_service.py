@@ -17,17 +17,11 @@ from valsys.modeling.service import (
     new_model_groups, pull_case, pull_model_groups, pull_model_information,
     share_model, spawn_model, tag_line_item, tag_model, update_model_groups,
     pull_model_datasources, get_model_tags, append_tags, recalculate_model,
-    remove_module, add_child_module)
+    remove_module, add_child_module, add_line_item)
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.headers import Headers
-from .factories import (
-    valid_email,
-    valid_permission,
-    valid_tags,
-    valid_ticker,
-    valid_uid,
-    valid_uids,
-)
+from .factories import (valid_email, valid_permission, valid_tags,
+                        valid_ticker, valid_uid, valid_uids, valid_name)
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -576,7 +570,7 @@ class TestAddChildModule:
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
     def test_works_ok(self, mock_from_json, mock_new_client):
         parent_module_id = valid_uid()
-        name = 'Name'
+        name = valid_name()
         model_id = valid_uid()
         case_id = valid_uid()
         mock_c = mock.MagicMock()
@@ -606,7 +600,7 @@ class TestAddChildModule:
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok_module_not_found(self, mock_new_client):
         parent_module_id = valid_uid()
-        name = 'Name'
+        name = valid_name()
         model_id = valid_uid()
         case_id = valid_uid()
         mock_c = mock.MagicMock()
@@ -630,7 +624,7 @@ class TestAddChildModule:
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_incorrect_data_structure(self, mock_new_client):
         parent_module_id = valid_uid()
-        name = 'Name'
+        name = valid_name()
         model_id = valid_uid()
         case_id = valid_uid()
         mock_c = mock.MagicMock()
@@ -642,3 +636,93 @@ class TestAddChildModule:
             add_child_module(parent_module_id, name, model_id, case_id)
         assert 'Error adding child module: unexpected data structure' in str(
             err)
+
+
+class TestAddLineItem:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        expected_line_item_data = {'uid': '0x2', 'name': name, 'facts': []}
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'lineItems': [expected_line_item_data]
+                }
+            }
+        }
+        rl = add_line_item(case_id, model_id, module_id, name, order)
+        assert rl.name == name
+        assert rl.uid == expected_line_item_data.get('uid')
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_bad_data(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        mock_c.post.return_value = {'data': {}}
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert 'error adding line item: invalid data structure' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_cant_find_line_item(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+
+        expected_line_item_data = {
+            'uid': '0x2',
+            'name': 'somethingElse',
+            'facts': []
+        }
+
+        mock_c.post.return_value = {
+            'data': {
+                'module': {
+                    'lineItems': [expected_line_item_data]
+                }
+            }
+        }
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert f'error adding line item: cannot find module with name {name}' in str(
+            err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_client_raises(self, mock_new_client):
+        case_id = valid_uid()
+        model_id = valid_uid()
+        module_id = valid_uid()
+        name = valid_name()
+        order = 1
+
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        d, s, u = 42, 4, 'www'
+        mock_c.post.side_effect = ModelingServicePostException(d, s, u)
+        with pytest.raises(AddLineItemException) as err:
+            add_line_item(case_id, model_id, module_id, name, order)
+        assert 'error adding line item' in str(err)
+        assert model_id in str(err)
+        assert module_id in str(err)

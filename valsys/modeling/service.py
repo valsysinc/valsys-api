@@ -389,18 +389,24 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                 Headers.MODULE_ID: module_id,
             },
         )
-    except ModelingServicePostException as err:
+    except (ModelingServicePostException, Exception) as err:
         logger.exception(err)
-        raise
-    except Exception as err:
         raise AddLineItemException(
-            f"error adding line item to model={model_id} module={module_id}")
+            f"error adding line item to model={model_id} module={module_id}; {str(err)}"
+        )
 
-    module = Module.from_json(resp["data"]["module"])
-    for l in module.line_items:
-        if l.name == name:
-            return l
-    raise AddLineItemException(f"cannot find module with name {name}")
+    try:
+        line_items = resp["data"]["module"]['lineItems']
+    except KeyError as err:
+        raise AddLineItemException(
+            "error adding line item: invalid data structure")
+
+    for l in line_items:
+        if l['name'] == name:
+            return LineItem.from_json(l)
+
+    raise AddLineItemException(
+        f"error adding line item: cannot find module with name {name}")
 
 
 def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):

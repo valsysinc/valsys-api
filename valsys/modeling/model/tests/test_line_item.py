@@ -19,7 +19,7 @@ class TestLineItem:
         assert li.uid == uid
         assert li.name == name
         assert len(li.facts) == 0
-        assert li.tags is None
+        assert li.tags == []
 
     def test_from_json_no_facts_no_tags(self):
         uid = self.valid_uid
@@ -29,7 +29,7 @@ class TestLineItem:
         assert li_fj.uid == uid
         assert li_fj.name == name
         assert len(li_fj.facts) == 0
-        assert li_fj.tags is None
+        assert li_fj.tags == []
 
     def test_from_json_no_facts_with_tags(self):
         uid = self.valid_uid

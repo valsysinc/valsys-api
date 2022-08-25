@@ -2,7 +2,7 @@ test:
 	export VALSYS_API_BUILD=test; python login-test.py; pytest . --disable-warnings
 
 coverage-ci:
-	rm coverage.svg
+	rm -f coverage.svg
 	export VALSYS_API_BUILD=test; python login-test.py; coverage run  --source=. -m pytest . 
 	coverage-badge -o coverage.svg
 

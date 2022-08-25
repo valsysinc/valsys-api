@@ -42,6 +42,41 @@ class ModelingActions:
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
 
 
+def filter_history():
+    url = VSURL.USERS_FILTER_HISTORY
+    headers = {
+        'pagination':
+        '1',  # 50 models per page, use model-history to get total number of models    
+    }
+    filter = {
+        "allActive": False,
+        "dateRange": ["2002-01-01T00:00:00.000Z", "2023-01-31T00:00:00.000Z"],
+        "maxDate": "2023-01-31T00:00:00.000Z",
+        "minDate": "2002-01-01T00:00:00.000Z",
+        "filters": {
+            "Name": True,
+            "Ticker": True,
+            "Geography": False,
+            "Industry": False
+        },
+        "geoFilters": [],
+        "indFilters": [],
+        "predicate":
+        "",  # search by name along with the 'filters' prop, will match according to settings set to True   
+        "modelType": "user",  # options are 'user', 'shared', 'both' 
+        "tagFilters": ["AE Machine Model"]  # search by tags  
+    }
+    client = new_client()
+    try:
+        resp = client.post(url, headers, filter)
+    except ModelingServicePostException:
+        raise
+    return resp.json()
+
+
+# response = requests.request("POST", url, headers=headers, data=json.dumps(filter))   print(response.json())
+
+
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
     client = new_socket_client()
     config.action = ModelingActions.SPAWN_MODELS

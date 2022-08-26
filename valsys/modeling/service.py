@@ -8,30 +8,19 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException,
-    AddLineItemException,
-    NewModelGroupsException,
-    PullModelGroupsException,
-    PullModelInformationException,
-    RecalculateModelException,
-    RemoveModuleException,
-    ShareModelException,
-    TagLineItemException,
-    TagModelException,
-    UpdateModelGroupsException,
-)
+    AddChildModuleException, AddLineItemException, NewModelGroupsException,
+    PullModelGroupsException, PullModelInformationException,
+    RecalculateModelException, RemoveModuleException, ShareModelException,
+    TagLineItemException, TagModelException, UpdateModelGroupsException,
+    FilterModelsException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
-from valsys.modeling.models import (
-    ModelGroups,
-    Permissions,
-    SpawnedModelInfo,
-    TaggedLineItemResponse,
-)
+from valsys.modeling.models import (ModelGroups, Permissions, SpawnedModelInfo,
+                                    TaggedLineItemResponse, ModelInformation)
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -42,39 +31,73 @@ class ModelingActions:
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
 
 
-def filter_history():
+def filter_user_models(tags: List[str] = None,
+                       model_type: str = 'user',
+                       max_date: str = "2023-01-31T00:00:00.000Z",
+                       min_date: str = "2002-01-01T00:00:00.000Z",
+                       tag_filter_type: str = '',
+                       geo_filters: List[str] = None,
+                       ind_filters: List[str] = None,
+                       filter_on: List[str] = None,
+                       predicate: str = '',
+                       pagination=1) -> List[ModelInformation]:
+    """Search for a set of models, using the provided set of filters for the using user
+    
+    Args:
+        model_type: Options are `user`, `shared`, `both`. 
+        max_date: Maximum creation date of the model
+        min_date: Minimum creation date of the model
+        geo_filters: The geographies to include in the search
+        ind_filters: The industries to include in the search
+        filter_on: List of strings of properties to filter on; allowed: `Name`, `Ticker`, `Geography`, `Industry`.
+        predicate: Will match according the props in the `filter_on` list.  
+        tags: List of tags to filter on
+        tag_filter_type: How to combine the tags to search over; options are `and` and `or`.
+        pagination: Page number of results
+    Returns:
+        List of matching model information objects.
+    """
+
+    if tag_filter_type not in ['', 'and', 'or']:
+        raise FilterModelsException(
+            f"invalid tag_filter_type prop: {tag_filter_type}")
+    if model_type not in ['user', 'shared', 'both']:
+        raise FilterModelsException(f"invalid model_type prop: {model_type}")
+
+    filter_on = [fo.lower() for fo in filter_on]
+    filter_name = 'name' in filter_on
+    filter_ticker = 'ticker' in filter_on
+    filter_geography = 'geography' in filter_on
+    filter_industry = 'industry' in filter_on
+
     url = VSURL.USERS_FILTER_HISTORY
     headers = {
-        'pagination':
-        '1',  # 50 models per page, use model-history to get total number of models    
+        'pagination': str(pagination),
     }
     filter = {
-        "allActive": False,
-        "dateRange": ["2002-01-01T00:00:00.000Z", "2023-01-31T00:00:00.000Z"],
-        "maxDate": "2023-01-31T00:00:00.000Z",
-        "minDate": "2002-01-01T00:00:00.000Z",
+        "maxDate": min_date,
+        "minDate": max_date,
         "filters": {
-            "Name": True,
-            "Ticker": True,
-            "Geography": False,
-            "Industry": False
+            "Name": filter_name,
+            "Ticker": filter_ticker,
+            "Geography": filter_geography,
+            "Industry": filter_industry
         },
-        "geoFilters": [],
-        "indFilters": [],
-        "predicate":
-        "",  # search by name along with the 'filters' prop, will match according to settings set to True   
-        "modelType": "user",  # options are 'user', 'shared', 'both' 
-        "tagFilters": ["AE Machine Model"]  # search by tags  
+        "geoFilters": geo_filters or [],
+        "indFilters": ind_filters or [],
+        "tagFilters": tags or [],
+        "tagFilterType": tag_filter_type,
+        "predicate": predicate,
+        "modelType": model_type,
     }
     client = new_client()
     try:
         resp = client.post(url, headers, filter)
     except ModelingServicePostException:
         raise
-    return resp.json()
-
-
-# response = requests.request("POST", url, headers=headers, data=json.dumps(filter))   print(response.json())
+    return [
+        ModelInformation.from_json(j) for j in resp.get('data').get('models')
+    ]
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:

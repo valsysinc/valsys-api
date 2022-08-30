@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
+from valsys.modeling.exceptions import FilterModelsException
 
 
 @dataclass
@@ -185,3 +186,63 @@ class ModelInformation:
                    model_tags=j.get('modelTags'),
                    permissions=PermissionsModel.from_json(
                        j.get('permissions')))
+
+
+@dataclass
+class ModelsFilter:
+    max_date: str
+    min_date: str
+
+    predicate: str
+    model_type: str
+    filter_name: bool = False
+    filter_ticker: bool = False
+    filter_geography: bool = False
+    filter_industry: bool = False
+    geo_filters: List[str] = field(default_factory=list)
+    ind_filters: List[str] = field(default_factory=list)
+    tag_filters: List[str] = field(default_factory=list)
+    tag_filter_type: str = ''
+
+    class ValidTypes:
+        TAG_FILTER_TYPES = ['', 'and', 'or']
+        MODEL_TYPES = ['user', 'shared', 'both']
+
+    def __post_init__(self):
+        self.validate()
+
+    def set_filter_on(self, filter_on: List[str]):
+        filter_on = [fo.lower() for fo in filter_on]
+        self.filter_name = 'name' in filter_on
+        self.filter_ticker = 'ticker' in filter_on
+        self.filter_geography = 'geography' in filter_on
+        self.filter_industry = 'industry' in filter_on
+
+    def validate(self):
+        if self.tag_filter_type not in self.ValidTypes.TAG_FILTER_TYPES:
+            raise FilterModelsException(
+                f"invalid tag_filter_type prop: {self.tag_filter_type}")
+
+        if self.model_type not in self.ValidTypes.MODEL_TYPES:
+            raise FilterModelsException(
+                f"invalid model_type prop: {self.model_type}")
+
+    def jsonify(self):
+        # Incase anyone has messed about with anything: validate again;
+        self.validate()
+        return {
+            "maxDate": self.max_date,
+            "minDate": self.min_date,
+            "filters": {
+                "Name": self.filter_name,
+                "Ticker": self.filter_ticker,
+                "Geography": self.filter_geography,
+                "Industry": self.filter_industry
+            },
+            "geoFilters": self.geo_filters,
+            "indFilters": self.ind_filters,
+            "tagFilters": self.tag_filters,
+            "tagFilterType": self.tag_filter_type,
+            "predicate": self.predicate,
+            "modelType": self.model_type,
+        }

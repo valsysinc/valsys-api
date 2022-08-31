@@ -49,7 +49,10 @@ This provides a valid example of a configuration file which can be passed to the
     "spawnModelsConfig": [
         {
             "tickers": [
-                "SBUX"
+                {
+                    "ticker": "SBUX",
+                    "source": "dataSource|SBUX_US|jp"
+                }
             ],
             "templateName": "dcf-standard",
             "numForecastYears": 2,
@@ -63,7 +66,10 @@ This provides a valid example of a configuration file which can be passed to the
         },
         {
             "tickers": [
-                "BYND"
+                {
+                    "ticker": "BYND",
+                    "source": "dataSource|BYND_US|jp"
+                }
             ],
             "templateName": "dcf-standard",
             "numForecastYears": 2,

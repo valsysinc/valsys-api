@@ -212,6 +212,8 @@ class ModelsFilter:
         self.validate()
 
     def set_filter_on(self, filter_on: List[str]):
+        if filter_on is None:
+            return
         filter_on = [fo.lower() for fo in filter_on]
         self.filter_name = 'name' in filter_on
         self.filter_ticker = 'ticker' in filter_on

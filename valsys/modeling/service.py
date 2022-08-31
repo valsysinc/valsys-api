@@ -59,16 +59,16 @@ def filter_user_models(tags: List[str] = None,
         List of matching model information objects.
     """
 
-    filters = ModelsFilter(max_date=max_date,
-                           min_date=min_date,
-                           tag_filter_type=tag_filter_type,
-                           model_type=model_type,
-                           geo_filters=geo_filters,
-                           ind_filters=ind_filters,
-                           tag_filters=tags,
-                           tag_filter_type=tag_filter_type,
-                           predicate=filter_term,
-                           model_type=model_type)
+    filters = ModelsFilter(
+        max_date=max_date,
+        min_date=min_date,
+        tag_filter_type=tag_filter_type,
+        model_type=model_type,
+        geo_filters=geo_filters,
+        ind_filters=ind_filters,
+        tag_filters=tags,
+        predicate=filter_term,
+    )
     filters.set_filter_on(filter_on)
 
     headers = {

@@ -8,6 +8,13 @@ For example, `from valsys.modeling.service import tag_model`.
 
 The exposed functions are listed out below
 
+## Model searching
+```python linenums="1"
+filter_user_models
+```
+::: valsys.modeling.service.filter_user_models
+
+
 ## Model tagging
 
 ```python linenums="1"

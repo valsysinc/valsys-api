@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
+from valsys.modeling.exceptions import FilterModelsException
 
 
 @dataclass
@@ -100,3 +101,150 @@ class TaggedLineItemResponse:
     @classmethod
     def from_json(cls, j):
         return cls(uid=j.get('uid'), name=j.get('name'), tags=j.get('tags'))
+
+
+@dataclass
+class PermissionsModel:
+    user_id: str
+    model_id: str
+    view: bool = False
+    edit: bool = False
+    full_access: bool = False
+    owner: bool = False
+
+    class fields:
+        USER_ID = 'userID'
+        MODEL_ID = 'modelID'
+        VIEW = 'view'
+        EDIT = 'edit'
+        FULL_ACCESS = 'fullAccess'
+        OWNER = 'owner'
+
+    def jsonify(self):
+        return {
+            self.fields.USER_ID: self.user_id,
+            self.fields.MODEL_ID: self.model_id,
+            self.fields.VIEW: self.view,
+            self.fields.EDIT: self.edit,
+            self.fields.FULL_ACCESS: self.full_access,
+            self.fields.OWNER: self.owner
+        }
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(user_id=j.get(cls.fields.USER_ID),
+                   model_id=j.get(cls.fields.MODEL_ID),
+                   view=j.get(cls.fields.VIEW, False),
+                   edit=j.get(cls.fields.EDIT, False),
+                   full_access=j.get(cls.fields.FULL_ACCESS, False),
+                   owner=j.get(cls.fields.OWNER, False))
+
+
+@dataclass
+class ModelInformation:
+    uid: str
+    cik: str
+    ticker: str
+    company_name: str
+    geography: str
+    industry: str
+    currency: str
+    case_id: str
+    current_share_price: float
+    implied_share_price: float
+    forecast_period: int
+    historical_period: int
+    historical_start: int
+    forecast_increment: int
+    start_period: int
+    created_at: str
+    last_edit: str
+    tags: List[str]
+    model_tags: List[str]
+    permissions: PermissionsModel
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(uid=j.get('uid'),
+                   cik=j.get('cik'),
+                   ticker=j.get('ticker'),
+                   geography=j.get('geography'),
+                   industry=j.get('industry'),
+                   company_name=j.get('companyName'),
+                   currency=j.get('currency'),
+                   case_id=j.get('caseID'),
+                   current_share_price=float(j.get('currentSharePrice')),
+                   implied_share_price=float(j.get('impliedSharePrice')),
+                   forecast_period=int(j.get('forecastPeriod')),
+                   historical_period=int(j.get('historicalPeriod')),
+                   historical_start=int(j.get('historicalStart')),
+                   forecast_increment=j.get('forecastIncrement'),
+                   start_period=j.get('startPeriod'),
+                   created_at=j.get('createdAt'),
+                   last_edit=j.get('lastEdit'),
+                   tags=j.get('tags'),
+                   model_tags=j.get('modelTags'),
+                   permissions=PermissionsModel.from_json(
+                       j.get('permissions')))
+
+
+@dataclass
+class ModelsFilter:
+    max_date: str
+    min_date: str
+
+    predicate: str
+    model_type: str
+    filter_name: bool = False
+    filter_ticker: bool = False
+    filter_geography: bool = False
+    filter_industry: bool = False
+    geo_filters: List[str] = field(default_factory=list)
+    ind_filters: List[str] = field(default_factory=list)
+    tag_filters: List[str] = field(default_factory=list)
+    tag_filter_type: str = ''
+
+    class ValidTypes:
+        TAG_FILTER_TYPES = ['', 'and', 'or']
+        MODEL_TYPES = ['user', 'shared', 'both']
+
+    def __post_init__(self):
+        self.validate()
+
+    def set_filter_on(self, filter_on: List[str]):
+        if filter_on is None:
+            return
+        filter_on = [fo.lower() for fo in filter_on]
+        self.filter_name = 'name' in filter_on
+        self.filter_ticker = 'ticker' in filter_on
+        self.filter_geography = 'geography' in filter_on
+        self.filter_industry = 'industry' in filter_on
+
+    def validate(self):
+        if self.tag_filter_type not in self.ValidTypes.TAG_FILTER_TYPES:
+            raise FilterModelsException(
+                f"invalid tag_filter_type prop: {self.tag_filter_type}")
+
+        if self.model_type not in self.ValidTypes.MODEL_TYPES:
+            raise FilterModelsException(
+                f"invalid model_type prop: {self.model_type}")
+
+    def jsonify(self):
+        # Incase anyone has messed about with anything: validate again;
+        self.validate()
+        return {
+            "maxDate": self.max_date,
+            "minDate": self.min_date,
+            "filters": {
+                "Name": self.filter_name,
+                "Ticker": self.filter_ticker,
+                "Geography": self.filter_geography,
+                "Industry": self.filter_industry
+            },
+            "geoFilters": self.geo_filters,
+            "indFilters": self.ind_filters,
+            "tagFilters": self.tag_filters,
+            "tagFilterType": self.tag_filter_type,
+            "predicate": self.predicate,
+            "modelType": self.model_type,
+        }

@@ -8,30 +8,20 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException,
-    AddLineItemException,
-    NewModelGroupsException,
-    PullModelGroupsException,
-    PullModelInformationException,
-    RecalculateModelException,
-    RemoveModuleException,
-    ShareModelException,
-    TagLineItemException,
-    TagModelException,
-    UpdateModelGroupsException,
-)
+    AddChildModuleException, AddLineItemException, NewModelGroupsException,
+    PullModelGroupsException, PullModelInformationException,
+    RecalculateModelException, RemoveModuleException, ShareModelException,
+    TagLineItemException, TagModelException, UpdateModelGroupsException,
+    FilterModelsException)
 from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
-from valsys.modeling.models import (
-    ModelGroups,
-    Permissions,
-    SpawnedModelInfo,
-    TaggedLineItemResponse,
-)
+from valsys.modeling.models import (ModelGroups, Permissions, SpawnedModelInfo,
+                                    TaggedLineItemResponse, ModelInformation,
+                                    ModelsFilter)
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -40,6 +30,60 @@ from valsys.utils import logger
 class ModelingActions:
     SPAWN_MODELS = "SPAWN_MODELS"
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
+
+
+def filter_user_models(tags: List[str] = None,
+                       model_type: str = 'user',
+                       max_date: str = "2023-01-31T00:00:00.000Z",
+                       min_date: str = "2002-01-01T00:00:00.000Z",
+                       tag_filter_type: str = '',
+                       geo_filters: List[str] = None,
+                       ind_filters: List[str] = None,
+                       filter_on: List[str] = None,
+                       filter_term: str = '',
+                       pagination=1) -> List[ModelInformation]:
+    """Search for a set of models, using the provided set of filters for the using user
+    
+    Args:
+        filter_on: List of strings of properties to filter on; allowed: `Name`, `Ticker`, `Geography`, `Industry`.
+        filter_term: Will match according the props in the `filter_on` list.  
+        model_type: Options are `user`, `shared`, `both`. 
+        max_date: Maximum creation date of the model (required format: YYYY-MM-DDTHH:MM:DD.SSSZ)
+        min_date: Minimum creation date of the model (required format: YYYY-MM-DDTHH:MM:DD.SSSZ)
+        geo_filters: The geographies to include in the search
+        ind_filters: The industries to include in the search
+        tags: List of tags to filter on
+        tag_filter_type: How to combine the tags to search over; options are `and` and `or`.
+        pagination: Page number of results
+    Returns:
+        List of matching model information objects.
+    """
+
+    filters = ModelsFilter(
+        max_date=max_date,
+        min_date=min_date,
+        tag_filter_type=tag_filter_type,
+        model_type=model_type,
+        geo_filters=geo_filters,
+        ind_filters=ind_filters,
+        tag_filters=tags,
+        predicate=filter_term,
+    )
+    filters.set_filter_on(filter_on)
+
+    headers = {
+        'pagination': str(pagination),
+    }
+    client = new_client()
+    try:
+        resp = client.post(VSURL.USERS_FILTER_HISTORY,
+                           headers=headers,
+                           data=filters.jsonify())
+    except ModelingServicePostException as err:
+        raise err
+    return [
+        ModelInformation.from_json(j) for j in resp.get('data').get('models')
+    ]
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:

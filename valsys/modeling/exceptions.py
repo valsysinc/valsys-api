@@ -40,3 +40,7 @@ class UpdateModelGroupsException(Exception):
 
 class TagLineItemException(Exception):
     pass
+
+
+class FilterModelsException(Exception):
+    pass

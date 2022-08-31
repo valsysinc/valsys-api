@@ -22,6 +22,7 @@ class VSURL:
     USERS_GROUPS = f"{BASE_URL}/users/groups"
     USERS_GROUP = f"{BASE_URL}/users/group"
     USERS_UPDATE_GROUP = f"{BASE_URL}/users/update-group"
+    USERS_FILTER_HISTORY = f"{BASE_URL}/users/filter-history"
     RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"

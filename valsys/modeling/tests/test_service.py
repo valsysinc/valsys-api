@@ -18,13 +18,21 @@ from valsys.modeling.service import (
     pull_model_information, share_model, spawn_model, tag_line_item, tag_model,
     update_model_groups, pull_model_datasources, get_model_tags, append_tags,
     recalculate_model, remove_module, add_child_module, add_line_item,
-    edit_facts, edit_formula)
+    edit_facts, edit_formula, filter_user_models)
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.headers import Headers
 from .factories import (valid_email, valid_permission, valid_tags,
                         valid_ticker, valid_uid, valid_uids, valid_name)
 
 MODULE_PREFIX = "valsys.modeling.service"
+
+
+class TestFilterUserModels:
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_no_args(self, mock_new_client):
+        filter_user_models()
+        mock_new_client.assert_called_once()
 
 
 class TestSpawnModel:

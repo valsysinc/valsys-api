@@ -20,8 +20,8 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (ModelGroups, Permissions, SpawnedModelInfo,
-                                    TaggedLineItemResponse, ModelInformation,
-                                    ModelsFilter)
+                                    TaggedLineItemResponse,
+                                    ModelDetailInformation, ModelsFilter)
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -41,7 +41,7 @@ def filter_user_models(tags: List[str] = None,
                        ind_filters: List[str] = None,
                        filter_on: List[str] = None,
                        filter_term: str = '',
-                       pagination=1) -> List[ModelInformation]:
+                       pagination=1) -> List[ModelDetailInformation]:
     """Search for a set of models, using the provided set of filters for the using user
     
     Args:
@@ -82,7 +82,8 @@ def filter_user_models(tags: List[str] = None,
     except ModelingServicePostException as err:
         raise err
     return [
-        ModelInformation.from_json(j) for j in resp.get('data').get('models')
+        ModelDetailInformation.from_json(j)
+        for j in resp.get('data').get('models')
     ]
 
 

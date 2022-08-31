@@ -22,7 +22,7 @@ class Model(object):
 
 @dataclass
 class ModelInformation:
-
+    # TODO: combine with  datastructure `ModelDetailInformation` in valsys.modeling.models
     uid: str
     tags: List[str] = field(default_factory=list)
     cases: List[CaseInformation] = field(default_factory=list)

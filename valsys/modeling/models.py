@@ -141,7 +141,7 @@ class PermissionsModel:
 
 
 @dataclass
-class ModelInformation:
+class ModelDetailInformation:
     uid: str
     cik: str
     ticker: str

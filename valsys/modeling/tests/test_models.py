@@ -1,8 +1,14 @@
 import pytest
 
-from valsys.modeling.models import ModelGroup, PermissionTypes, Permissions, ModelsFilter
-from .factories import valid_models_filter
 from valsys.modeling.exceptions import FilterModelsException
+from valsys.modeling.models import (
+    ModelGroup,
+    ModelsFilter,
+    PermissionTypes,
+    Permissions,
+)
+
+from .factories import valid_models_filter
 
 
 class TestPermissions:

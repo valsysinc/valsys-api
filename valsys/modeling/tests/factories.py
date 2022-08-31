@@ -1,7 +1,6 @@
 import uuid
 
-from valsys.modeling.models import PermissionTypes, Permissions
-from valsys.modeling.models import ModelsFilter
+from valsys.modeling.models import ModelsFilter, PermissionTypes, Permissions
 
 
 def valid_ticker():

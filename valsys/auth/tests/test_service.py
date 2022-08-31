@@ -6,6 +6,7 @@ import pytest
 
 from valsys.auth.service import Status, auth_headers, authenticate
 
+
 MODULE_PREFIX = "valsys.auth.service"
 
 

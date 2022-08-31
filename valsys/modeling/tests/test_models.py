@@ -82,6 +82,14 @@ class TestModelsFilter:
         assert not mf.filter_name
         assert not mf.filter_ticker
 
+    def test_set_filter_on_blank(self):
+        mf = valid_models_filter()
+        mf.set_filter_on(None)
+        assert not mf.filter_name
+        assert not mf.filter_geography
+        assert not mf.filter_industry
+        assert not mf.filter_ticker
+
     def test_set_filter_on_name_only(self):
         mf = valid_models_filter()
         mf.set_filter_on(['naMe'])

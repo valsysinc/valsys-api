@@ -20,7 +20,8 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (ModelGroups, Permissions, SpawnedModelInfo,
-                                    TaggedLineItemResponse, ModelInformation)
+                                    TaggedLineItemResponse, ModelInformation,
+                                    ModelsFilter)
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -39,18 +40,18 @@ def filter_user_models(tags: List[str] = None,
                        geo_filters: List[str] = None,
                        ind_filters: List[str] = None,
                        filter_on: List[str] = None,
-                       predicate: str = '',
+                       filter_term: str = '',
                        pagination=1) -> List[ModelInformation]:
     """Search for a set of models, using the provided set of filters for the using user
     
     Args:
+        filter_on: List of strings of properties to filter on; allowed: `Name`, `Ticker`, `Geography`, `Industry`.
+        filter_term: Will match according the props in the `filter_on` list.  
         model_type: Options are `user`, `shared`, `both`. 
-        max_date: Maximum creation date of the model
-        min_date: Minimum creation date of the model
+        max_date: Maximum creation date of the model (required format: YYYY-MM-DDTHH:MM:DD.SSSZ)
+        min_date: Minimum creation date of the model (required format: YYYY-MM-DDTHH:MM:DD.SSSZ)
         geo_filters: The geographies to include in the search
         ind_filters: The industries to include in the search
-        filter_on: List of strings of properties to filter on; allowed: `Name`, `Ticker`, `Geography`, `Industry`.
-        predicate: Will match according the props in the `filter_on` list.  
         tags: List of tags to filter on
         tag_filter_type: How to combine the tags to search over; options are `and` and `or`.
         pagination: Page number of results
@@ -58,43 +59,28 @@ def filter_user_models(tags: List[str] = None,
         List of matching model information objects.
     """
 
-    if tag_filter_type not in ['', 'and', 'or']:
-        raise FilterModelsException(
-            f"invalid tag_filter_type prop: {tag_filter_type}")
-    if model_type not in ['user', 'shared', 'both']:
-        raise FilterModelsException(f"invalid model_type prop: {model_type}")
+    filters = ModelsFilter(max_date=max_date,
+                           min_date=min_date,
+                           tag_filter_type=tag_filter_type,
+                           model_type=model_type,
+                           geo_filters=geo_filters,
+                           ind_filters=ind_filters,
+                           tag_filters=tags,
+                           tag_filter_type=tag_filter_type,
+                           predicate=filter_term,
+                           model_type=model_type)
+    filters.set_filter_on(filter_on)
 
-    filter_on = [fo.lower() for fo in filter_on]
-    filter_name = 'name' in filter_on
-    filter_ticker = 'ticker' in filter_on
-    filter_geography = 'geography' in filter_on
-    filter_industry = 'industry' in filter_on
-
-    url = VSURL.USERS_FILTER_HISTORY
     headers = {
         'pagination': str(pagination),
     }
-    filter = {
-        "maxDate": min_date,
-        "minDate": max_date,
-        "filters": {
-            "Name": filter_name,
-            "Ticker": filter_ticker,
-            "Geography": filter_geography,
-            "Industry": filter_industry
-        },
-        "geoFilters": geo_filters or [],
-        "indFilters": ind_filters or [],
-        "tagFilters": tags or [],
-        "tagFilterType": tag_filter_type,
-        "predicate": predicate,
-        "modelType": model_type,
-    }
     client = new_client()
     try:
-        resp = client.post(url, headers, filter)
-    except ModelingServicePostException:
-        raise
+        resp = client.post(VSURL.USERS_FILTER_HISTORY,
+                           headers=headers,
+                           data=filters.jsonify())
+    except ModelingServicePostException as err:
+        raise err
     return [
         ModelInformation.from_json(j) for j in resp.get('data').get('models')
     ]

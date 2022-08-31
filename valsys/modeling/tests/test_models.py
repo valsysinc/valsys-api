@@ -1,6 +1,8 @@
 import pytest
 
-from valsys.modeling.models import ModelGroup, PermissionTypes, Permissions
+from valsys.modeling.models import ModelGroup, PermissionTypes, Permissions, ModelsFilter
+from .factories import valid_models_filter
+from valsys.modeling.exceptions import FilterModelsException
 
 
 class TestPermissions:
@@ -49,3 +51,94 @@ class TestModelGroup:
         assert mg_from_j.name == name
         assert mg_from_j.user_id == user_id
         assert mg_from_j.model_ids == model_ids
+
+
+class TestModelsFilter:
+
+    @property
+    def valid_max_date(self):
+        return '1234'
+
+    @property
+    def valid_min_date(self):
+        return '5678'
+
+    def test_init(self):
+        max_date = self.valid_max_date
+        min_date = self.valid_min_date
+        predicate = 'hello'
+        model_type = ModelsFilter.ValidTypes.MODEL_TYPES[0]
+        mf = ModelsFilter(max_date=max_date,
+                          min_date=min_date,
+                          predicate=predicate,
+                          model_type=model_type)
+
+        assert mf.max_date == max_date
+        assert mf.min_date == min_date
+        assert mf.predicate == predicate
+        assert mf.model_type == model_type
+        assert not mf.filter_geography
+        assert not mf.filter_industry
+        assert not mf.filter_name
+        assert not mf.filter_ticker
+
+    def test_set_filter_on_name_only(self):
+        mf = valid_models_filter()
+        mf.set_filter_on(['naMe'])
+        assert mf.filter_name
+        assert not mf.filter_geography
+        assert not mf.filter_industry
+        assert not mf.filter_ticker
+
+    def test_set_filter_on_name_ticker_geog_industry(self):
+        mf = valid_models_filter()
+        mf.set_filter_on(['naMe', 'indusTry', 'Geography', 'TickeR'])
+        assert mf.filter_name
+        assert mf.filter_geography
+        assert mf.filter_industry
+        assert mf.filter_ticker
+
+    def test_invalid_filter_type(self):
+        max_date = self.valid_max_date
+        min_date = self.valid_min_date
+        predicate = 'hello'
+        tag_filter_type = 'garbage'
+        model_type = ModelsFilter.ValidTypes.MODEL_TYPES[0]
+        with pytest.raises(FilterModelsException) as err:
+            ModelsFilter(max_date=max_date,
+                         min_date=min_date,
+                         predicate=predicate,
+                         model_type=model_type,
+                         tag_filter_type=tag_filter_type)
+        assert tag_filter_type in str(err)
+
+    def test_invalid_model_type(self):
+        max_date = self.valid_max_date
+        min_date = self.valid_min_date
+        predicate = 'hello'
+        model_type = 'garbage'
+        with pytest.raises(FilterModelsException) as err:
+            ModelsFilter(max_date=max_date,
+                         min_date=min_date,
+                         predicate=predicate,
+                         model_type=model_type)
+        assert model_type in str(err)
+
+    def test_jsonify_with_name_geography_filters(self):
+        max_date = self.valid_max_date
+        min_date = self.valid_min_date
+        predicate = 'hello'
+        model_type = ModelsFilter.ValidTypes.MODEL_TYPES[0]
+        mf = ModelsFilter(max_date=max_date,
+                          min_date=min_date,
+                          predicate=predicate,
+                          model_type=model_type)
+        mf.set_filter_on(['naMe', 'Geography'])
+
+        mf_j = mf.jsonify()
+        assert mf_j.get('maxDate') == max_date
+        assert mf_j.get('minDate') == min_date
+        assert not mf_j.get('filters').get('Ticker')
+        assert mf_j.get('filters').get('Geography')
+        assert not mf_j.get('filters').get('Industry')
+        assert mf_j.get('filters').get('Name')

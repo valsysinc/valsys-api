@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Dict, Any
 
 from .case import Case, CaseInformation
 
@@ -44,7 +44,7 @@ class ModelInformation:
         return self.cases[0]
 
     @classmethod
-    def from_json(cls, uid, input_json):
+    def from_json(cls, uid: str, input_json: Dict[str, Any]):
 
         tags = input_json.get(cls.fields.TAGS, '').split(',')
         return cls(uid=uid,

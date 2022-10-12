@@ -26,6 +26,7 @@ class VSURL:
     RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
+    SCK_MODELING_CREATE2 = f"{BASE_SCK}/modeling/connect/create/"
     SCK_ORCHESTRATOR = f"{BASE_SCK}/orchestrator/connect/"
 
     @classmethod

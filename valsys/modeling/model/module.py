@@ -9,8 +9,28 @@ class Module:
     uid: str
     name: str
     module_start: int
+    module_end: int
+    depth: int
+    order: int
+    period_type: str
+    start_period: float
+    unlinked: bool
     line_items: List[LineItem] = field(default_factory=list)
     child_modules: List["Module"] = field(default_factory=list)
+
+    class fields:
+        UID = 'id'
+        DEPTH = 'depth'
+        ORDER = 'order'
+        NAME = 'name'
+        MODULE_START = 'moduleStart'
+        MODULE_END = 'moduleEnd'
+        LINE_ITEMS = 'lineItems'
+        PERIOD_TYPE = 'periodType'
+        START_PERIOD = "startPeriod"
+        CHILD_MODULES = 'childModules'
+        UNLINKED = 'unlinked'
+        EDGES = 'edges'
 
     @property
     def module_meta(self):
@@ -64,11 +84,23 @@ class Module:
     @classmethod
     def from_json(cls, data):
         return cls(
-            uid=data["uid"],
-            name=data["name"],
-            module_start=data["moduleStart"],
-            line_items=list(map(LineItem.from_json, data.get("lineItems",
-                                                             []))),
+            uid=data[cls.fields.UID],
+            depth=data.get(cls.fields.DEPTH, 0),
+            name=data[cls.fields.NAME],
+            module_start=data[cls.fields.MODULE_START],
+            module_end=data[cls.fields.MODULE_END],
+            order=data.get(cls.fields.ORDER),
+            period_type=data.get(cls.fields.PERIOD_TYPE),
+            start_period=data.get(cls.fields.START_PERIOD),
+            unlinked=data.get(cls.fields.UNLINKED, False),
+            line_items=list(
+                map(
+                    LineItem.from_json,
+                    data.get(cls.fields.EDGES, {}).get(cls.fields.LINE_ITEMS,
+                                                       []))),
             child_modules=list(
-                map(Module.from_json, data.get("childModules", []))),
+                map(
+                    Module.from_json,
+                    data.get(cls.fields.EDGES,
+                             {}).get(cls.fields.CHILD_MODULES, []))),
         )

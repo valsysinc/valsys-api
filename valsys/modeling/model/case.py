@@ -23,6 +23,10 @@ class Case:
     modules: List[Module] = field(default_factory=list)
     ticker: str = ""
 
+    class fields:
+        UID = 'id'
+        START_PERIOD = 'startPeriod'
+
     @property
     def module_meta(self):
         return [module.module_meta for module in self.modules]
@@ -54,8 +58,10 @@ class Case:
     def from_json(cls, data):
 
         return cls(
-            uid=data["uid"],
-            start_period=data["startPeriod"],
-            case=data["case"],
-            modules=list(map(Module.from_json, data["modules"])),
+            uid=data.get(cls.fields.UID),
+            start_period=data[cls.fields.START_PERIOD],
+            case=data.get("case", ""),
+            modules=list(
+                map(Module.from_json,
+                    data.get('edges', {}).get("modules"))),
         )

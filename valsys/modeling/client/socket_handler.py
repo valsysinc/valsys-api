@@ -6,7 +6,6 @@ import websocket
 
 from valsys.utils import logger
 
-
 TRACE_DEFAULT = False
 
 
@@ -66,6 +65,7 @@ class SocketHandler:
         socketpath = f"{self.url}{auth_token}"
         if after_token is not None:
             socketpath += '/' + after_token
+
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
             on_open=self.send_data,

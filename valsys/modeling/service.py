@@ -102,6 +102,7 @@ def filter_user_models(tags: List[str] = None,
 
 
 def create_model(config) -> Model:
+    config['action'] = ModelingActions.CREATE_MODEL
     client = new_socket_client()
     config['token'] = client.auth_token
     resp = client.post(url=VSURL.SCK_MODELING_CREATE2, data=config)

@@ -33,10 +33,11 @@ def run_spawn_models_from_file(config_filename: str):
     return run_spawn_models(config_file)
 
 
-def generate_model(tickers):
-
+def generate_model_from_file(config_filename: str):
+    with open(config_filename, "r") as file:
+        config_file = json.loads(file.read())
     cfgs = []
-    for b in tickers:
+    for b in config_file:
         tid = SeedsLoader.template_id_by_name(b.get('templateName'))
         cinfo = SeedsLoader.company_configs_by_ticker(
             [t['ticker'] for t in b['tickers']])
@@ -62,8 +63,7 @@ def generate_model(tickers):
                 "title": tkr + " - 06/02/2022",
             }
             cfgs.append(cfg)
-    print(cfgs)
 
     for cfg in cfgs:
-        m = create_model(cfg)
-        print(m.uid)
+        create_model(cfg)
+        print(f"generated model {cfg['ticker']}")

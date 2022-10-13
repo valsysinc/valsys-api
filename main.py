@@ -24,6 +24,12 @@ def main(args):
             logger.info(f'done with errors')
         else:
             logger.info(f'done')
+    elif mode == '--create':
+        from valsys.utils import logger
+        logger.info(f"start")
+        from valsys.workflows.service import generate_model_from_file
+        print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
+        res = generate_model_from_file(config_filename=args[1])
 
 
 if __name__ == "__main__":

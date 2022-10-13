@@ -26,6 +26,8 @@ class Case:
     class fields:
         UID = 'id'
         START_PERIOD = 'startPeriod'
+        MODULES = 'modules'
+        EDGES = 'edges'
 
     @property
     def module_meta(self):
@@ -65,3 +67,12 @@ class Case:
                 map(Module.from_json,
                     data.get('edges', {}).get("modules"))),
         )
+
+    def jsonify(self):
+        return {
+            self.fields.UID: self.uid,
+            self.fields.START_PERIOD: self.start_period,
+            self.fields.EDGES: {
+                self.fields.MODULES: [m.jsonify() for m in self.modules]
+            }
+        }

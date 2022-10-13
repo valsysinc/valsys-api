@@ -46,3 +46,13 @@ class LineItem:
                            data.get(cls.fields.EDGES,
                                     {}).get(cls.fields.FACTS, []))),
                    tags=data.get(cls.fields.TAGS, []))
+
+    def jsonify(self):
+        return {
+            self.fields.UID: self.uid,
+            self.fields.NAME: self.name,
+            self.fields.EDGES: {
+                self.fields.FACTS: [f.jsonify() for f in self.facts]
+            },
+            self.fields.TAGS: self.tags
+        }

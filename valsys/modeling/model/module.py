@@ -9,12 +9,12 @@ class Module:
     uid: str
     name: str
     module_start: int
-    module_end: int
-    depth: int
-    order: int
-    period_type: str
-    start_period: float
-    unlinked: bool
+    module_end: int = 0
+    depth: int = 0
+    order: int = 1
+    period_type: str = 'ANNUAL'
+    start_period: float = 2019
+    unlinked: bool = False
     line_items: List[LineItem] = field(default_factory=list)
     child_modules: List["Module"] = field(default_factory=list)
 
@@ -88,7 +88,7 @@ class Module:
             depth=data.get(cls.fields.DEPTH, 0),
             name=data[cls.fields.NAME],
             module_start=data[cls.fields.MODULE_START],
-            module_end=data[cls.fields.MODULE_END],
+            module_end=data.get(cls.fields.MODULE_END, 0),
             order=data.get(cls.fields.ORDER),
             period_type=data.get(cls.fields.PERIOD_TYPE),
             start_period=data.get(cls.fields.START_PERIOD),
@@ -104,3 +104,21 @@ class Module:
                     data.get(cls.fields.EDGES,
                              {}).get(cls.fields.CHILD_MODULES, []))),
         )
+
+    def jsonify(self):
+        return {
+            self.fields.UID: self.uid,
+            self.fields.DEPTH: self.depth,
+            self.fields.NAME: self.name,
+            self.fields.MODULE_START: self.module_start,
+            self.fields.MODULE_END: self.module_end,
+            self.fields.ORDER: self.order,
+            self.fields.PERIOD_TYPE: self.period_type,
+            self.fields.START_PERIOD: self.start_period,
+            self.fields.UNLINKED: self.unlinked,
+            self.fields.EDGES: {
+                self.fields.LINE_ITEMS: [l.jsonify() for l in self.line_items],
+                self.fields.CHILD_MODULES:
+                [cm.jsonify() for cm in self.child_modules]
+            }
+        }

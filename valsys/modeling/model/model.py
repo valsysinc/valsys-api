@@ -9,6 +9,7 @@ class Model(object):
     uid: str
     styling: str
     cases: List[Case] = field(default_factory=list)
+    geography: str = ''
 
     class fields:
         UID = 'id'
@@ -16,11 +17,13 @@ class Model(object):
         TITLE = 'title'
         CASES = 'cases'
         EDGES = 'edges'
+        GEOGRAPHY = 'geography'
 
     @classmethod
     def from_json(cls, data):
         return cls(uid=data[cls.fields.UID],
                    styling=data.get(cls.fields.STYLING),
+                   geography=data.get(cls.fields.GEOGRAPHY),
                    cases=list(
                        map(
                            Case.from_json,
@@ -31,6 +34,16 @@ class Model(object):
         for case in self.cases:
             if case.case == name:
                 return case
+
+    def jsonify(self):
+        return {
+            self.fields.UID: self.uid,
+            self.fields.STYLING: self.styling,
+            self.fields.GEOGRAPHY: self.geography,
+            self.fields.EDGES: {
+                self.fields.CASES: [c.jsonify() for c in self.cases]
+            }
+        }
 
 
 @dataclass

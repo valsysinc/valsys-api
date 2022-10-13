@@ -37,7 +37,7 @@ def generate_model_from_file(config_filename: str):
     with open(config_filename, "r") as file:
         config_file = json.loads(file.read())
     cfgs = []
-    for b in config_file:
+    for b in config_file.get('spawnModelsConfig'):
         tid = SeedsLoader.template_id_by_name(b.get('templateName'))
         cinfo = SeedsLoader.company_configs_by_ticker(
             [t['ticker'] for t in b['tickers']])

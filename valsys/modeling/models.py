@@ -11,7 +11,7 @@ class SpawnedModelInfo:
 
     @classmethod
     def from_json(cls, m):
-        return cls(model_id=m.get('modelID'), ticker=m.get('ticker'))
+        return cls(model_id=m.get('id'), ticker=m.get('ticker'))
 
 
 class PermissionTypes:

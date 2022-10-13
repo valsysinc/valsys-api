@@ -25,7 +25,7 @@ from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.model.model import ModelInformation
+from valsys.modeling.model.model import ModelInformation, Model
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (
     ModelDetailInformation,
@@ -43,6 +43,7 @@ from valsys.utils import logger
 class ModelingActions:
     SPAWN_MODELS = "SPAWN_MODELS"
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
+    CREATE_MODEL = 'CREATE_MODEL'
 
 
 def filter_user_models(tags: List[str] = None,
@@ -98,6 +99,13 @@ def filter_user_models(tags: List[str] = None,
         ModelDetailInformation.from_json(j)
         for j in resp.get('data').get('models')
     ]
+
+
+def create_model(config) -> Model:
+    client = new_socket_client()
+    config['token'] = client.auth_token
+    resp = client.post(url=VSURL.SCK_MODELING_CREATE2, data=config)
+    return Model.from_json(resp.get('data').get('data'))
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:

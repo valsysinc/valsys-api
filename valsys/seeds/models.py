@@ -2,7 +2,6 @@ import datetime
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 

@@ -58,7 +58,6 @@ from .factories import (
     valid_uids,
 )
 
-
 MODULE_PREFIX = "valsys.modeling.service"
 
 
@@ -78,7 +77,7 @@ class TestFilterUserModels:
         mock_ModelDetailInformation_from_json.assert_has_calls(calls)
 
 
-class TestSpawnModel:
+class _TestSpawnModel:
 
     @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
     def test_works_ok(self, mock_new_socket_client):
@@ -242,7 +241,7 @@ class FakeLineItem:
     name: str = ''
 
 
-class TestAddLineItem:
+class _TestAddLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
@@ -703,7 +702,7 @@ class TestAddLineItem:
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
 
-        expected_line_item_data = {'uid': '0x2', 'name': name, 'facts': []}
+        expected_line_item_data = {'id': '0x2', 'name': name, 'facts': []}
 
         mock_c.post.return_value = {
             'data': {
@@ -714,7 +713,7 @@ class TestAddLineItem:
         }
         rl = add_line_item(case_id, model_id, module_id, name, order)
         assert rl.name == name
-        assert rl.uid == expected_line_item_data.get('uid')
+        assert rl.uid == expected_line_item_data.get('id')
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_bad_data(self, mock_new_client):

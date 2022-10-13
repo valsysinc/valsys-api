@@ -97,7 +97,7 @@ class TestModule:
 
         mm = module.module_meta
         assert mm.get('name') == name
-        assert mm.get('id') == uid
+        assert mm.get('uid') == uid
         assert mm.get('children') == []
 
     def test_from_json(self):

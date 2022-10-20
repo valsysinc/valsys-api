@@ -47,6 +47,7 @@ from valsys.modeling.service import (
     update_model_groups,
 )
 from valsys.spawn.exceptions import ModelSpawnException
+from valsys.modeling.exceptions import  SpawnModelResponseException
 
 from .factories import (
     valid_email,
@@ -57,7 +58,6 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
-
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -87,9 +87,9 @@ class TestSpawnModel:
         fake_model_id, fake_model_ticker = valid_uid(), valid_ticker()
         fake_post_ret = {
             'models': [{
-                'modelID': fake_model_id,
+                SpawnedModelInfo.fields.MODEL_ID: fake_model_id,
                 'status': 'success',
-                'ticker': fake_model_ticker
+                SpawnedModelInfo.fields.TICKER: fake_model_ticker
             }]
         }
         mock_c.post.return_value = fake_post_ret
@@ -110,9 +110,9 @@ class TestSpawnModel:
         fake_model_id, fake_model_ticker = 'ghjkrhdg', valid_ticker()
         fake_post_ret = {
             'models': [{
-                'modelID': fake_model_id,
+                SpawnedModelInfo.fields.MODEL_ID: fake_model_id,
                 'status': 'garbage',
-                'ticker': fake_model_ticker
+                SpawnedModelInfo.fields.TICKER: fake_model_ticker
             }]
         }
         mock_c.post.return_value = fake_post_ret
@@ -123,6 +123,24 @@ class TestSpawnModel:
 
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()
+
+    @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
+    def test_fails_if_no_model_id(self, mock_new_socket_client):
+        config = mock.MagicMock()
+        mock_c = mock.MagicMock()
+        fake_model_id, fake_model_ticker = None, valid_ticker()
+        fake_post_ret = {
+            'models': [{
+                SpawnedModelInfo.fields.MODEL_ID: fake_model_id,
+                'status': 'success',
+                SpawnedModelInfo.fields.TICKER: fake_model_ticker
+            }]
+        }
+        mock_c.post.return_value = fake_post_ret
+        mock_new_socket_client.return_value = mock_c
+        with pytest.raises(ModelSpawnException) as err:
+            spawn_model(config)
+        assert "no modelID in response" in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
     def test_raises(self, mock_new_socket_client):

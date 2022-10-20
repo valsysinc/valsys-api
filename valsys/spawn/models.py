@@ -142,6 +142,9 @@ class SpawnProgress:
         self.shared_to.append((email, permission, err))
 
     def mark_spawned(self, model_id: str = None, err=None):
+        if model_id is None:
+            logger.info(f"no modelID for spawned model {self.ticker}")
+            return
         if err is None:
             self.spawned = True
             self.model_id = model_id

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from valsys.modeling.exceptions import FilterModelsException
+from valsys.modeling.exceptions import FilterModelsException, SpawnModelResponseException
 
 
 @dataclass
@@ -9,9 +9,17 @@ class SpawnedModelInfo:
     model_id: str
     ticker: str
 
+    class fields:
+        MODEL_ID = 'modelID'
+        TICKER = 'ticker'
+
     @classmethod
     def from_json(cls, m):
-        return cls(model_id=m.get('modelID'), ticker=m.get('ticker'))
+        mid = m.get(cls.fields.MODEL_ID, None)
+        if mid is None:
+            raise SpawnModelResponseException("no modelID in response")
+
+        return cls(model_id=mid, ticker=m.get(cls.fields.TICKER))
 
 
 class PermissionTypes:

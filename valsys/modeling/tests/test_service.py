@@ -47,7 +47,7 @@ from valsys.modeling.service import (
     update_model_groups,
 )
 from valsys.spawn.exceptions import ModelSpawnException
-from valsys.modeling.exceptions import  SpawnModelResponseException
+from valsys.modeling.exceptions import SpawnModelResponseException
 
 from .factories import (
     valid_email,
@@ -117,9 +117,9 @@ class TestSpawnModel:
         }
         mock_c.post.return_value = fake_post_ret
         mock_new_socket_client.return_value = mock_c
-
-        assert spawn_model(config) == []
-        assert config.action == ModelingActions.SPAWN_MODELS
+        with pytest.raises(ModelSpawnException) as err:
+            assert spawn_model(config) == []
+            assert config.action == ModelingActions.SPAWN_MODELS
 
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()

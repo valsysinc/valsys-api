@@ -102,14 +102,42 @@ def filter_user_models(tags: List[str] = None,
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
+    """
+    Expects
+    {
+        "models": [
+            {
+                "status":  "success",
+                "modelID": "1234",
+                "ticker":  "SBUX"
+            }
+        ]
+    }
+
+    from the socket.
+    """
     client = new_socket_client()
     config.action = ModelingActions.SPAWN_MODELS
     try:
         resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
-        return [
-            SpawnedModelInfo.from_json(m) for m in resp.get('models')
-            if m.get('status') == 'success'
-        ]
+
+        smi = []
+        fds = []
+        for m in resp.get('models'):
+            print("spawn_model >>>>>>")
+            print(m)
+            if m.get('status') == 'success':
+                smi.append(SpawnedModelInfo.from_json(m))
+            else:
+                fds.append({
+                    'status': m.get('status'),
+                    'ticker': m.get('ticker'),
+                    'error': m.get('error')
+                })
+        if len(fds) > 0:
+            raise ModelSpawnException(f"error building model: {fds}")
+        return smi
+
     except (ModelingServiceGetException, SpawnModelResponseException,
             Exception) as err:
         raise ModelSpawnException(

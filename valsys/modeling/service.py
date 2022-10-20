@@ -37,6 +37,7 @@ from valsys.modeling.models import (
 )
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
+from valsys.modeling.exceptions import SpawnModelResponseException
 from valsys.utils import logger
 
 
@@ -109,7 +110,8 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
             SpawnedModelInfo.from_json(m) for m in resp.get('models')
             if m.get('status') == 'success'
         ]
-    except (ModelingServiceGetException, Exception) as err:
+    except (ModelingServiceGetException, SpawnModelResponseException,
+            Exception) as err:
         raise ModelSpawnException(
             f"error building model: {client.error} {str(err)}")
 

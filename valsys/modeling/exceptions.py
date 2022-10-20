@@ -44,3 +44,7 @@ class TagLineItemException(Exception):
 
 class FilterModelsException(Exception):
     pass
+
+
+class SpawnModelResponseException(Exception):
+    pass

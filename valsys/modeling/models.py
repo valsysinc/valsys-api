@@ -18,6 +18,8 @@ class SpawnedModelInfo:
         mid = m.get(cls.fields.MODEL_ID, None)
         if mid is None:
             raise SpawnModelResponseException("no modelID in response")
+        if mid == "":
+            raise SpawnModelResponseException("no modelID in response")
 
         return cls(model_id=mid, ticker=m.get(cls.fields.TICKER))
 

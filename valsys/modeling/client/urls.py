@@ -9,7 +9,7 @@ class VSURL:
     TEMPLATES = f"{BASE_URL}/users/model-templates"
     MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/edit/model-properties"
     MODEL_INFO = f"{BASE_URL}/modeling/view/models"
-
+    PULL_MODEL = f"{BASE_URL}/modeling/view/model"
     CASE = f"{BASE_URL}/modeling/case"
     DELETE_MODULE = f"{BASE_URL}/modeling/delete-module"
     ADD_MODULE = f"{BASE_URL}/modeling/add-module"
@@ -23,7 +23,7 @@ class VSURL:
     USERS_GROUP = f"{BASE_URL}/users/group"
     USERS_UPDATE_GROUP = f"{BASE_URL}/users/update-group"
     USERS_FILTER_HISTORY = f"{BASE_URL}/users/filter-history"
-    RECALC_MODEL = f"{BASE_URL}/modeling/recalculate"
+    RECALC_MODEL = f"{BASE_URL}/modeling/edit/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
     SCK_ORCHESTRATOR = f"{BASE_SCK}/orchestrator/connect/"

@@ -58,6 +58,7 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
+from valsys.modeling.vars import Vars
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -88,7 +89,7 @@ class TestSpawnModel:
         fake_post_ret = {
             'models': [{
                 SpawnedModelInfo.fields.MODEL_ID: fake_model_id,
-                'status': 'success',
+                'status': Vars.SUCCESS,
                 SpawnedModelInfo.fields.TICKER: fake_model_ticker
             }]
         }
@@ -132,7 +133,7 @@ class TestSpawnModel:
         fake_post_ret = {
             'models': [{
                 SpawnedModelInfo.fields.MODEL_ID: fake_model_id,
-                'status': 'success',
+                'status': Vars.SUCCESS,
                 SpawnedModelInfo.fields.TICKER: fake_model_ticker
             }]
         }
@@ -591,8 +592,8 @@ class TestRecalculateModel:
         model_id = valid_uid()
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
-        mock_c.post.return_value = {'status': 'success'}
-        assert recalculate_model(model_id) == {'status': 'success'}
+        mock_c.post.return_value = {'status': Vars.SUCCESS}
+        assert recalculate_model(model_id) == {'status': Vars.SUCCESS}
         _, kw = mock_c.post.call_args
         assert 'url' in kw
         assert kw.get('data').get('modelId') == model_id
@@ -821,7 +822,7 @@ class TestEditFacts:
         model_id = valid_uid()
         facts = [1, 2, 3]
         mock_c = mock.MagicMock()
-        mock_c.post.return_value = {'status': 'success'}
+        mock_c.post.return_value = {'status': Vars.SUCCESS}
         mock_new_client.return_value = mock_c
         edit_facts(url, case_id, model_id, facts)
         mock_new_client.assert_called_once()

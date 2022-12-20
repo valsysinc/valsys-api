@@ -39,6 +39,7 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import SpawnModelResponseException
 from valsys.utils import logger
+from valsys.modeling.vars import Vars
 
 
 class ModelingActions:
@@ -123,7 +124,7 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
         smi = []
         fds = []
         for m in resp.get('models'):
-            if m.get('status') == 'success':
+            if m.get('status') == Vars.SUCCESS:
                 smi.append(SpawnedModelInfo.from_json(m))
             else:
                 fds.append({
@@ -389,7 +390,7 @@ def recalculate_model(model_id: str):
     print(payload)
     try:
         resp = client.post(url=VSURL.RECALC_MODEL, data=payload)
-        if resp.get('status') == 'success':
+        if resp.get('status') == Vars.SUCCESS:
             return resp
         raise RecalculateModelException(
             f"error recalculating model: {resp.get('error')}")
@@ -520,7 +521,7 @@ def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
             "facts": facts,
         },
     )
-    if resp.get('status') != 'success':
+    if resp.get('status') != Vars.SUCCESS:
         raise Exception(f'fact editing {resp.get("error")}')
     return resp
 

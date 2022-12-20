@@ -719,7 +719,7 @@ class _TestAddChildModule:
             err)
 
 
-class _TestAddLineItem:
+class TestAddLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
@@ -743,7 +743,7 @@ class _TestAddLineItem:
         }
         rl = add_line_item(case_id, model_id, module_id, name, order)
         assert rl.name == name
-        assert rl.uid == expected_line_item_data.get('uid')
+        assert rl.uid == expected_line_item_data.get('id')
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_bad_data(self, mock_new_client):

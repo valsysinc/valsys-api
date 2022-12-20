@@ -325,7 +325,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
             url=VSURL.MODEL_INFO,
             headers={"modelIds": model_id},
         )
-        cases = resp["data"]["models"][0]
+        cases = resp["data"]["models"][0]['model']
 
     except (ModelingServiceGetException, Exception) as err:
         raise PullModelInformationException(
@@ -520,6 +520,9 @@ def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
             "facts": facts,
         },
     )
+    if resp.get('status') != 'success':
+        raise Exception(f'fact editing {resp.get("error")}')
+    return resp
 
 
 def edit_format(case_id: str, model_id: str, facts: List[Fact]):

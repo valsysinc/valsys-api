@@ -64,11 +64,11 @@ class Module:
     @classmethod
     def from_json(cls, data):
         return cls(
-            uid=data["uid"],
+            uid=data["id"],
             name=data["name"],
             module_start=data["moduleStart"],
-            line_items=list(map(LineItem.from_json, data.get("lineItems",
-                                                             []))),
+            line_items=list(
+                map(LineItem.from_json, data['edges'].get("lineItems", []))),
             child_modules=list(
-                map(Module.from_json, data.get("childModules", []))),
+                map(Module.from_json, data['edges'].get("childModules", []))),
         )

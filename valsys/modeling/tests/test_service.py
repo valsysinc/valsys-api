@@ -809,7 +809,7 @@ class TestAddLineItem:
         assert module_id in str(err)
 
 
-class _TestEditFacts:
+class TestEditFacts:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
@@ -818,6 +818,7 @@ class _TestEditFacts:
         model_id = valid_uid()
         facts = [1, 2, 3]
         mock_c = mock.MagicMock()
+        mock_c.post.return_value = {'status': 'success'}
         mock_new_client.return_value = mock_c
         edit_facts(url, case_id, model_id, facts)
         mock_new_client.assert_called_once()

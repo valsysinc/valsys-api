@@ -7,8 +7,8 @@ class VSURL:
     LOGIN_USERS = f"{BASE_URL}/users/login"
     CONFIGS = f"{BASE_URL}/uploader/configuration"
     TEMPLATES = f"{BASE_URL}/users/model-templates"
-    MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/model-properties"
-    MODEL_INFO = f"{BASE_URL}/modeling/model-information"
+    MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/edit/model-properties"
+    MODEL_INFO = f"{BASE_URL}/modeling/view/models"
 
     CASE = f"{BASE_URL}/modeling/case"
     DELETE_MODULE = f"{BASE_URL}/modeling/delete-module"

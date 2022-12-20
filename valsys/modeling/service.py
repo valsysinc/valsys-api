@@ -438,19 +438,19 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
     Returns:
         The newly constructed `Module` object.
     """
-
+    payload = {
+        Headers.CASE_ID: case_id,
+        Headers.MODEL_ID: model_id,
+        Headers.NAME: name,
+        Headers.PARENT_MODULE_ID: parent_module_id,
+    }
     client = new_client()
     resp = client.post(
         url=VSURL.ADD_MODULE,
-        data={
-            Headers.CASE_ID: case_id,
-            Headers.MODEL_ID: model_id,
-            Headers.NAME: name,
-            Headers.PARENT_MODULE_ID: parent_module_id,
-        },
+        data=payload,
     )
     try:
-        child_modules = resp["data"]["module"]["childModules"]
+        child_modules = resp["data"]["module"]['edges']["childModules"]
     except KeyError:
         raise AddChildModuleException(
             f"Error adding child module: unexpected data structure")

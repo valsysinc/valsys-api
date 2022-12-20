@@ -584,19 +584,18 @@ class TestAppendlTags:
         assert len(tags) == 5
 
 
-class _TestRecalculateModel:
+class TestRecalculateModel:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
         model_id = valid_uid()
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
-        mock_c.get.return_value = 42
-        assert recalculate_model(model_id) == 42
-        _, kw = mock_c.get.call_args
+        mock_c.post.return_value = {'status': 'success'}
+        assert recalculate_model(model_id) == {'status': 'success'}
+        _, kw = mock_c.post.call_args
         assert 'url' in kw
-        assert 'headers' in kw
-        assert kw.get('headers').get('uid') == model_id
+        assert kw.get('data').get('modelId') == model_id
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises(self, mock_new_client):

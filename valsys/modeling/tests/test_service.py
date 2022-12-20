@@ -645,7 +645,7 @@ class TestRemoveModule:
         assert 'error removing module' in str(err)
 
 
-class _TestAddChildModule:
+class TestAddChildModule:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
@@ -662,7 +662,9 @@ class _TestAddChildModule:
         mock_c.post.return_value = {
             'data': {
                 'module': {
-                    'childModules': [module]
+                    'edges': {
+                        'childModules': [module]
+                    }
                 }
             }
         }
@@ -691,10 +693,12 @@ class _TestAddChildModule:
         mock_c.post.return_value = {
             'data': {
                 'module': {
-                    'childModules': [{
-                        'name': 'any',
-                        'thing': 42
-                    }]
+                    'edges': {
+                        'childModules': [{
+                            'name': 'any',
+                            'thing': 42
+                        }]
+                    }
                 }
             }
         }

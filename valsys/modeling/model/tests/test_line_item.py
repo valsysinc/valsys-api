@@ -24,7 +24,7 @@ class TestLineItem:
     def test_from_json_no_facts_no_tags(self):
         uid = self.valid_uid
         name = self.valid_name
-        ij = {'uid': uid, 'name': name}
+        ij = {LineItem.fields.ID: uid, LineItem.fields.NAME: name}
         li_fj = LineItem.from_json(ij)
         assert li_fj.uid == uid
         assert li_fj.name == name
@@ -35,7 +35,11 @@ class TestLineItem:
         uid = self.valid_uid
         name = self.valid_name
         tags = ['t1', 't2']
-        ij = {'uid': uid, 'name': name, 'tags': tags}
+        ij = {
+            LineItem.fields.ID: uid,
+            LineItem.fields.NAME: name,
+            'tags': tags
+        }
         li_fj = LineItem.from_json(ij)
         assert li_fj.uid == uid
         assert li_fj.name == name
@@ -46,8 +50,15 @@ class TestLineItem:
         uid = self.valid_uid
         name = self.valid_name
         tags = ['t1', 't2']
-        facts = [{'uid': 42}]
-        ij = {'uid': uid, 'name': name, 'tags': tags, 'facts': facts}
+        facts = [{LineItem.fields.ID: 42}]
+        ij = {
+            LineItem.fields.ID: uid,
+            LineItem.fields.NAME: name,
+            LineItem.fields.TAGS: tags,
+            'edges': {
+                'facts': facts
+            }
+        }
         li_fj = LineItem.from_json(ij)
         assert li_fj.uid == uid
         assert li_fj.name == name
@@ -58,8 +69,15 @@ class TestLineItem:
         uid = self.valid_uid
         name = self.valid_name
         tags = ['t1', 't2']
-        facts = [{'uid': 42}, {'uid': 41}]
-        ij = {'uid': uid, 'name': name, 'tags': tags, 'facts': facts}
+        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
+        ij = {
+            LineItem.fields.ID: uid,
+            LineItem.fields.NAME: name,
+            LineItem.fields.TAGS: tags,
+            'edges': {
+                'facts': facts
+            }
+        }
         li_fj = LineItem.from_json(ij)
         ffe = li_fj.facts_for_formula_edit()
         assert len(ffe) == 2

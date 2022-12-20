@@ -12,11 +12,17 @@ class Module:
     line_items: List[LineItem] = field(default_factory=list)
     child_modules: List["Module"] = field(default_factory=list)
 
+    class fields:
+        ID = 'id'
+        NAME = 'name'
+        LINE_ITEMS = 'lineItems'
+        CHILD_MODULES = 'childModules'
+
     @property
     def module_meta(self):
         return {
-            'name': self.name,
-            'uid': self.uid,
+            self.fields.NAME: self.name,
+            self.fields.ID: self.uid,
             'children': [m.module_meta for m in self.child_modules or []]
         }
 
@@ -64,11 +70,13 @@ class Module:
     @classmethod
     def from_json(cls, data):
         return cls(
-            uid=data["id"],
+            uid=data[cls.fields.ID],
             name=data["name"],
             module_start=data["moduleStart"],
             line_items=list(
-                map(LineItem.from_json, data['edges'].get("lineItems", []))),
+                map(LineItem.from_json,
+                    data.get('edges', {}).get(cls.fields.LINE_ITEMS, []))),
             child_modules=list(
-                map(Module.from_json, data['edges'].get("childModules", []))),
+                map(Module.from_json,
+                    data.get('edges', {}).get(cls.fields.CHILD_MODULES, []))),
         )

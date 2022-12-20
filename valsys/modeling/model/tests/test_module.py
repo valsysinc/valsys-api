@@ -1,13 +1,14 @@
 from valsys.modeling.model.module import Module
+from valsys.modeling.model.line_item import LineItem
 
 
 def module_with_no_children():
     mj = {
-        'uid': '1234',
+        Module.fields.ID: '1234',
         'name': 'module name',
         'moduleStart': 2018,
         'lineItems': [{
-            'uid': 42,
+            Module.fields.ID: 42,
             'name': 'Name'
         }]
     }
@@ -16,70 +17,66 @@ def module_with_no_children():
 
 def module_with_line_items_with_tags():
     mj = {
-        'uid':
-        '1234',
-        'name':
-        'module name',
-        'moduleStart':
-        2018,
-        'lineItems': [{
-            'uid': 42,
-            'name': 'Name',
-            'tags': ['t1', 't2']
-        }, {
-            'uid': 422,
-            'name': 'Name2',
-        }, {
-            'uid': 43,
-            'name': 'Name3',
-            'tags': ['t1', 't3']
-        }],
-        'childModules': [{
-            'uid':
-            91,
-            'name':
-            'child1',
-            'moduleStart':
-            2019,
+        Module.fields.ID: '1234',
+        'name': 'module name',
+        'moduleStart': 2018,
+        'edges': {
             'lineItems': [{
-                'uid': 421,
-                'name': 'Name1',
-                'tags': ['t11', 't12']
+                Module.fields.ID: 42,
+                'name': 'Name',
+                'tags': ['t1', 't2']
             }, {
-                'uid': 431,
+                Module.fields.ID: 422,
                 'name': 'Name2',
-                'tags': ['t11', 't13']
+            }, {
+                Module.fields.ID: 43,
+                'name': 'Name3',
+                'tags': ['t1', 't3']
             }],
-        }]
+            Module.fields.CHILD_MODULES: [{
+                Module.fields.ID: 91,
+                'name': 'child1',
+                'moduleStart': 2019,
+                'edges': {
+                    'lineItems': [{
+                        Module.fields.ID: 421,
+                        'name': 'Name1',
+                        'tags': ['t11', 't12']
+                    }, {
+                        Module.fields.ID: 431,
+                        'name': 'Name2',
+                        'tags': ['t11', 't13']
+                    }]
+                },
+            }]
+        },
     }
     return Module.from_json(mj)
 
 
 def module_with_n_children():
     mj = {
-        'uid':
-        '1234',
-        'name':
-        'module name',
-        'moduleStart':
-        2018,
-        'lineItems': [{
-            'uid': 42,
-            'name': 'Name'
-        }],
-        'childModules': [{
-            'uid':
-            91,
-            'name':
-            'child1',
-            'moduleStart':
-            2019,
-            'childModules': [{
-                'uid': 91,
-                'name': 'child2',
-                'moduleStart': 2019
+        Module.fields.ID: '1234',
+        'name': 'module name',
+        'moduleStart': 2018,
+        'edges': {
+            'lineItems': [{
+                Module.fields.ID: 42,
+                'name': 'Name'
+            }],
+            Module.fields.CHILD_MODULES: [{
+                Module.fields.ID: 91,
+                'name': 'child1',
+                'moduleStart': 2019,
+                'edges': {
+                    Module.fields.CHILD_MODULES: [{
+                        Module.fields.ID: 91,
+                        'name': 'child2',
+                        'moduleStart': 2019
+                    }]
+                }
             }]
-        }]
+        }
     }
     return Module.from_json(mj)
 
@@ -98,28 +95,30 @@ class TestModule:
         assert len(module.child_modules) == 0
 
         mm = module.module_meta
-        assert mm.get('name') == name
-        assert mm.get('uid') == uid
+        assert mm.get(Module.fields.NAME) == name
+        assert mm.get(Module.fields.ID) == uid
         assert mm.get('children') == []
 
     def test_from_json(self):
 
         mj = {
-            'uid': '1234',
-            'name': 'module name',
+            Module.fields.ID: '1234',
+            Module.fields.NAME: 'module name',
             'moduleStart': 2018,
-            'lineItems': [{
-                'uid': 42,
-                'name': 'Name'
-            }],
-            'childModules': [{
-                'uid': 91,
-                'name': 'child1',
-                'moduleStart': 2019
-            }]
+            'edges': {
+                'lineItems': [{
+                    Module.fields.ID: 42,
+                    'name': 'Name'
+                }],
+                Module.fields.CHILD_MODULES: [{
+                    Module.fields.ID: 91,
+                    'name': 'child1',
+                    'moduleStart': 2019
+                }]
+            }
         }
         module = Module.from_json(mj)
-        assert module.uid == mj.get('uid')
+        assert module.uid == mj.get(Module.fields.ID)
         assert module.name == mj.get('name')
         assert module.module_start == mj.get('moduleStart')
         assert len(module.line_items) == 1
@@ -128,16 +127,18 @@ class TestModule:
     def test_from_json_no_child_modules(self):
 
         mj = {
-            'uid': '1234',
-            'name': 'module name',
+            Module.fields.ID: '1234',
+            Module.fields.NAME: 'module name',
             'moduleStart': 2018,
-            'lineItems': [{
-                'uid': 42,
-                'name': 'Name'
-            }]
+            'edges': {
+                Module.fields.LINE_ITEMS: [{
+                    LineItem.fields.ID: 42,
+                    'name': 'Name'
+                }]
+            }
         }
         module = Module.from_json(mj)
-        assert module.uid == mj.get('uid')
+        assert module.uid == mj.get(Module.fields.ID)
         assert module.name == mj.get('name')
         assert module.module_start == mj.get('moduleStart')
         assert len(module.line_items) == 1

@@ -11,6 +11,11 @@ class LineItem:
     facts: List[Fact] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
 
+    class fields:
+        ID = 'id'
+        NAME = 'name'
+        TAGS = 'tags'
+
     def jsonify_facts(self, fields=None):
         return [f.jsonify(fields) for f in self.facts]
 
@@ -30,8 +35,9 @@ class LineItem:
 
     @classmethod
     def from_json(cls, data):
-        return cls(uid=data["id"],
-                   name=data["name"],
+        return cls(uid=data[cls.fields.ID],
+                   name=data[cls.fields.NAME],
                    facts=list(
-                       map(Fact.from_json, data['edges'].get("facts", []))),
-                   tags=data.get("tags", []))
+                       map(Fact.from_json,
+                           data.get('edges', {}).get("facts", []))),
+                   tags=data.get(cls.fields.TAGS, []))

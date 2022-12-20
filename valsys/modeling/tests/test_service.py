@@ -167,14 +167,14 @@ class TestPullModelInformation:
         mock_get = mock.MagicMock()
         mock_cases = mock.MagicMock()
         mock_model_info = mock.MagicMock()
-        mock_get.return_value = {'data': {'model': mock_cases}}
+        mock_get.return_value = {'data': {'models': [{'model': mock_cases}]}}
         mock_new_client.return_value.get = mock_get
         mock_ModelInformation_from_json.return_value = mock_model_info
         model_info = pull_model_information(uid)
         mock_new_client.assert_called_once()
         mock_get.assert_called_once()
         _, kw = mock_get.call_args
-        assert kw.get('headers') == {'modelID': uid}
+        assert kw.get('headers') == {'modelIds': uid}
         mock_ModelInformation_from_json.assert_called_once_with(
             uid, mock_cases)
         assert model_info == mock_model_info
@@ -260,7 +260,7 @@ class FakeLineItem:
     name: str = ''
 
 
-class TestAddLineItem:
+class _TestAddLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
@@ -573,7 +573,7 @@ class TestAppendlTags:
         assert len(tags) == 5
 
 
-class TestRecalculateModel:
+class _TestRecalculateModel:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
@@ -634,7 +634,7 @@ class TestRemoveModule:
         assert 'error removing module' in str(err)
 
 
-class TestAddChildModule:
+class _TestAddChildModule:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
@@ -708,7 +708,7 @@ class TestAddChildModule:
             err)
 
 
-class TestAddLineItem:
+class _TestAddLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
@@ -721,7 +721,7 @@ class TestAddLineItem:
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
 
-        expected_line_item_data = {'uid': '0x2', 'name': name, 'facts': []}
+        expected_line_item_data = {'id': '0x2', 'name': name, 'facts': []}
 
         mock_c.post.return_value = {
             'data': {
@@ -798,7 +798,7 @@ class TestAddLineItem:
         assert module_id in str(err)
 
 
-class TestEditFacts:
+class _TestEditFacts:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):

@@ -48,7 +48,7 @@ from valsys.modeling.service import (
 )
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import SpawnModelResponseException
-
+from valsys.modeling.model.line_item import LineItem
 from .factories import (
     valid_email,
     valid_name,
@@ -260,18 +260,29 @@ class FakeLineItem:
     name: str = ''
 
 
-class _TestAddLineItem:
+class TestAddLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.Module.from_json")
     def test_works_ok(self, mock_from_json, mock_new_client):
         mock_client = mock.MagicMock()
-        mock_post = mock.MagicMock()
+        name = 'n'
+        new_line_item_id = 'ox1'
+        mock_post = {
+            "data": {
+                'module': {
+                    'lineItems': [{
+                        'name': name,
+                        'id': new_line_item_id
+                    }]
+                }
+            }
+        }  #mock.MagicMock()
         mock_client.post.return_value = mock_post
         mock_new_client.return_value = mock_client
         mock_module = mock.MagicMock()
-        case_id, model_id, module_id, name, order = 'c', 'm', 'mi', 'n', 'o'
-        fake_line_item = FakeLineItem(name=name)
+        case_id, model_id, module_id, order = 'c', 'm', 'mi', 'o'
+        fake_line_item = LineItem(name=name, uid=new_line_item_id)
         mock_module.line_items = [fake_line_item]
         mock_from_json.return_value = mock_module
 

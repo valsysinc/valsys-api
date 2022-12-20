@@ -12,7 +12,7 @@ class Fact:
     fmt: str
 
     class fields:
-        UID = 'uid'
+        UID = 'id'
         FORMULA = 'formula'
         PERIOD = 'period'
         IDENTIFIER = 'identifier'

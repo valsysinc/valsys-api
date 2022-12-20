@@ -54,8 +54,9 @@ class Case:
     def from_json(cls, data):
 
         return cls(
-            uid=data["uid"],
+            uid=data["id"],
             start_period=data["startPeriod"],
-            case=data["case"],
-            modules=list(map(Module.from_json, data["modules"])),
+            #case=data["case"],
+            case="",
+            modules=list(map(Module.from_json, data['edges']["modules"])),
         )

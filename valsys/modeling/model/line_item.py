@@ -30,7 +30,8 @@ class LineItem:
 
     @classmethod
     def from_json(cls, data):
-        return cls(uid=data["uid"],
+        return cls(uid=data["id"],
                    name=data["name"],
-                   facts=list(map(Fact.from_json, data.get("facts", []))),
+                   facts=list(
+                       map(Fact.from_json, data['edges'].get("facts", []))),
                    tags=data.get("tags", []))

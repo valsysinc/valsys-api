@@ -25,7 +25,7 @@ from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.model.model import ModelInformation
+from valsys.modeling.model.model import ModelInformation, Model
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (
     ModelDetailInformation,
@@ -120,12 +120,9 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
     config.action = ModelingActions.SPAWN_MODELS
     try:
         resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
-
         smi = []
         fds = []
         for m in resp.get('models'):
-            print("spawn_model >>>>>>")
-            print(m)
             if m.get('status') == 'success':
                 smi.append(SpawnedModelInfo.from_json(m))
             else:
@@ -157,15 +154,16 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     """
 
     client = new_client(auth_token)
+    payload = {
+        Headers.MODEL_ID: model_id,
+        "tags": tags,
+        "update": True,
+        "rollForward": True,
+    }
     try:
         return client.post(
             url=VSURL.MODELING_MODEL_PROPERTIES,
-            data={
-                Headers.MODEL_ID: model_id,
-                "modelTags": tags,
-                "update": True,
-                "rollForward": True,
-            },
+            data=payload,
         )
     except ModelingServicePostException as err:
         raise TagModelException(
@@ -325,15 +323,24 @@ def pull_model_information(model_id: str) -> ModelInformation:
     try:
         resp = client.get(
             url=VSURL.MODEL_INFO,
-            headers={
-                Headers.MODEL_ID: model_id,
-            },
+            headers={"modelIds": model_id},
         )
-        cases = resp["data"]["model"]
+        cases = resp["data"]["models"][0]
+
     except (ModelingServiceGetException, Exception) as err:
         raise PullModelInformationException(
             f"could not pull model info for model={model_id}")
     return ModelInformation.from_json(model_id, cases)
+
+
+def pull_model(model_id) -> Model:
+    client = new_client()
+
+    resp = client.get(
+        url=VSURL.PULL_MODEL,
+        headers={"modelId": model_id},
+    )
+    return Model.from_json(resp.get('data').get('model'))
 
 
 def pull_model_datasources(model_id) -> str:
@@ -378,11 +385,15 @@ def recalculate_model(model_id: str):
         model_id: The ID of the model to be recalculated.
     """
     client = new_client()
+    payload = {"modelId": model_id}
+    print(payload)
     try:
-        resp = client.get(url=VSURL.RECALC_MODEL,
-                          headers={Headers.UID: model_id})
-        return resp
-    except ModelingServiceGetException as err:
+        resp = client.post(url=VSURL.RECALC_MODEL, data=payload)
+        if resp.get('status') == 'success':
+            return resp
+        raise RecalculateModelException(
+            f"error recalculating model: {resp.get('error')}")
+    except ModelingServicePostException as err:
         raise RecalculateModelException(
             f"error recalculating model: {str(err)}")
 

@@ -19,6 +19,11 @@ class Model(object):
             if case.case == name:
                 return case
 
+    def pull_case_by_id(self, id) -> Case:
+        for case in self.cases:
+            if case.uid == id:
+                return case
+
     @property
     def first_case_id(self):
         return self.cases[0].uid

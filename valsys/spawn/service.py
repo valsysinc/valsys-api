@@ -6,7 +6,7 @@ from valsys.modeling.service import (
     add_line_item,
     edit_format,
     edit_formula,
-    pull_case,
+    pull_model,
     pull_model_information,
 )
 from valsys.seeds.loader import SeedsLoader
@@ -124,7 +124,9 @@ def populate_modules(config: PopulateModulesConfig) -> PopulatedModules:
         model_info = pull_model_information(model_id)
 
         case_id = model_info.first.uid
-        case = pull_case(case_id=case_id)
+        model = pull_model(model_id)
+
+        case = model.pull_case_by_id(case_id=case_id)
         populated_modules_report.add_model(model_id, case.case)
         root_module = case.pull_module(config.parent_module_name)
 

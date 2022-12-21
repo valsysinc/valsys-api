@@ -15,6 +15,8 @@ class LineItem:
         ID = 'id'
         NAME = 'name'
         TAGS = 'tags'
+        EDGES = 'edges'
+        FACTS = 'facts'
 
     def jsonify_facts(self, fields=None):
         return [f.jsonify(fields) for f in self.facts]
@@ -38,6 +40,8 @@ class LineItem:
         return cls(uid=data[cls.fields.ID],
                    name=data[cls.fields.NAME],
                    facts=list(
-                       map(Fact.from_json,
-                           data.get('edges', {}).get("facts", []))),
+                       map(
+                           Fact.from_json,
+                           data.get(cls.fields.EDGES,
+                                    {}).get(cls.fields.FACTS, []))),
                    tags=data.get(cls.fields.TAGS, []))

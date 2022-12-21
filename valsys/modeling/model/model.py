@@ -9,10 +9,17 @@ class Model(object):
     uid: str
     cases: List[Case] = field(default_factory=list)
 
+    class fields:
+        ID = 'id'
+        EDGES = 'edges'
+        CASES = 'cases'
+
     @classmethod
     def from_json(cls, data):
-        return cls(uid=data["id"],
-                   cases=list(map(Case.from_json, data['edges']["cases"])))
+        return cls(uid=data[cls.fields.ID],
+                   cases=list(
+                       map(Case.from_json,
+                           data[cls.fields.EDGES][cls.fields.CASES])))
 
     def pull_case(self, name: str) -> Case:
         for case in self.cases:

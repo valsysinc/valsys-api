@@ -17,6 +17,8 @@ class Module:
         NAME = 'name'
         LINE_ITEMS = 'lineItems'
         CHILD_MODULES = 'childModules'
+        MODULE_START = 'moduleStart'
+        EDGES = 'edges'
 
     @property
     def module_meta(self):
@@ -71,12 +73,16 @@ class Module:
     def from_json(cls, data):
         return cls(
             uid=data[cls.fields.ID],
-            name=data["name"],
-            module_start=data["moduleStart"],
+            name=data[cls.fields.NAME],
+            module_start=data[cls.fields.MODULE_START],
             line_items=list(
-                map(LineItem.from_json,
-                    data.get('edges', {}).get(cls.fields.LINE_ITEMS, []))),
+                map(
+                    LineItem.from_json,
+                    data.get(cls.fields.EDGES, {}).get(cls.fields.LINE_ITEMS,
+                                                       []))),
             child_modules=list(
-                map(Module.from_json,
-                    data.get('edges', {}).get(cls.fields.CHILD_MODULES, []))),
+                map(
+                    Module.from_json,
+                    data.get(cls.fields.EDGES,
+                             {}).get(cls.fields.CHILD_MODULES, []))),
         )

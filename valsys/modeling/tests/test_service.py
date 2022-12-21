@@ -461,11 +461,10 @@ class TestTagLineItem:
         mock_new_client.assert_called_once()
         _, kw = mock_client.post.call_args
         assert 'data' in kw
-        assert kw.get('data').get('uid') == line_item_id
+        print(kw)
+        assert kw.get('data').get('lineItemId') == line_item_id
         assert kw.get('data').get('modelID') == model_id
         assert kw.get('data').get('tags') == tags
-        mock_from_json.assert_called_once_with(
-            fake_return_data.get('data').get('lineItems')[0])
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises(self, mock_new_client):
@@ -741,7 +740,9 @@ class TestAddLineItem:
         mock_c.post.return_value = {
             'data': {
                 'module': {
-                    'lineItems': [expected_line_item_data]
+                    "edges": {
+                        'lineItems': [expected_line_item_data]
+                    }
                 }
             }
         }
@@ -785,7 +786,9 @@ class TestAddLineItem:
         mock_c.post.return_value = {
             'data': {
                 'module': {
-                    'lineItems': [expected_line_item_data]
+                    'edges': {
+                        'lineItems': [expected_line_item_data]
+                    }
                 }
             }
         }

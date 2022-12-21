@@ -5,5 +5,8 @@ class Headers:
     UID = "uid"
     PARENT_MODULE_ID = "parentModuleID"
     NAME = "name"
+    LINE_ITEM_NAME = 'lineItemName'
+    LINE_ITEM_ID = 'lineItemId'
     ORDER = "order"
     MODULE_ID = "moduleID"
+    TAGS = 'tags'

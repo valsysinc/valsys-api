@@ -111,7 +111,7 @@ class TaggedLineItemResponse:
 
     @classmethod
     def from_json(cls, j):
-        return cls(uid=j.get('uid'), name=j.get('name'), tags=j.get('tags'))
+        return cls(uid=j.get('id'), name=j.get('name'), tags=j.get('tags'))
 
 
 @dataclass

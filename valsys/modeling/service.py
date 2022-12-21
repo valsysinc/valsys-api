@@ -193,14 +193,13 @@ def tag_line_item(model_id: str, line_item_id: str,
             url=VSURL.ADD_ITEM_TAGS,
             data={
                 Headers.MODEL_ID: model_id,
-                'uid': line_item_id,
-                "tags": tags
+                Headers.LINE_ITEM_ID: line_item_id,
+                Headers.TAGS: tags
             },
         )
     except ModelingServicePostException as err:
         raise TagLineItemException(f"error tagging line item: {str(err)}")
-    return TaggedLineItemResponse.from_json(
-        ait.get('data').get('lineItems')[0])
+    return TaggedLineItemResponse.from_json(ait.get('data').get('lineItem'))
 
 
 def share_model(model_id: str,
@@ -484,7 +483,7 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
             data={
                 Headers.CASE_ID: case_id,
                 Headers.MODEL_ID: model_id,
-                Headers.NAME: name,
+                Headers.LINE_ITEM_NAME: name,
                 Headers.ORDER: order,
                 Headers.MODULE_ID: module_id,
             },
@@ -494,9 +493,8 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
         raise AddLineItemException(
             f"error adding line item to model={model_id} module={module_id}; {str(err)}"
         )
-
     try:
-        line_items = resp["data"]["module"]['lineItems']
+        line_items = resp["data"]["module"]['edges']['lineItems']
     except KeyError as err:
         raise AddLineItemException(
             "error adding line item: invalid data structure")

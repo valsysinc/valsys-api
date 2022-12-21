@@ -324,7 +324,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
     try:
         resp = client.get(
             url=VSURL.MODEL_INFO,
-            headers={"modelIds": model_id},
+            headers={Headers.MODEL_IDS: model_id},
         )
         cases = resp["data"]["models"][0]['model']
 

@@ -51,8 +51,12 @@ class ModelingServiceHttpClient:
         )
         self.status_code = resp.status_code
         if resp.status_code != expected_status:
+            try:
+                d = resp.json()
+            except:
+                d = {}
             raise ModelingServiceGetException(
-                data=resp.json(),
+                data=d,
                 url=url,
                 status_code=resp.status_code,
             )
@@ -79,8 +83,12 @@ class ModelingServiceHttpClient:
         self.status_code = resp.status_code
 
         if resp.status_code != expected_status:
+            try:
+                d = resp.json()
+            except:
+                d = {}
             raise ModelingServicePostException(
-                data=resp.json(),
+                data=d,
                 url=url,
                 status_code=resp.status_code,
             )

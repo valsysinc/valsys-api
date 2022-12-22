@@ -30,6 +30,7 @@ class Model(object):
         for case in self.cases:
             if case.uid == id:
                 return case
+        raise Exception('cannot find case with id')
 
     @property
     def first_case_id(self):

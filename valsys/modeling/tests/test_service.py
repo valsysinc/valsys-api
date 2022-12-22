@@ -614,33 +614,31 @@ class TestRemoveModule:
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
         model_id = valid_uid()
-        case_id = valid_uid()
+
         module_id = valid_uid()
-        parent_module_id = valid_uid()
+
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
-        assert remove_module(model_id, case_id, module_id, parent_module_id)
+        assert remove_module(model_id, module_id)
         mock_c.post.assert_called_once()
         _, kw = mock_c.post.call_args
         assert kw.get('data') == {
-            Headers.CASE_ID: case_id,
             Headers.MODEL_ID: model_id,
-            Headers.PARENT_MODULE_ID: parent_module_id,
-            Headers.UID: module_id,
+            Headers.MODULE_ID: module_id,
         }
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises(self, mock_new_client):
         model_id = valid_uid()
-        case_id = valid_uid()
+
         module_id = valid_uid()
-        parent_module_id = valid_uid()
+
         mock_c = mock.MagicMock()
         d, s, u = 42, 4, 'www'
         mock_c.post.side_effect = ModelingServicePostException(d, s, u)
         mock_new_client.return_value = mock_c
         with pytest.raises(RemoveModuleException) as err:
-            remove_module(model_id, case_id, module_id, parent_module_id)
+            remove_module(model_id, module_id)
         assert 'error removing module' in str(err)
 
 

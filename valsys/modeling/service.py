@@ -398,15 +398,12 @@ def recalculate_model(model_id: str):
             f"error recalculating model: {str(err)}")
 
 
-def remove_module(model_id: str, case_id: str, module_id: str,
-                  parent_module_id: str):
+def remove_module(model_id: str, module_id: str):
     """Removes the specified module from the model.
     
     Args:
         model_id: The ID of the model.
-        case_id: The ID of the case containing the module.
         module_id: The ID of the module to be removed.
-        parent_module_id: The ID of the parent of the module to be removed.
     """
 
     client = new_client()
@@ -414,10 +411,8 @@ def remove_module(model_id: str, case_id: str, module_id: str,
         client.post(
             url=VSURL.DELETE_MODULE,
             data={
-                Headers.CASE_ID: case_id,
                 Headers.MODEL_ID: model_id,
-                Headers.PARENT_MODULE_ID: parent_module_id,
-                Headers.UID: module_id,
+                Headers.MODULE_ID: module_id,
             },
         )
     except ModelingServicePostException as err:

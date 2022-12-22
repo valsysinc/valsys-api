@@ -11,7 +11,7 @@ class VSURL:
     MODEL_INFO = f"{BASE_URL}/modeling/view/models"
     PULL_MODEL = f"{BASE_URL}/modeling/view/model"
     CASE = f"{BASE_URL}/modeling/case"
-    DELETE_MODULE = f"{BASE_URL}/modeling/delete-module"
+    DELETE_MODULE = f"{BASE_URL}/modeling/edit/delete-module"
     ADD_MODULE = f"{BASE_URL}/modeling/edit/add-module"
     ADD_ITEM = f"{BASE_URL}/modeling/edit/add-item"
     ADD_ITEM_TAGS = f"{BASE_URL}/modeling/edit/update-tags"

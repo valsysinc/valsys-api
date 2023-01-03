@@ -12,6 +12,12 @@ pip install git+https://github.com/valsysinc/valsys-api
 ```
 
 Once done, please see the [documentation](`https://valsysinc.github.io/valsys-api/`) to find out how to use the library.
+
+Specific versions of the library can be installed via
+```
+pip install git+https://github.com/valsysinc/valsys-api@v0.4.3
+```
+where `v0.4.3` is the git tag of the required version (these can be found on the [github](https://github.com/valsysinc/valsys-api/tags) repo)
 ### **Advanced**: installation via source
 For more advance use, the source code can be cloned locally (via `git clone https://github.com/valsysinc/valsys-api.git`) and interacted with directly. 
 

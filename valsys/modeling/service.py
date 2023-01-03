@@ -333,7 +333,15 @@ def pull_model_information(model_id: str) -> ModelInformation:
     return ModelInformation.from_json(model_id, cases)
 
 
-def pull_model(model_id) -> Model:
+def pull_model(model_id: str) -> Model:
+    """Pull a model by its ID.
+    
+    Args:
+        model_id: the ID of the required model.
+    
+    Returns:
+        The `Model` object for the model.
+    """
     client = new_client()
 
     resp = client.get(

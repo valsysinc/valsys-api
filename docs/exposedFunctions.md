@@ -14,6 +14,12 @@ filter_user_models
 ```
 ::: valsys.modeling.service.filter_user_models
 
+## Model pulling
+```python linenums="1"
+pull_model(model_id)
+```
+::: valsys.modeling.service.pull_model
+
 
 ## Model tagging
 
@@ -102,8 +108,7 @@ recalculate_model(model_id: str)
 
 ## Remove a module
 ```python linenums="1"
-remove_module(model_id: str, case_id: str, module_id: str,
-                  parent_module_id: str)
+remove_module(model_id: str, module_id: str)
 ```
 :::valsys.modeling.service.remove_module
 

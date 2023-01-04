@@ -40,6 +40,7 @@ from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import SpawnModelResponseException
 from valsys.utils import logger
 from valsys.modeling.vars import Vars
+from valsys.modeling.utils import facts_list
 
 
 class ModelingActions:
@@ -94,6 +95,7 @@ def filter_user_models(tags: List[str] = None,
         resp = client.post(VSURL.USERS_FILTER_HISTORY,
                            headers=headers,
                            data=filters.jsonify())
+        print(resp)
     except ModelingServicePostException as err:
         raise err
     return [
@@ -351,7 +353,7 @@ def pull_model(model_id: str) -> Model:
     return Model.from_json(resp.get('data').get('model'))
 
 
-def pull_model_datasources(model_id) -> str:
+def pull_model_datasources(model_id: str) -> str:
     """Pull the model data source string for the `model_id`."""
     return pull_model_information(model_id).data_sources
 
@@ -386,24 +388,28 @@ def append_tags(uid: str, tags: List[str]):
     tag_model(uid, list(set(tags).union(set(curr_tags))))
 
 
-def recalculate_model(model_id: str):
+def recalculate_model(model_id: str) -> List[Fact]:
     """Recalculates the model.
     
     Args:
         model_id: The ID of the model to be recalculated.
+    
+    Returns:
+        List of Facts updated during the recalculation process.
     """
     client = new_client()
-    payload = {"modelId": model_id}
-    print(payload)
+    payload = {Headers.MODEL_ID: model_id}
+
     try:
         resp = client.post(url=VSURL.RECALC_MODEL, data=payload)
-        if resp.get('status') == Vars.SUCCESS:
-            return resp
-        raise RecalculateModelException(
-            f"error recalculating model: {resp.get('error')}")
     except ModelingServicePostException as err:
         raise RecalculateModelException(
-            f"error recalculating model: {str(err)}")
+            f"error posting model for recalculating: {str(err)}")
+
+    if resp.get('status') == Vars.SUCCESS:
+        return facts_list(resp.get('data').get('facts'))
+    raise RecalculateModelException(
+        f"error recalculating model: {resp.get('error')}")
 
 
 def remove_module(model_id: str, module_id: str):
@@ -491,6 +497,7 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                 Headers.MODULE_ID: module_id,
             },
         )
+
     except (ModelingServicePostException, Exception) as err:
         logger.exception(err)
         raise AddLineItemException(
@@ -510,21 +517,22 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
         f"error adding line item: cannot find module with name {name}")
 
 
-def edit_facts(url: str, case_id: str, model_id: str, facts: List[Fact]):
+def edit_facts(url: str, case_id: str, model_id: str,
+               facts: List[Fact]) -> List[Fact]:
     client = new_client()
-
+    payload = {
+        Headers.CASE_ID: case_id,
+        Headers.MODEL_ID: model_id,
+        "forecastIncrement": 1,
+        "facts": facts,
+    }
     resp = client.post(
         url=url,
-        data={
-            Headers.CASE_ID: case_id,
-            Headers.MODEL_ID: model_id,
-            "forecastIncrement": 1,
-            "facts": facts,
-        },
+        data=payload,
     )
     if resp.get('status') != Vars.SUCCESS:
         raise Exception(f'fact editing {resp.get("error")}')
-    return resp
+    return facts_list(resp.get('data').get('facts'))
 
 
 def edit_format(case_id: str, model_id: str, facts: List[Fact]):

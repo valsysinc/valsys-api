@@ -49,6 +49,7 @@ from valsys.modeling.service import (
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.modeling.exceptions import SpawnModelResponseException
 from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.model.fact import Fact
 from .factories import (
     valid_email,
     valid_name,
@@ -586,27 +587,70 @@ class TestAppendlTags:
 
 class TestRecalculateModel:
 
+    @property
+    def success_response(self):
+        return {
+            'status': Vars.SUCCESS,
+            "data": {
+                "facts": [{
+                    "id": "161396b0-5f43-4d20-ab82-94b291974d81",
+                    "identifier":
+                    "[Cash Flow From Financing Activities[Repayments of long term debt[2018]]]",
+                    "period": 2018,
+                    "format": "{}",
+                    "value": "-0",
+                    "dataValue": "-0",
+                    "formula": "-0",
+                    "internalFormula": "-0",
+                    "edges": {
+                        "dependantCells": [{
+                            "id": "f6390bf9-49f4-451d-b339-d63d98c944ac",
+                            "identifier":
+                            "[Cash Flow statement[Repayments of long term debt[2018]]]",
+                            "edges": {}
+                        }]
+                    }
+                }]
+            }
+        }
+
+    @property
+    def failed_response(self):
+        return {'status': 'garbage'}
+
+    @mock.patch(f"{MODULE_PREFIX}.facts_list")
     @mock.patch(f"{MODULE_PREFIX}.new_client")
-    def test_works_ok(self, mock_new_client):
+    def test_works_ok(self, mock_new_client, mock_facts_list):
         model_id = valid_uid()
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
-        mock_c.post.return_value = {'status': Vars.SUCCESS}
-        assert recalculate_model(model_id) == {'status': Vars.SUCCESS}
+        mock_c.post.return_value = self.success_response
+        mfl = mock_facts_list.return_value
+        assert recalculate_model(model_id) == mfl
         _, kw = mock_c.post.call_args
         assert 'url' in kw
-        assert kw.get('data').get('modelId') == model_id
+        assert kw.get('data').get(Headers.MODEL_ID) == model_id
+        mock_facts_list.assert_called_once()
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
-    def test_raises(self, mock_new_client):
+    def test_raises_not_success(self, mock_new_client):
         model_id = valid_uid()
         mock_c = mock.MagicMock()
         mock_new_client.return_value = mock_c
-        d, s, u = 42, 4, 'www'
-        mock_c.get.side_effect = ModelingServiceGetException(d, s, u)
+        mock_c.post.return_value = self.failed_response
         with pytest.raises(RecalculateModelException) as err:
             recalculate_model(model_id)
         assert 'error recalculating model' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_raises_post_exception(self, mock_new_client):
+        model_id = valid_uid()
+        mock_c = mock.MagicMock()
+        mock_new_client.return_value = mock_c
+        mock_c.post.side_effect = ModelingServicePostException('d', 4, 'www')
+        with pytest.raises(RecalculateModelException) as err:
+            recalculate_model(model_id)
+        assert 'error posting model for recalculating' in str(err)
 
 
 class TestRemoveModule:
@@ -816,6 +860,33 @@ class TestAddLineItem:
 
 class TestEditFacts:
 
+    @property
+    def success_response(self):
+        return {
+            'status': Vars.SUCCESS,
+            "data": {
+                "facts": [{
+                    "id": "161396b0-5f43-4d20-ab82-94b291974d81",
+                    "identifier":
+                    "[Cash Flow From Financing Activities[Repayments of long term debt[2018]]]",
+                    "period": 2018,
+                    "format": "{}",
+                    "value": "-0",
+                    "dataValue": "-0",
+                    "formula": "-0",
+                    "internalFormula": "-0",
+                    "edges": {
+                        "dependantCells": [{
+                            "id": "f6390bf9-49f4-451d-b339-d63d98c944ac",
+                            "identifier":
+                            "[Cash Flow statement[Repayments of long term debt[2018]]]",
+                            "edges": {}
+                        }]
+                    }
+                }]
+            }
+        }
+
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client):
         url = 'www'
@@ -823,7 +894,7 @@ class TestEditFacts:
         model_id = valid_uid()
         facts = [1, 2, 3]
         mock_c = mock.MagicMock()
-        mock_c.post.return_value = {'status': Vars.SUCCESS}
+        mock_c.post.return_value =self.success_response
         mock_new_client.return_value = mock_c
         edit_facts(url, case_id, model_id, facts)
         mock_new_client.assert_called_once()

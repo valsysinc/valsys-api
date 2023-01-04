@@ -33,8 +33,12 @@ class Model(object):
         raise Exception('cannot find case with id')
 
     @property
+    def first_case(self):
+        return self.cases[0]
+
+    @property
     def first_case_id(self):
-        return self.cases[0].uid
+        return self.first_case.uid
 
 
 @dataclass

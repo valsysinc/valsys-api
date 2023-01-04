@@ -24,6 +24,10 @@ class Case:
     ticker: str = ""
 
     @property
+    def first_module(self):
+        return self.modules[0]
+
+    @property
     def module_meta(self):
         return [module.module_meta for module in self.modules]
 

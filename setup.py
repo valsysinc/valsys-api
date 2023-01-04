@@ -1,20 +1,37 @@
 """Setup for distribution"""
 
 from distutils.core import setup
-
 from setuptools import find_packages
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
+
+
+def read_requirements():
+    with open('requirements.txt') as f:
+        required = f.read().splitlines()
+    return required
+
+
+def read_config():
+    with open("CONFIG") as v:
+        ls = v.read().splitlines()
+        lds = {}
+        for l in ls:
+            k, v = l.split('=')
+            lds[k] = v
+    return lds
+
+
+cfg = read_config()
+rqs = read_requirements()
 setup(
     name='valsys',
     packages=find_packages(),
-    version="0.4.5",
+    version=cfg['VERSION'],
     license='MIT',
     description='Valsys python library',
     author='Jonathan Pearson',
     author_email='jonathan.pearson@valsys.com',
     url='https://valsys.io/',
-    install_requires=required,
+    install_requires=rqs,
     classifiers=[
         # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
         'Development Status :: 3 - Alpha',

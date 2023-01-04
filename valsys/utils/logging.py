@@ -31,3 +31,14 @@ err_file_handler.setFormatter(logging.Formatter(FORMAT, datefmt=FORMAT_DATE))
 logger.addHandler(screen_handler)
 logger.addHandler(file_handler)
 logger.addHandler(err_file_handler)
+
+loggerIT =logging.getLogger(f"{LOG_ID}-TEST")
+loggerIT.setLevel(logging.DEBUG)
+FORMAT = "[%(asctime)s] %(name)s %(levelname)s - %(message)s"
+FORMAT_DATE = "%d-%m-%y %H:%M:%S"
+
+
+
+loggerIT.addHandler(screen_handler)
+loggerIT.addHandler(file_handler)
+loggerIT.addHandler(err_file_handler)

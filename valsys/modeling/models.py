@@ -176,7 +176,7 @@ class ModelDetailInformation:
 
     @classmethod
     def from_json(cls, j):
-        return cls(uid=j.get('uid'),
+        return cls(uid=j.get('id'),
                    cik=j.get('cik'),
                    ticker=j.get('ticker'),
                    geography=j.get('geography'),
@@ -184,11 +184,11 @@ class ModelDetailInformation:
                    company_name=j.get('companyName'),
                    currency=j.get('currency'),
                    case_id=j.get('caseID'),
-                   current_share_price=float(j.get('currentSharePrice')),
-                   implied_share_price=float(j.get('impliedSharePrice')),
+                   current_share_price=float(j.get('currentSharePrice', 0)),
+                   implied_share_price=float(j.get('impliedSharePrice', 0)),
                    forecast_period=int(j.get('forecastPeriod')),
                    historical_period=int(j.get('historicalPeriod')),
-                   historical_start=int(j.get('historicalStart')),
+                   historical_start=int(j.get('historicalStart', 0)),
                    forecast_increment=j.get('forecastIncrement'),
                    start_period=j.get('startPeriod'),
                    created_at=j.get('createdAt'),

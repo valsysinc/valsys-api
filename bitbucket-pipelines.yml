@@ -3,11 +3,24 @@ image: python:3.7.4-alpine3.10
 pipelines:
   default:
     - step:
+        name: Build
         services:
           - docker
         script:
           - export VALSYS_API_BUILD=test
           - docker build -t apilib .
+
+    - step:
+        name: Unit tests
+        services:
+          - docker
+        script:
           - docker run -t apilib make test
           - docker run -t apilib /bin/bash -c "make coverage-ci"
+
+    - step:
+        name: Integration tests
+        services:
+          - docker
+        script:
           - docker run -t apilib /bin/bash -c "make inttest"

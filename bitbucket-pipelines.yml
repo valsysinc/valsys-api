@@ -6,9 +6,14 @@ pipelines:
         name: Build
         services:
           - docker
-        script:
+        image: atlassian/pipelines-awscli
+        script: 
+          - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
+          - sh login.sh
           - export VALSYS_API_BUILD=test
-          - docker build -t apilib .
+          - docker build -t vslib .
+          - docker tag vslib:latest 467586146532.dkr.ecr.eu-west-1.amazonaws.com/vslib:latest
+          - docker push 467586146532.dkr.ecr.eu-west-1.amazonaws.com/vslib:latest
 
     - step:
         name: Unit tests

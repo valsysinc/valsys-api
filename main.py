@@ -11,9 +11,9 @@ def main(args):
         from valsys.admin import login
         login()
     elif mode == '--inttests':
-        from valsys.inttests.run import run_inttests
+        from valsys.inttests.run import run_workflows
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-        run_inttests()
+        run_workflows()
     elif mode == '--spawn':
         from valsys.utils import logger
         logger.info(f"start")

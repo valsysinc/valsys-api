@@ -2,7 +2,8 @@
 FROM python:3.8.9 
 ADD . /valsys
 WORKDIR /valsys
-
+ARG VALSYS_API_SOCKET
+ENV VALSYS_API_SOCKET=$VALSYS_API_SOCKET
 #ENV VALSYS_API_SOCKET=wss://api.valsys.io
 ENV VALSYS_API_SERVER=https://api.valsys.io
 ENV VALSYS_API_USER=simon.bessey@valsys.io

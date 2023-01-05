@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from valsys.config.env import get_envfiles
 from valsys.utils.utils import read_env
 
-
 BUILDS_TO_LOAD_FROM_ENV_FILES = ['local', 'test']
 
 
@@ -17,7 +16,7 @@ def load_from_env_file(build: str):
 
 
 def get_build():
-    return os.getenv("VALSYS_API_BUILD", 'local')
+    return os.getenv("VALSYS_API_BUILD", 'local2')
 
 
 _BUILD = get_build()

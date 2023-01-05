@@ -39,4 +39,4 @@ pipelines:
           - sh login.sh
           - TAG=${BITBUCKET_COMMIT}
           - AWS_REGISTRY_URL=467586146532.dkr.ecr.eu-west-1.amazonaws.com
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make inttest"
+          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG -e VALSYS_API_SOCKET=$VALSYS_API_SOCKET /bin/bash -c "make inttest"

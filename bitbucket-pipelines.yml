@@ -13,7 +13,7 @@ pipelines:
           - TAG=${BITBUCKET_COMMIT}
           - AWS_REGISTRY_URL=467586146532.dkr.ecr.eu-west-1.amazonaws.com
           - export VALSYS_API_BUILD=test
-          - docker build --build-arg VALSYS_API_SOCKET=${VALSYS_API_SOCKET} -t $AWS_REGISTRY_URL/vslib:$TAG .
+          - docker build --build-arg VALSYS_API_SOCKET=${VALSYS_API_SOCKET} --build-arg VALSYS_API_SERVER=${VALSYS_API_SERVER} --build-arg VALSYS_API_USER=${VALSYS_API_USER} --build-arg VALSYS_API_PASSWORD=${VALSYS_API_PASSWORD} -t $AWS_REGISTRY_URL/vslib:$TAG .
           - docker push $AWS_REGISTRY_URL/vslib:$TAG
 
     - step:

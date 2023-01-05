@@ -11,20 +11,22 @@ pipelines:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
           - TAG=${BITBUCKET_COMMIT}
+          - AWS_REGISTRY_URL=467586146532.dkr.ecr.eu-west-1.amazonaws.com
           - export VALSYS_API_BUILD=test
-          - docker build -t 467586146532.dkr.ecr.eu-west-1.amazonaws.com/vslib:$TAG .
-          #- docker tag vslib:$TAG 467586146532.dkr.ecr.eu-west-1.amazonaws.com/vslib
-          - docker push 467586146532.dkr.ecr.eu-west-1.amazonaws.com/vslib:$TAG
+          - docker build -t $AWS_REGISTRY_URL/vslib:$TAG .
+          - docker push $AWS_REGISTRY_URL/vslib:$TAG
 
     - step:
         name: Unit tests
         services:
           - docker
         script:
-          - export VALSYS_API_BUILD=test
-          - docker build -t apilib .
-          - docker run -t apilib make test
-          - docker run -t apilib /bin/bash -c "make coverage-ci"
+          - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
+          - sh login.sh
+          - TAG=${BITBUCKET_COMMIT}
+          - AWS_REGISTRY_URL=467586146532.dkr.ecr.eu-west-1.amazonaws.com
+          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG make test
+          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make coverage-ci"
 
     - step:
         name: Integration tests

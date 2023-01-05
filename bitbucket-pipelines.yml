@@ -20,6 +20,7 @@ pipelines:
         name: Unit tests
         services:
           - docker
+        image: atlassian/pipelines-awscli
         script:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh

@@ -95,7 +95,6 @@ def filter_user_models(tags: List[str] = None,
         resp = client.post(VSURL.USERS_FILTER_HISTORY,
                            headers=headers,
                            data=filters.jsonify())
-        print(resp)
     except ModelingServicePostException as err:
         raise err
     return [

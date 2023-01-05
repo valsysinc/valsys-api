@@ -15,6 +15,8 @@ pipelines:
         services:
           - docker
         script:
+          - export VALSYS_API_BUILD=test
+          - docker build -t apilib .
           - docker run -t apilib make test
           - docker run -t apilib /bin/bash -c "make coverage-ci"
 
@@ -23,4 +25,6 @@ pipelines:
         services:
           - docker
         script:
+          - export VALSYS_API_BUILD=test
+          - docker build -t apilib .
           - docker run -t apilib /bin/bash -c "make inttest"

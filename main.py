@@ -24,6 +24,8 @@ def main(args):
             logger.info(f'done with errors')
         else:
             logger.info(f'done')
+    else:
+        raise NotImplementedError(f"invalid mode: {mode}")
 
 
 if __name__ == "__main__":

@@ -23,8 +23,13 @@ class LineItem:
     def jsonify_facts(self, fields=None):
         return [f.jsonify(fields) for f in self.facts]
 
-    def replace_fact(self, idx, new_fact: Fact):
-        self.facts[idx] = new_fact
+    def replace_fact(self, idx: int, new_fact: Fact):
+        try:
+            self.facts[idx] = new_fact
+        except IndexError as err:
+            raise Exception(
+                f"tried to replace fact at index {idx}; does not exist in facts list"
+            )
 
     def facts_for_formula_edit(self):
         return self.jsonify_facts(fields=[

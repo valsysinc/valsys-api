@@ -1,5 +1,6 @@
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
+import pytest
 
 
 class TestLineItem:
@@ -88,3 +89,52 @@ class TestLineItem:
         for f in ffe:
             assert set(f.keys()).intersection(set(expected_fields)) == set(
                 f.keys())
+
+    def test_replace_fact_ok(self):
+        uid = self.valid_uid
+        name = self.valid_name
+        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
+        ij = {
+            LineItem.fields.ID: uid,
+            LineItem.fields.NAME: name,
+            'edges': {
+                'facts': facts
+            }
+        }
+        li_fj = LineItem.from_json(ij)
+        assert len(li_fj.facts) == 2
+        new_fact_index = 0
+        new_fact = Fact(uid=92,
+                        identifier='1',
+                        formula='42',
+                        period=1,
+                        value=1,
+                        fmt='1')
+        li_fj.replace_fact(new_fact_index, new_fact)
+        assert len(li_fj.facts) == 2
+        assert li_fj.facts[new_fact_index] == new_fact
+
+    def test_replace_fact_invalid_index(self):
+        uid = self.valid_uid
+        name = self.valid_name
+
+        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
+        ij = {
+            LineItem.fields.ID: uid,
+            LineItem.fields.NAME: name,
+            'edges': {
+                'facts': facts
+            }
+        }
+        li_fj = LineItem.from_json(ij)
+        assert len(li_fj.facts) == 2
+        new_fact_index = 2
+        new_fact = Fact(uid=92,
+                        identifier='1',
+                        formula='42',
+                        period=1,
+                        value=1,
+                        fmt='1')
+        with pytest.raises(Exception) as err:
+            li_fj.replace_fact(new_fact_index, new_fact)
+        assert str(new_fact_index) in str(err)

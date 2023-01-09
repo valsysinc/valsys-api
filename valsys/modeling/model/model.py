@@ -26,6 +26,17 @@ class Model(object):
             if case.case == name:
                 return case
 
+    def pull_module(self, module_id: str):
+        """Extract a module by ID from the model.
+        
+        Note that the first module with the given id will be returned.
+        """
+        for case in self.cases:
+            for module in case.modules:
+                if module.uid == module_id:
+                    return module
+        raise Exception(f'cannot find module with id {module_id}')
+
     def pull_case_by_id(self, id) -> Case:
         for case in self.cases:
             if case.uid == id:

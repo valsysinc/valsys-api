@@ -14,6 +14,7 @@ class VSURL:
     DELETE_MODULE = f"{BASE_URL}/modeling/edit/delete-module"
     ADD_MODULE = f"{BASE_URL}/modeling/edit/add-module"
     ADD_ITEM = f"{BASE_URL}/modeling/edit/add-item"
+    DELETE_ITEM = f"{BASE_URL}/modeling/edit/delete-item"
     ADD_ITEM_TAGS = f"{BASE_URL}/modeling/edit/update-tags"
     EDIT_FORMAT = f"{BASE_URL}/modeling/edit/format"
     EDIT_FORMULA = f"{BASE_URL}/modeling/edit/formula"

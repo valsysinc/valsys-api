@@ -515,6 +515,22 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
         f"error adding line item: cannot find module with name {name}")
 
 
+def delete_line_item(model_id: str, module_id: str,
+                     line_item_id: str) -> Module:
+    client = new_client()
+
+    resp = client.post(
+        url=VSURL.DELETE_ITEM,
+        data={
+            Headers.MODEL_ID: model_id,
+            Headers.LINE_ITEM_ID: line_item_id,
+            Headers.MODULE_ID: module_id,
+        },
+    )
+    module = Module.from_json(resp.get('data').get('module'))
+    return module
+
+
 def edit_facts(url: str, case_id: str, model_id: str,
                facts: List[Fact]) -> List[Fact]:
     client = new_client()

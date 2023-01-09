@@ -541,13 +541,17 @@ def edit_format(case_id: str, model_id: str, facts: List[Fact]):
                       facts=facts)
 
 
-def edit_formula(case_id: str, model_id: str, facts: List[Fact]):
+def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
     """Edit the formula on the supplied facts.
     
     Args:
         case_id: The caseID for where the facts live.
         model_id: The modelID for where the facts live.
         facts: The list of facts whose formulae are to be edited.
+
+    
+    Returns:
+        List of `Fact`s modified by the edit.
     """
     return edit_facts(url=VSURL.EDIT_FORMULA,
                       case_id=case_id,

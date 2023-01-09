@@ -67,6 +67,20 @@ def run_edit_formula(model_id: str, case_id: str, fact: Fact):
     assert found
 
 
+@workflow('edit format')
+def run_edit_format(model_id: str, case_id: str, fact: Fact):
+    from valsys.modeling.service import edit_format
+    new_format = '{"thing":42}'
+    fact.fmt = new_format
+    efs = edit_format(case_id, model_id, [ff.jsonify() for ff in [fact]])
+    found = False
+    for f in efs:
+        if f.uid == fact.uid:
+            assert f.fmt == new_format
+            found = True
+    assert found
+
+
 @workflow('tag line item')
 def run_tag_line_item(model_id: str, line_item: LineItem):
     from valsys.modeling.service import tag_line_item

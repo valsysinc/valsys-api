@@ -104,6 +104,22 @@ def run_add_line_item(model_id: str, case: Case, module_id: str):
     assert new_line_item.order == new_line_item_order
 
 
+@workflow('remove line item')
+def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
+    from valsys.modeling.service import delete_line_item
+    from valsys.modeling.service import pull_model
+
+    original_model = pull_model(model_id)
+    original_module = original_model.pull_module(module_id)
+    orig_num_line_items = len(original_module.line_items)
+
+    parent_module = delete_line_item(model_id, module_id, line_item_id)
+    assert parent_module.uid == module_id
+    for l in parent_module.line_items:
+        assert l.uid != line_item_id
+    assert len(parent_module.line_items) == orig_num_line_items - 1
+
+
 @workflow('filter user models')
 def run_filter_user_models(model_id: str):
     from valsys.modeling.service import filter_user_models

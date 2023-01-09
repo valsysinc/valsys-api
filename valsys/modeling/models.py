@@ -104,17 +104,6 @@ class ModelGroups:
 
 
 @dataclass
-class TaggedLineItemResponse:
-    uid: str
-    name: str
-    tags: List[str] = field(default_factory=list)
-
-    @classmethod
-    def from_json(cls, j):
-        return cls(uid=j.get('id'), name=j.get('name'), tags=j.get('tags'))
-
-
-@dataclass
 class PermissionsModel:
     user_id: str
     model_id: str

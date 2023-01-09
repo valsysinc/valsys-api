@@ -13,3 +13,8 @@ class TestModelConfig:
     EMAIL = "jack.fuller@valsys.io"
     NEW_MODULE_NAME = 'new module'
     NEW_LINE_ITEM_NAME = 'new line item'
+
+
+class AddLineItemConfig:
+    NAME = 'New line item'
+    ORDER = 12

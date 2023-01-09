@@ -70,7 +70,9 @@ def run_edit_formula(model_id: str, case_id: str, fact: Fact):
 @workflow('tag line item')
 def run_tag_line_item(model_id: str, line_item: LineItem):
     from valsys.modeling.service import tag_line_item
-    new_tags = ['t4']
+    import uuid
+
+    new_tags = ['t4', str(uuid.uuid1())]
     tli = tag_line_item(model_id, line_item.uid, new_tags)
     assert tli.tags == new_tags
 
@@ -78,8 +80,9 @@ def run_tag_line_item(model_id: str, line_item: LineItem):
 @workflow('add line item')
 def run_add_line_item(model_id: str, case: Case, module_id: str):
     from valsys.modeling.service import add_line_item
-    new_line_item_name = 'new line item'
-    new_line_item_order = 12
+    from valsys.inttests.config import AddLineItemConfig
+    new_line_item_name = AddLineItemConfig.NAME
+    new_line_item_order = AddLineItemConfig.ORDER
     new_line_item = add_line_item(case.uid, model_id, module_id,
                                   new_line_item_name, new_line_item_order)
 
@@ -124,7 +127,18 @@ def run_add_child_module(model_id: str, case_id: str, module_id: str):
 @workflow('remove module')
 def run_remove_module(model_id: str, module_id: str):
     from valsys.modeling.service import remove_module
+    from valsys.modeling.service import pull_model
+    from valsys.modeling.exceptions import RemoveModuleException
     remove_module(model_id, module_id)
+    m = pull_model(model_id)
+    for c in m.cases:
+        for m in c.modules:
+            assert m.uid != module_id
+
+    try:
+        remove_module(model_id, module_id)
+    except RemoveModuleException:
+        pass
 
 
 @workflow('recalculate model')

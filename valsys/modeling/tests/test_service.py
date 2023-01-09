@@ -446,7 +446,7 @@ class TestUpdateModelGroups:
 class TestTagLineItem:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
-    @mock.patch(f"{MODULE_PREFIX}.TaggedLineItemResponse.from_json")
+    @mock.patch(f"{MODULE_PREFIX}.LineItem.from_json")
     def test_works_ok(self, mock_from_json, mock_new_client):
         model_id = valid_uid()
         line_item_id = valid_uid()

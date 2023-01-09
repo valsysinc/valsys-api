@@ -33,7 +33,6 @@ from valsys.modeling.models import (
     ModelsFilter,
     Permissions,
     SpawnedModelInfo,
-    TaggedLineItemResponse,
 )
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
@@ -174,7 +173,7 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
 
 
 def tag_line_item(model_id: str, line_item_id: str,
-                  tags: List[str]) -> TaggedLineItemResponse:
+                  tags: List[str]) -> LineItem:
     """Tag a line item.
 
     Note that this replaces any existing tags on the line item.
@@ -185,7 +184,7 @@ def tag_line_item(model_id: str, line_item_id: str,
         tags: The tags to give to the line item
     
     Returns:
-        TaggedLineItemResponse
+        LineItem
 
     """
     client = new_client()
@@ -200,7 +199,7 @@ def tag_line_item(model_id: str, line_item_id: str,
         )
     except ModelingServicePostException as err:
         raise TagLineItemException(f"error tagging line item: {str(err)}")
-    return TaggedLineItemResponse.from_json(ait.get('data').get('lineItem'))
+    return LineItem.from_json(ait.get('data').get('lineItem'))
 
 
 def share_model(model_id: str,

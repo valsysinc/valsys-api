@@ -1,7 +1,7 @@
 from valsys.utils import loggerIT as logger
 
 
-def workflow(nm):
+def workflow(nm: str):
 
     def real_decorator(function):
 

@@ -184,7 +184,7 @@ def tag_line_item(model_id: str, line_item_id: str,
         tags: The tags to give to the line item
     
     Returns:
-        LineItem
+        LineItem from the backend, containing updated tags.
 
     """
     client = new_client()

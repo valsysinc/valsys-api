@@ -173,7 +173,8 @@ def run_remove_module(model_id: str, module_id: str):
     original_model.pull_module(module_id)
 
     # Now delete the target module
-    remove_module(model_id, module_id)
+    assert remove_module(model_id, module_id)
+
     # Now validate that the target module doesnt exist.
     m = pull_model(model_id)
     try:
@@ -192,4 +193,4 @@ def run_remove_module(model_id: str, module_id: str):
 @workflow('recalculate model')
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
-    recalculate_model(model_id)
+    assert recalculate_model(model_id)

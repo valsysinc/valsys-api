@@ -420,7 +420,7 @@ def remove_module(model_id: str, module_id: str):
 
     client = new_client()
     try:
-        client.post(
+        rm = client.post(
             url=VSURL.DELETE_MODULE,
             data={
                 Headers.MODEL_ID: model_id,
@@ -429,7 +429,7 @@ def remove_module(model_id: str, module_id: str):
         )
     except ModelingServicePostException as err:
         raise RemoveModuleException(f'error removing module: {str(err)}')
-    return True
+    return rm.get('status') == 'success'
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,

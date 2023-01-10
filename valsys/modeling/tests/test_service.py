@@ -662,6 +662,7 @@ class TestRemoveModule:
         module_id = valid_uid()
 
         mock_c = mock.MagicMock()
+        mock_c.post.return_value = {'status': 'success'}
         mock_new_client.return_value = mock_c
         assert remove_module(model_id, module_id)
         mock_c.post.assert_called_once()
@@ -894,7 +895,7 @@ class TestEditFacts:
         model_id = valid_uid()
         facts = [1, 2, 3]
         mock_c = mock.MagicMock()
-        mock_c.post.return_value =self.success_response
+        mock_c.post.return_value = self.success_response
         mock_new_client.return_value = mock_c
         edit_facts(url, case_id, model_id, facts)
         mock_new_client.assert_called_once()

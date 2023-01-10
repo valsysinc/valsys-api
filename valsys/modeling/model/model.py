@@ -33,9 +33,29 @@ class Model(object):
         """
         for case in self.cases:
             for module in case.modules:
+
                 if module.uid == module_id:
                     return module
+                for cm in module.child_modules:
+                    if cm.uid == module_id:
+                        return cm
         raise Exception(f'cannot find module with id {module_id}')
+
+    def pull_line_item(self, line_item_id: str):
+        """Extract a line item by ID from the model.
+        
+        Note that the first line item with the given id will be returned.
+        """
+        for case in self.cases:
+            for module in case.modules:
+                for line_item in module.line_items:
+                    if line_item.uid == line_item_id:
+                        return line_item
+                for cm in module.child_modules:
+                    for cline_item in cm.line_items:
+                        if cline_item.uid == line_item_id:
+                            return cline_item
+        raise Exception(f'cannot find line item with id {line_item_id}')
 
     def pull_case_by_id(self, id) -> Case:
         for case in self.cases:

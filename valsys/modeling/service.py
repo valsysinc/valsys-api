@@ -517,6 +517,16 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
 
 def delete_line_item(model_id: str, module_id: str,
                      line_item_id: str) -> Module:
+    """Delete a line item from an existing module.
+    
+    Args:
+        model_id: The modelID
+        module_id: The ID of the module containing the line item
+        line_item_id: The ID of the line item to be deleted.
+
+    Returns:
+        The `Module` without the deleted line item.
+    """
     client = new_client()
 
     resp = client.post(

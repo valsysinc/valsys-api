@@ -67,6 +67,20 @@ def run_edit_formula(model_id: str, case_id: str, fact: Fact):
     assert found
 
 
+@workflow('edit format')
+def run_edit_format(model_id: str, case_id: str, fact: Fact):
+    from valsys.modeling.service import edit_format
+    new_format = '{"thing":42}'
+    fact.fmt = new_format
+    efs = edit_format(case_id, model_id, [ff.jsonify() for ff in [fact]])
+    found = False
+    for f in efs:
+        if f.uid == fact.uid:
+            assert f.fmt == new_format
+            found = True
+    assert found
+
+
 @workflow('tag line item')
 def run_tag_line_item(model_id: str, line_item: LineItem):
     from valsys.modeling.service import tag_line_item
@@ -88,6 +102,29 @@ def run_add_line_item(model_id: str, case: Case, module_id: str):
 
     assert new_line_item.name == new_line_item_name
     assert new_line_item.order == new_line_item_order
+
+
+@workflow('remove line item')
+def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
+    from valsys.modeling.service import delete_line_item
+    from valsys.modeling.service import pull_model
+
+    original_model = pull_model(model_id)
+    original_module = original_model.pull_module(module_id)
+    orig_num_line_items = len(original_module.line_items)
+    original_model.pull_line_item(line_item_id)
+
+    parent_module = delete_line_item(model_id, module_id, line_item_id)
+    assert parent_module.uid == module_id
+    for l in parent_module.line_items:
+        assert l.uid != line_item_id
+    assert len(parent_module.line_items) == orig_num_line_items - 1
+    modified_model = pull_model(model_id)
+
+    try:
+        modified_model.pull_line_item(line_item_id)
+    except Exception as err:
+        assert "cannot find line item with id" in str(err)
 
 
 @workflow('filter user models')
@@ -129,12 +166,24 @@ def run_remove_module(model_id: str, module_id: str):
     from valsys.modeling.service import remove_module
     from valsys.modeling.service import pull_model
     from valsys.modeling.exceptions import RemoveModuleException
-    remove_module(model_id, module_id)
-    m = pull_model(model_id)
-    for c in m.cases:
-        for m in c.modules:
-            assert m.uid != module_id
 
+    # Before we do anything, pull the model and validate
+    # that the target module actually exists
+    original_model = pull_model(model_id)
+    original_model.pull_module(module_id)
+
+    # Now delete the target module
+    assert remove_module(model_id, module_id)
+
+    # Now validate that the target module doesnt exist.
+    m = pull_model(model_id)
+    try:
+        m.pull_module(module_id)
+    except Exception as err:
+        assert 'cannot find module with id' in str(err)
+
+    # Just for fun, try and delete the module again;
+    # it should fail.
     try:
         remove_module(model_id, module_id)
     except RemoveModuleException:
@@ -144,4 +193,4 @@ def run_remove_module(model_id: str, module_id: str):
 @workflow('recalculate model')
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
-    recalculate_model(model_id)
+    assert recalculate_model(model_id)

@@ -184,7 +184,7 @@ def tag_line_item(model_id: str, line_item_id: str,
         tags: The tags to give to the line item
     
     Returns:
-        LineItem
+        LineItem from the backend, containing updated tags.
 
     """
     client = new_client()
@@ -420,7 +420,7 @@ def remove_module(model_id: str, module_id: str):
 
     client = new_client()
     try:
-        client.post(
+        rm = client.post(
             url=VSURL.DELETE_MODULE,
             data={
                 Headers.MODEL_ID: model_id,
@@ -429,7 +429,7 @@ def remove_module(model_id: str, module_id: str):
         )
     except ModelingServicePostException as err:
         raise RemoveModuleException(f'error removing module: {str(err)}')
-    return True
+    return rm.get('status') == 'success'
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -515,6 +515,32 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
         f"error adding line item: cannot find module with name {name}")
 
 
+def delete_line_item(model_id: str, module_id: str,
+                     line_item_id: str) -> Module:
+    """Delete a line item from an existing module.
+    
+    Args:
+        model_id: The modelID
+        module_id: The ID of the module containing the line item
+        line_item_id: The ID of the line item to be deleted.
+
+    Returns:
+        The `Module` without the deleted line item.
+    """
+    client = new_client()
+
+    resp = client.post(
+        url=VSURL.DELETE_ITEM,
+        data={
+            Headers.MODEL_ID: model_id,
+            Headers.LINE_ITEM_ID: line_item_id,
+            Headers.MODULE_ID: module_id,
+        },
+    )
+    module = Module.from_json(resp.get('data').get('module'))
+    return module
+
+
 def edit_facts(url: str, case_id: str, model_id: str,
                facts: List[Fact]) -> List[Fact]:
     client = new_client()
@@ -541,13 +567,17 @@ def edit_format(case_id: str, model_id: str, facts: List[Fact]):
                       facts=facts)
 
 
-def edit_formula(case_id: str, model_id: str, facts: List[Fact]):
+def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
     """Edit the formula on the supplied facts.
     
     Args:
         case_id: The caseID for where the facts live.
         model_id: The modelID for where the facts live.
         facts: The list of facts whose formulae are to be edited.
+
+    
+    Returns:
+        List of `Fact`s modified by the edit.
     """
     return edit_facts(url=VSURL.EDIT_FORMULA,
                       case_id=case_id,

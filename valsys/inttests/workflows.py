@@ -112,12 +112,19 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
     original_model = pull_model(model_id)
     original_module = original_model.pull_module(module_id)
     orig_num_line_items = len(original_module.line_items)
+    original_model.pull_line_item(line_item_id)
 
     parent_module = delete_line_item(model_id, module_id, line_item_id)
     assert parent_module.uid == module_id
     for l in parent_module.line_items:
         assert l.uid != line_item_id
     assert len(parent_module.line_items) == orig_num_line_items - 1
+    modified_model = pull_model(model_id)
+
+    try:
+        modified_model.pull_line_item(line_item_id)
+    except Exception as err:
+        assert "cannot find line item with id" in str(err)
 
 
 @workflow('filter user models')
@@ -159,12 +166,23 @@ def run_remove_module(model_id: str, module_id: str):
     from valsys.modeling.service import remove_module
     from valsys.modeling.service import pull_model
     from valsys.modeling.exceptions import RemoveModuleException
-    remove_module(model_id, module_id)
-    m = pull_model(model_id)
-    for c in m.cases:
-        for m in c.modules:
-            assert m.uid != module_id
 
+    # Before we do anything, pull the model and validate
+    # that the target module actually exists
+    original_model = pull_model(model_id)
+    original_model.pull_module(module_id)
+
+    # Now delete the target module
+    remove_module(model_id, module_id)
+    # Now validate that the target module doesnt exist.
+    m = pull_model(model_id)
+    try:
+        m.pull_module(module_id)
+    except Exception as err:
+        assert 'cannot find module with id' in str(err)
+
+    # Just for fun, try and delete the module again;
+    # it should fail.
     try:
         remove_module(model_id, module_id)
     except RemoveModuleException:

@@ -16,7 +16,7 @@ def load_from_env_file(build: str):
 
 
 def get_build():
-    return os.getenv("VALSYS_API_BUILD", 'local2')
+    return os.getenv("VALSYS_API_BUILD", '')
 
 
 _BUILD = get_build()

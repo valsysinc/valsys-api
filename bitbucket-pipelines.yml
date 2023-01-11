@@ -23,9 +23,9 @@ pipelines:
         script:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
-          - TAG=${BITBUCKET_COMMIT}
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG make test
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make coverage-ci"
+          - DOCKER_IMG=$AWS_REGISTRY_URL/vslib:$BITBUCKET_COMMIT
+          - docker run -t DOCKER_IMG make test
+          - docker run -t $DOCKER_IMG /bin/bash -c "make coverage-ci"
 
     - step:
         name: Integration tests
@@ -35,5 +35,5 @@ pipelines:
         script:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
-          - TAG=${BITBUCKET_COMMIT}
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make inttest"
+          - DOCKER_IMG=$AWS_REGISTRY_URL/vslib:$BITBUCKET_COMMIT
+          - docker run -t $DOCKER_IMG /bin/bash -c "make inttest"

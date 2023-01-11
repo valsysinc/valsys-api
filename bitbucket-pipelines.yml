@@ -38,3 +38,17 @@ pipelines:
           - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:$BITBUCKET_COMMIT
           - docker run -t $DOCKER_IMG /bin/bash -c "python main.py --inttests ${VALSYS_API_SOCKET} ${VALSYS_API_SERVER} ${VALSYS_API_USER} ${VALSYS_API_PASSWORD}"
 
+    branches:
+    '{master}':
+      - step:
+          name: Build
+          services:
+            - docker
+          image: atlassian/pipelines-awscli
+          script: 
+            - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
+            - sh login.sh
+            - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:master
+            - export VALSYS_API_BUILD=test
+            - docker build -t $DOCKER_IMG .
+            - docker push $DOCKER_IMG

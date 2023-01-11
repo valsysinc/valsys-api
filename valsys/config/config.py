@@ -24,6 +24,7 @@ if _BUILD in BUILDS_TO_LOAD_FROM_ENV_FILES:
     load_from_env_file(_BUILD)
 else:
     print(f"BUILD={_BUILD}")
+
 BASE_SCK = read_env("VALSYS_API_SOCKET")
 BASE_URL = read_env("VALSYS_API_SERVER")
 API_USERNAME = read_env("VALSYS_API_USER")

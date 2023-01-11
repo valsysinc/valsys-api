@@ -26,9 +26,6 @@ tidy:
 	yapf --in-place --recursive *.py
 	importanize path valsys/
 
-inttest:
-	python main.py --inttests
-
 login:
 	python main.py --login
 

@@ -36,4 +36,4 @@ pipelines:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
           - DOCKER_IMG=$AWS_REGISTRY_URL/vslib:$BITBUCKET_COMMIT
-          - docker run -t $DOCKER_IMG /bin/bash -c "make inttest ${VALSYS_API_SOCKET} ${VALSYS_API_SERVER} ${VALSYS_API_USER} ${VALSYS_API_PASSWORD}"
+          - docker run -t $DOCKER_IMG /bin/bash -c "python main.py --inttests ${VALSYS_API_SOCKET} ${VALSYS_API_SERVER} ${VALSYS_API_USER} ${VALSYS_API_PASSWORD}"

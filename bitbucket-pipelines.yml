@@ -10,9 +10,9 @@ pipelines:
         script: 
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
-          - DOCKER_IMG=$AWS_REGISTRY_URL/vslib:$BITBUCKET_COMMIT
+          - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:$BITBUCKET_COMMIT
           - export VALSYS_API_BUILD=test
-          - docker build --build-arg VALSYS_API_SOCKET=${VALSYS_API_SOCKET} --build-arg VALSYS_API_SERVER=${VALSYS_API_SERVER} --build-arg VALSYS_API_USER=${VALSYS_API_USER} --build-arg VALSYS_API_PASSWORD=${VALSYS_API_PASSWORD} -t $DOCKER_IMG .
+          - docker build -t $DOCKER_IMG .
           - docker push $DOCKER_IMG
 
     - step:
@@ -23,9 +23,9 @@ pipelines:
         script:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
-          - TAG=${BITBUCKET_COMMIT}
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG make test
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make coverage-ci"
+          - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:$BITBUCKET_COMMIT
+          - docker run -t $DOCKER_IMG make test
+          - docker run -t $DOCKER_IMG /bin/bash -c "make coverage-ci"
 
     - step:
         name: Integration tests
@@ -35,5 +35,6 @@ pipelines:
         script:
           - aws ecr get-login --no-include-email --region eu-west-1 > login.sh
           - sh login.sh
-          - TAG=${BITBUCKET_COMMIT}
-          - docker run -t $AWS_REGISTRY_URL/vslib:$TAG /bin/bash -c "make inttest"
+          - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:$BITBUCKET_COMMIT
+          - docker run -t $DOCKER_IMG /bin/bash -c "python main.py --inttests ${VALSYS_API_SOCKET} ${VALSYS_API_SERVER} ${VALSYS_API_USER} ${VALSYS_API_PASSWORD}"
+

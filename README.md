@@ -40,3 +40,10 @@ make docserver
 ```
 then visit `http://localhost:8989/` in a browser.
 
+## Integration tests
+This library can be used to run integration tests against the Valsys Modeling service.
+Invoke via
+```
+python main.py --inttests <VALSYS_API_SOCKET> <VALSYS_API_SERVER> <VALSYS_API_USER> <VALSYS_API_PASSWORD>
+```
+The ordering of these parameters is important.

@@ -14,13 +14,6 @@ class Model(object):
         EDGES = 'edges'
         CASES = 'cases'
 
-    @classmethod
-    def from_json(cls, data):
-        return cls(uid=data[cls.fields.ID],
-                   cases=list(
-                       map(Case.from_json,
-                           data[cls.fields.EDGES][cls.fields.CASES])))
-
     def pull_case(self, name: str) -> Case:
         for case in self.cases:
             if case.case == name:
@@ -70,6 +63,13 @@ class Model(object):
     @property
     def first_case_id(self):
         return self.first_case.uid
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(uid=data[cls.fields.ID],
+                   cases=list(
+                       map(Case.from_json,
+                           data[cls.fields.EDGES][cls.fields.CASES])))
 
 
 @dataclass

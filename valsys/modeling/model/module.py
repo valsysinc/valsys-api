@@ -29,7 +29,7 @@ class Module:
         }
 
     def find_module(self, name: str) -> "Module":
-        """Returns a module by name.
+        """Returns a child module by name.
         
         If no matching module is found, `None` is returned.
         """
@@ -63,6 +63,7 @@ class Module:
         the provided name.
         
         If none is found, `None` is returned."""
+        #TODO: should this look at the line items of the modules' children modules too?
         if self.line_items is not None:
             for item in self.line_items:
                 if item.name == name:

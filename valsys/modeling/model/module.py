@@ -63,7 +63,8 @@ class Module:
         the provided name.
         
         If none is found, `None` is returned."""
-        #TODO: should this look at the line items of the modules' children modules too?
+        #TODO: PFL-24
+        # should this look at the line items of the modules' children modules too?
         if self.line_items is not None:
             for item in self.line_items:
                 if item.name == name:

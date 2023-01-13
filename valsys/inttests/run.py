@@ -49,7 +49,7 @@ def run_workflows():
 def wait_then_run():
     import time
     from valsys.modeling.service import health
-    maxtries = 2
+    maxtries = 13
     sleep_time_sec = 0.1
     sleep_multfac = 2
 

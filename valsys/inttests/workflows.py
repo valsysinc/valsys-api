@@ -193,3 +193,12 @@ def run_remove_module(model_id: str, module_id: str):
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
     assert recalculate_model(model_id)
+
+
+@workflow('rename module')
+def run_rename_module(model_id: str, module_id: str, new_name: str):
+    from valsys.modeling.service import rename_module
+    r = rename_module(model_id, module_id, new_name)
+    assert r.get('data').get('module').get('name') == new_name
+    r = rename_module(model_id, module_id, new_name)
+    print(r)

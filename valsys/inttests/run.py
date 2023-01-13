@@ -4,6 +4,7 @@ from valsys.inttests.workflows import run_spawn_model, run_pull_model, run_edit_
 from valsys.inttests.workflows import run_tag_line_item, run_add_line_item, run_filter_user_models
 from valsys.inttests.workflows import run_pull_model_datasources, run_pull_model_information, run_remove_module
 from valsys.inttests.workflows import run_add_child_module, run_recalculate_model, run_edit_format, run_delete_line_item
+from valsys.inttests.workflows import run_rename_module
 from valsys.config.config import BASE_SCK, BASE_URL
 
 
@@ -39,8 +40,7 @@ def run_workflows():
     lid = len(model.first_case.first_module.line_items) - 1
     run_delete_line_item(model_id, module_id,
                          model.first_case.first_module.line_items[lid].uid)
+    #TODO: make this test changing the name of a different module
+    # to a modules name that currently exists.
+    run_rename_module(model_id, module_id, 'new name!')
     logger.info('integration tests passed ok')
-
-
-if __name__ == '__main__':
-    run_workflows()

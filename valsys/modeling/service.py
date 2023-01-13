@@ -47,6 +47,11 @@ class ModelingActions:
     DYNAMIC_UPDATES = "DYNAMIC_UPDATES"
 
 
+def health():
+    client = new_client()
+    return client.get(url=VSURL.HEALTH, )
+
+
 def filter_user_models(tags: List[str] = None,
                        model_type: str = 'user',
                        max_date: str = "2023-01-31T00:00:00.000Z",
@@ -430,6 +435,20 @@ def remove_module(model_id: str, module_id: str):
     except ModelingServicePostException as err:
         raise RemoveModuleException(f'error removing module: {str(err)}')
     return rm.get('status') == 'success'
+
+
+def rename_module(model_id: str, module_id: str, new_module_name: str):
+    client = new_client()
+
+    rm = client.post(
+        url=VSURL.RENAME_MODULE,
+        data={
+            Headers.MODEL_ID: model_id,
+            Headers.MODULE_ID: module_id,
+            Headers.NAME: new_module_name
+        },
+    )
+    return rm
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,

@@ -1,7 +1,6 @@
 from valsys.utils import loggerIT as logger
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
-from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model
 from valsys.inttests.utils import workflow
 
@@ -82,12 +81,12 @@ def run_edit_format(model_id: str, case_id: str, fact: Fact):
 
 
 @workflow('tag line item')
-def run_tag_line_item(model_id: str, line_item: LineItem):
+def run_tag_line_item(model_id: str, line_item_id: str):
     from valsys.modeling.service import tag_line_item
     import uuid
 
     new_tags = ['t4', str(uuid.uuid1())]
-    tli = tag_line_item(model_id, line_item.uid, new_tags)
+    tli = tag_line_item(model_id, line_item_id, new_tags)
     assert tli.tags == new_tags
 
 
@@ -194,3 +193,12 @@ def run_remove_module(model_id: str, module_id: str):
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
     assert recalculate_model(model_id)
+
+
+@workflow('rename module')
+def run_rename_module(model_id: str, module_id: str, new_name: str):
+    from valsys.modeling.service import rename_module
+    r = rename_module(model_id, module_id, new_name)
+    assert r.get('data').get('module').get('name') == new_name
+    r = rename_module(model_id, module_id, new_name)
+    print(r)

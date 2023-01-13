@@ -37,8 +37,8 @@ definitions:
           - sh login.sh
           - DOCKER_IMG=$AWS_REGISTRY_URL/$AWS_ECR_REPO:$BITBUCKET_COMMIT
           - docker run -t $DOCKER_IMG /bin/bash -c "python main.py --inttests ${VALSYS_API_SOCKET} ${VALSYS_API_SERVER} ${VALSYS_API_USER} ${VALSYS_API_PASSWORD}"
-pipelines:
 
+pipelines:
     default:
       - step: *build-step
       - step: *unit-test-step

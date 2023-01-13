@@ -47,14 +47,17 @@ def run_workflows():
 
 
 def wait_then_run():
-    from valsys.modeling.service import health
     import time
-    maxtries = 10
-    ntries = 1
+    from valsys.modeling.service import health
+    maxtries = 2
     sleep_time_sec = 0.1
+    sleep_multfac = 2
+
+    ntries = 1
     while True:
         try:
-            logger.info(f'trying {ntries}/{maxtries}')
+            logger.info(
+                f'connecting to modeling service; trying {ntries}/{maxtries}')
             h = health()
             if h.get('status') == 'success':
                 logger.info('modeling ok')
@@ -66,7 +69,7 @@ def wait_then_run():
         ntries += 1
         logger.info(f"pause {sleep_time_sec}s")
         time.sleep(sleep_time_sec)
-        sleep_time_sec += 0.1
+        sleep_time_sec *= sleep_multfac
         if ntries > maxtries:
             logger.info(
                 f"could not connect to modeling service after {ntries} times.")

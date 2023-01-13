@@ -44,3 +44,30 @@ def run_workflows():
     # to a modules name that currently exists.
     run_rename_module(model_id, module_id, 'new name!')
     logger.info('integration tests passed ok')
+
+
+def wait_then_run():
+    from valsys.modeling.service import health
+    import time
+    maxtries = 10
+    ntries = 1
+    sleep_time_sec = 0.1
+    while True:
+        try:
+            logger.info(f'trying {ntries}/{maxtries}')
+            h = health()
+            if h.get('status') == 'success':
+                logger.info('modeling ok')
+                run_workflows()
+                break
+        except Exception:
+            pass
+
+        ntries += 1
+        logger.info(f"pause {sleep_time_sec}s")
+        time.sleep(sleep_time_sec)
+        sleep_time_sec += 0.1
+        if ntries > maxtries:
+            logger.info(
+                f"could not connect to modeling service after {ntries} times.")
+            break

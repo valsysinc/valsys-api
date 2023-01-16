@@ -18,7 +18,7 @@ def main(args):
         from valsys.admin import login
         login()
     elif mode == VALID_MODES['INTTESTS']:
-        print("ARGS >>" + args.join(' '))
+        print("ARGS >>", args)
         os.environ['VALSYS_API_BUILD'] = 'inttest'
         os.environ['VALSYS_API_SOCKET'] = args[1]
         os.environ['VALSYS_API_SERVER'] = args[2]

@@ -18,15 +18,16 @@ def main(args):
         from valsys.admin import login
         login()
     elif mode == VALID_MODES['INTTESTS']:
+        print("ARGS >>" + args.join(' '))
         os.environ['VALSYS_API_BUILD'] = 'inttest'
         os.environ['VALSYS_API_SOCKET'] = args[1]
         os.environ['VALSYS_API_SERVER'] = args[2]
         os.environ['VALSYS_API_USER'] = args[3]
         os.environ['VALSYS_API_PASSWORD'] = args[4]
-        from valsys.inttests.run import wait_then_run
+        from valsys.inttests.run import run_workflows
 
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-        wait_then_run()
+        run_workflows()
     elif mode == VALID_MODES['SPAWN']:
         from valsys.utils import logger
         logger.info(f"start")

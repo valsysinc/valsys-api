@@ -1,4 +1,4 @@
-from valsys.config.config import BASE_SCK, BASE_URL
+from valsys.config.config import BASE_SCK, BASE_URL, BASE_ORCH
 
 
 class VSURL:
@@ -29,7 +29,7 @@ class VSURL:
     RECALC_MODEL = f"{BASE_URL}/modeling/edit/recalculate"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
-    SCK_ORCHESTRATOR = f"{BASE_SCK}/orchestrator/connect/"
+    SCK_ORCHESTRATOR = f"{BASE_ORCH}/orchestrator/connect/"
 
     @classmethod
     def login(cls, base):

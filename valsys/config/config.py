@@ -26,6 +26,13 @@ else:
     print(f"BUILD={_BUILD}")
 
 BASE_SCK = read_env("VALSYS_API_SOCKET")
+BASE_ORCH = read_env("VALSYS_API_SOCKET_ORCH", required=False)
 BASE_URL = read_env("VALSYS_API_SERVER")
 API_USERNAME = read_env("VALSYS_API_USER")
 API_PASSWORD = read_env("VALSYS_API_PASSWORD")
+
+if BASE_ORCH is None:
+    BASE_ORCH = BASE_SCK
+
+# BASE_SCK -> create ws://modeling:5100
+# BASE_ORCH -> /orchestrator/connect/ ->

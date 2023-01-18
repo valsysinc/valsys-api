@@ -41,6 +41,6 @@ class Fact:
             identifier=data.get(cls.fields.IDENTIFIER, ""),
             formula=data.get(cls.fields.FORMULA, ""),
             period=data.get(cls.fields.PERIOD, 0),
-            value=data.get(cls.fields.VALUE, 0),
+            value=float(data.get(cls.fields.VALUE, 0)),
             fmt=data.get(cls.fields.FORMAT, ""),
         )

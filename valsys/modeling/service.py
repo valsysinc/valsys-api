@@ -569,6 +569,10 @@ def edit_facts(url: str, case_id: str, model_id: str,
         "forecastIncrement": 1,
         "facts": facts,
     }
+
+    print(url)
+    print(payload)
+
     resp = client.post(
         url=url,
         data=payload,

@@ -1,8 +1,32 @@
-from valsys.utils import loggerIT as logger
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
 from valsys.inttests.utils import workflow
+
+
+def gen_orch_config(cfg, user, password):
+    from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
+    from valsys.seeds.loader import SeedsLoader
+
+    template_id = SeedsLoader.template_id_by_name(cfg.get('templateName'))
+
+    # Define the model seed configuration data
+    model_seed_config = OrchestratorConfig(
+        username=user,
+        password=password,
+        num_forecast_years=cfg.get('numForecastYears'),
+        num_historical_years=cfg.get('numHistoricalYears'),
+        start_date=cfg.get('startDate'),
+        model_configs=[
+            OrchestratorModelConfig(
+                template_id=template_id,
+                company_name=cfg.get('companyName'),
+                ticker=cfg.get('ticker'),
+                industry=cfg.get('industry'),
+                start_period=cfg.get('startPeriod'),
+            )
+        ])
+    return model_seed_config
 
 
 @workflow('spawn model')
@@ -15,31 +39,12 @@ def run_spawn_model():
     # Import the spawn_model function from the modeling service
     from valsys.modeling.service import spawn_model
     from valsys.config.config import API_PASSWORD, API_USERNAME
-    from valsys.seeds.loader import SeedsLoader
 
     # Import the class for the model seed configuration data
-    from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
     user, password = API_USERNAME, API_PASSWORD
 
-    template_id = SeedsLoader.template_id_by_name(
-        TestModelConfig.MODEL.get('templateName'))
-
     # Define the model seed configuration data
-    model_seed_config = OrchestratorConfig(
-        username=user,
-        password=password,
-        num_forecast_years=TestModelConfig.MODEL.get('numForecastYears'),
-        num_historical_years=TestModelConfig.MODEL.get('numHistoricalYears'),
-        start_date=TestModelConfig.MODEL.get('startDate'),
-        model_configs=[
-            OrchestratorModelConfig(
-                template_id=template_id,
-                company_name=TestModelConfig.MODEL.get('companyName'),
-                ticker=TestModelConfig.MODEL.get('ticker'),
-                industry=TestModelConfig.MODEL.get('industry'),
-                start_period=TestModelConfig.MODEL.get('startPeriod'),
-            )
-        ])
+    model_seed_config = gen_orch_config(TestModelConfig.MODEL, user, password)
     # Spawn the model and obtain the new modelID
     spawned_model_id = spawn_model(model_seed_config)
     assert isinstance(spawned_model_id, list)

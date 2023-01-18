@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Dict
+from valsys.config.config import HOST
 
 import requests
 
@@ -29,6 +30,7 @@ class ModelingServiceHttpClient:
         auth_headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.auth_token}",
+            "Host": HOST
         }
         hdrs.update(auth_headers)
         return hdrs

@@ -5,7 +5,7 @@ from typing import Dict
 import websocket
 
 from valsys.utils import logger
-
+from valsys.config.config import HOST
 
 TRACE_DEFAULT = False
 
@@ -66,8 +66,13 @@ class SocketHandler:
         socketpath = f"{self.url}{auth_token}"
         if after_token is not None:
             socketpath += '/' + after_token
+        if HOST is not None:
+            headers = {'host': HOST}
+        else:
+            headers = None
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
+            headers=headers,
             on_open=self.send_data,
             on_message=self.msg_handler,
             on_close=self.on_close,

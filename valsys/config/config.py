@@ -30,7 +30,7 @@ BASE_ORCH = read_env("VALSYS_API_SOCKET_ORCH", required=False)
 BASE_URL = read_env("VALSYS_API_SERVER")
 API_USERNAME = read_env("VALSYS_API_USER")
 API_PASSWORD = read_env("VALSYS_API_PASSWORD")
-
+HOST = read_env('HOST', required=False)
 if BASE_ORCH is None:
     BASE_ORCH = BASE_SCK
 

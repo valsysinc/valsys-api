@@ -9,11 +9,11 @@ from valsys.modeling.client.exceptions import (
 )
 from valsys.modeling.client.http import ModelingServiceHttpClient
 
-
 MODULE_PREFIX = "valsys.modeling.client.http"
 
 
 class TestModelingServiceHttpClient:
+
     def test_init_ok(self):
         msc = ModelingServiceHttpClient()
         assert msc.auth_token == ""
@@ -62,6 +62,7 @@ class TestModelingServiceHttpClient:
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {token}",
+                "Host": None
             },
         )
         mock_response.json.assert_called_once()
@@ -89,14 +90,15 @@ class TestModelingServiceHttpClient:
                 "you": 1,
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {token}",
+                "Host": None
             },
         )
         mock_response.json.assert_called_once()
         assert reply == fake_reply
 
     @pytest.mark.parametrize(
-        "bad_code", [HTTPStatus.BAD_REQUEST, HTTPStatus.CREATED, HTTPStatus.ACCEPTED]
-    )
+        "bad_code",
+        [HTTPStatus.BAD_REQUEST, HTTPStatus.CREATED, HTTPStatus.ACCEPTED])
     @mock.patch(f"{MODULE_PREFIX}.requests.get")
     def test_get_with_url_raises(self, mock_get, bad_code):
 
@@ -120,6 +122,7 @@ class TestModelingServiceHttpClient:
                 "you": 1,
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {token}",
+                "Host": None
             },
         )
         assert err.value.url == url
@@ -149,6 +152,7 @@ class TestModelingServiceHttpClient:
                 "you": 1,
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {token}",
+                "Host": None
             },
         )
         mock_response.json.assert_called_once()

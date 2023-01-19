@@ -169,7 +169,14 @@ class TestPullModelInformation:
         mock_get = mock.MagicMock()
         mock_cases = mock.MagicMock()
         mock_model_info = mock.MagicMock()
-        mock_get.return_value = {'status':Vars.SUCCESS,'data': {'models': [{'model': mock_cases}]}}
+        mock_get.return_value = {
+            'status': Vars.SUCCESS,
+            'data': {
+                'models': [{
+                    'model': mock_cases
+                }]
+            }
+        }
         mock_new_client.return_value.get = mock_get
         mock_ModelInformation_from_json.return_value = mock_model_info
         model_info = pull_model_information(uid)

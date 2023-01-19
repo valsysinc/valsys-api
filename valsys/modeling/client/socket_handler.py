@@ -72,7 +72,7 @@ class SocketHandler:
             headers = None
         self.wsapp = websocket.WebSocketApp(
             url=socketpath,
-            headers=headers,
+            header=headers,
             on_open=self.send_data,
             on_message=self.msg_handler,
             on_close=self.on_close,

@@ -8,10 +8,7 @@ from valsys.inttests.workflows import run_rename_module
 from valsys.config.config import BASE_SCK, BASE_URL
 
 
-def run_workflows():
-    logger.info('running integration tests')
-    logger.info(f'modeling service HTTP URL:{BASE_URL}')
-    logger.info(f'modeling service SOCK URL:{BASE_SCK}')
+def workflow():
 
     spawned_models = run_spawn_model()
     model_id = spawned_models[0].model_id
@@ -30,6 +27,7 @@ def run_workflows():
     run_edit_format(model_id,
                     first_case_id,
                     fact=model.first_case.first_module.line_items[0].facts[0])
+    print(model.first_case.first_module.line_items[0].name)
     run_tag_line_item(
         model_id, line_item_id=model.first_case.first_module.line_items[0].uid)
     run_add_line_item(model_id, first_case, module_id)
@@ -43,6 +41,19 @@ def run_workflows():
     #TODO: make this test changing the name of a different module
     # to a modules name that currently exists.
     run_rename_module(model_id, module_id, 'new name!')
+
+
+def run_workflows():
+    logger.info('running integration tests')
+    logger.info(f'modeling service HTTP URL:{BASE_URL}')
+    logger.info(f'modeling service SOCK URL:{BASE_SCK}')
+    try:
+        workflow()
+    except Exception as err:
+        logger.info(f'FAILED: {str(err)}')
+        import sys
+        sys.exit(1)
+
     logger.info('integration tests passed ok')
 
 

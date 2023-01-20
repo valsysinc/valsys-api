@@ -1,77 +1,17 @@
-from typing import Dict, Any
-from valsys.utils import loggerIT as logger
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
-from valsys.inttests.utils import workflow
-
-
-def gen_orch_config(cfg, user, password):
-    from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
-    from valsys.seeds.loader import SeedsLoader
-
-    template_id = SeedsLoader.template_id_by_name(cfg.get('templateName'))
-
-    # Define the model seed configuration data
-    model_seed_config = OrchestratorConfig(
-        username=user,
-        password=password,
-        num_forecast_years=cfg.get('numForecastYears'),
-        num_historical_years=cfg.get('numHistoricalYears'),
-        start_date=cfg.get('startDate'),
-        model_configs=[
-            OrchestratorModelConfig(
-                template_id=template_id,
-                company_name=cfg.get('companyName'),
-                ticker=cfg.get('ticker'),
-                industry=cfg.get('industry'),
-                start_period=cfg.get('startPeriod'),
-            )
-        ])
-    return model_seed_config
-
-
-def workflows():
-    from valsys.inttests.config import TestModelConfig
-    spawned_models = run_spawn_model(TestModelConfig.MODEL)
-
-    model_id = spawned_models[0].model_id
-
-    model = run_pull_model(model_id)
-    first_case_id = model.first_case_id
-    first_case = model.pull_case_by_id(first_case_id)
-    module_id = first_case.first_module.uid
-
-    new_module = run_add_child_module(model_id, first_case_id, module_id)
-    first_line_item = first_case.first_module.line_items[0]
-    first_fact = first_line_item.facts[0]
-
-    run_recalculate_model(model_id)
-    run_edit_formula(model_id, first_case_id, fact=first_fact)
-    run_edit_format(model_id, first_case_id, fact=first_fact)
-    run_tag_line_item(model_id, line_item_id=first_line_item.uid)
-    run_add_line_item(model_id, first_case, module_id)
-    run_pull_model_information(model_id)
-    run_pull_model_datasources(model_id)
-    run_remove_module(model_id, new_module.uid)
-    run_filter_user_models(model_id)
-    lid = len(first_case.first_module.line_items) - 1
-    run_delete_line_item(model_id, module_id,
-                         first_case.first_module.line_items[lid].uid)
-    #TODO: make this test changing the name of a different module
-    # to a modules name that currently exists.
-    run_rename_module(model_id, module_id, 'new name!')
+from valsys.inttests.runners.utils import workflow
 
 
 @workflow('spawn model')
-def run_spawn_model(model_config: Dict[str, Any]):
+def run_spawn_model(model_config):
     """
     SPAWN A MODEL
     """
 
     # Import the spawn_model function from the modeling service
     from valsys.modeling.service import spawn_model
-    from valsys.config.config import API_PASSWORD, API_USERNAME
 
     # Spawn the model and obtain the new modelID
     spawned_model_id = spawn_model(model_config)

@@ -1,6 +1,8 @@
 from typing import List
-from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
+
 from valsys.seeds.loader import SeedsLoader
+from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
+from valsys.utils import loggerIT as logger
 
 
 def gen_orch_config(cfg, user, password):
@@ -42,7 +44,6 @@ def run_each_allow_fail(funcs) -> List[str]:
     return fails
 
 
-from valsys.utils import loggerIT as logger
 
 
 def workflow(nm: str):

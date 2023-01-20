@@ -1,7 +1,7 @@
+from valsys.inttests.runners.utils import runner
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
-from valsys.inttests.runners.utils import runner
 
 
 @runner('spawn model')

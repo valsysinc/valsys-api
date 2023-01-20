@@ -1,12 +1,13 @@
 import sys
 import time
-from valsys.modeling.service import health
-from valsys.utils import loggerIT as logger
+
 from valsys.config.config import BASE_SCK, BASE_URL
 from valsys.inttests.integration_tests import run_integration_tests
 from valsys.inttests.qa_tests import run_qa_script
-from valsys.modeling.vars import Vars
 from valsys.inttests.utils import run_each_allow_fail
+from valsys.modeling.service import health
+from valsys.modeling.vars import Vars
+from valsys.utils import loggerIT as logger
 
 
 def run_workflows():

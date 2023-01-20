@@ -4,8 +4,9 @@ from typing import Dict
 
 import websocket
 
-from valsys.utils import logger
 from valsys.config.config import HOST
+from valsys.utils import logger
+
 
 TRACE_DEFAULT = False
 

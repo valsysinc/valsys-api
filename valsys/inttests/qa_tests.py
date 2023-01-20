@@ -1,9 +1,9 @@
 import datetime
-from valsys.utils.logging import loggerIT
+
 from valsys.config.config import API_PASSWORD, API_USERNAME
-from valsys.inttests.utils import gen_orch_config
-import valsys.modeling.service as Modeling
-from valsys.inttests.utils import workflow
+from valsys.inttests.utils import gen_orch_config, workflow
+from valsys.modeling import service as Modeling
+from valsys.utils.logging import loggerIT
 
 
 def qa_script():

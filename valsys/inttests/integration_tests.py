@@ -1,9 +1,8 @@
 import datetime
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
-import valsys.inttests.runners.runners as Runners
-from valsys.inttests.utils import gen_orch_config
-from valsys.inttests.utils import workflow
+from valsys.inttests.runners import runners as Runners
+from valsys.inttests.utils import gen_orch_config, workflow
 
 
 def integration_test_config():

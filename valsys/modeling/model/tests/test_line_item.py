@@ -1,6 +1,7 @@
+import pytest
+
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-import pytest
 
 
 class TestLineItem:

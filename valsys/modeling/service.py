@@ -17,6 +17,7 @@ from valsys.modeling.exceptions import (
     RecalculateModelException,
     RemoveModuleException,
     ShareModelException,
+    SpawnModelResponseException,
     TagLineItemException,
     TagModelException,
     UpdateModelGroupsException,
@@ -25,7 +26,7 @@ from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.model.model import ModelInformation, Model
+from valsys.modeling.model.model import Model, ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (
     ModelDetailInformation,
@@ -34,12 +35,11 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
+from valsys.modeling.utils import facts_list
+from valsys.modeling.vars import Vars
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
-from valsys.modeling.exceptions import SpawnModelResponseException
 from valsys.utils import logger
-from valsys.modeling.vars import Vars
-from valsys.modeling.utils import facts_list
 
 
 class ModelingActions:

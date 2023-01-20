@@ -1,6 +1,6 @@
 class TestModelConfig:
     MODEL = {
-        'companyName': 'STARBUCKS CORP',
+        'companyName': 'Pepsi',
         'ticker': 'PEP',
         'templateName': 'dcf-standard',
         'numForecastYears': 3,

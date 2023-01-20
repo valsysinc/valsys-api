@@ -332,7 +332,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
             url=VSURL.MODEL_INFO,
             headers={Headers.MODEL_IDS: model_id},
         )
-        if resp.get('status') == 'success':
+        if resp.get('status') == Vars.SUCCESS:
             if resp["data"]["models"]:
                 if len(resp["data"]["models"]) > 0:
                     cases = resp["data"]["models"][0]['model']
@@ -447,7 +447,7 @@ def remove_module(model_id: str, module_id: str):
         )
     except ModelingServicePostException as err:
         raise RemoveModuleException(f'error removing module: {str(err)}')
-    return rm.get('status') == 'success'
+    return rm.get('status') == Vars.SUCCESS
 
 
 def rename_module(model_id: str, module_id: str, new_module_name: str):

@@ -2,24 +2,24 @@ import datetime
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config, workflow
-from valsys.modeling import service as Modeling
 from valsys.utils.logging import loggerIT
+from valsys.inttests.runners import runners as Runners
 
 
 def qa_script():
 
-    sd = (datetime.datetime.utcnow() -
-          datetime.timedelta(days=1)).isoformat() + "Z"
+    starting_date = (datetime.datetime.utcnow() -
+                     datetime.timedelta(days=1)).isoformat() + "Z"
     return {
         'modelConfig': {
-            'templateName': 'dcf-standard',
             'companyName': 'Pepsi',
             'ticker': 'PEP',
-            'numHistoricalYears': 5,
+            'templateName': 'dcf-standard',
             'numForecastYears': 5,
+            'numHistoricalYears': 5,
             'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
             'startPeriod': 2019,
-            'startDate': sd,
+            'startDate': starting_date,
         },
         'steps': [{
             'type': 'edit_formula',
@@ -41,8 +41,6 @@ def run_qa_script():
 
     qa_flow = qa_script()
 
-    # Import the spawn_model function from the modeling service
-
     # Import the class for the model seed configuration data
     user, password = API_USERNAME, API_PASSWORD
 
@@ -50,47 +48,37 @@ def run_qa_script():
     model_seed_config = gen_orch_config(qa_flow.get('modelConfig'), user,
                                         password)
 
-    # Spawn the model and obtain the new modelID
-    spawned_model_id = Modeling.spawn_model(model_seed_config)
-    assert isinstance(spawned_model_id, list)
-    mid = spawned_model_id[0].model_id
-    m = Modeling.pull_model(mid)
+    # Spawn the model and obtain the modelID
+    mid = Runners.run_spawn_model(model_seed_config)[0].model_id
+    model = Runners.run_pull_model(mid)
     edit_formula_config = qa_flow['steps'][0]
-    module = m.pull_module_by_name(edit_formula_config['startingModule'])
-    edited_facts = []
+    module = model.pull_module_by_name(edit_formula_config['startingModule'])
 
     tcid = f"[{edit_formula_config['startingModule']}[{edit_formula_config['targetLineItem']}[{edit_formula_config['targetCellPeriod']}]]]"
     loggerIT.info(
-        f"searching for {tcid} in line item {edit_formula_config['targetLineItem']}"
+        f"searching for fact={tcid} in line item={edit_formula_config['targetLineItem']}"
     )
 
-    for li in module.line_items:
-        if li.name == edit_formula_config['targetLineItem']:
-            for fact in li.facts:
-                if fact.identifier == tcid:
-                    assert fact.formula == edit_formula_config[
-                        'originalCellFormula']
-                    assert fact.value == edit_formula_config[
-                        'originalCellValue']
-                    fact.formula = edit_formula_config['newCellFormula']
-                    loggerIT.info(f"fact found: value {fact.value}")
-                    edited_facts.append(fact)
-                    break
+    li = module.pull_item_by_name(edit_formula_config['targetLineItem'])
+    fact = li.pull_fact_by_identifier(tcid)
     loggerIT.info(
         f"editing fact formula from {edit_formula_config['originalCellFormula']} to {edit_formula_config['newCellFormula']}"
     )
-    ef = Modeling.edit_formula(m.first_case_id, m.uid,
-                               [ff.jsonify() for ff in edited_facts])
-    for f in ef:
-        if f.uid == edited_facts[0].uid:
-            assert f.identifier == tcid
-            assert f.value == edit_formula_config['newCellValue']
-    loggerIT.info('recalculating model')
-    Modeling.recalculate_model(m.uid)
+    Runners.run_edit_formula(
+        mid,
+        model.first_case_id,
+        fact,
+        original_formula=edit_formula_config['originalCellFormula'],
+        new_formula=edit_formula_config['newCellFormula'],
+        original_value=edit_formula_config['originalCellValue'],
+        new_value=edit_formula_config['newCellValue'])
+    loggerIT.info(f"fact found: value {fact.value}")
+
+    Runners.run_recalculate_model(model.uid)
 
     #TODO
     # obtain implied premium value
     # recalc
     # obtain implied premium value (different to above)
 
-    return spawned_model_id
+    return mid

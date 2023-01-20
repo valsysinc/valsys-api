@@ -26,9 +26,19 @@ def run_pull_model(model_id: str) -> Model:
 
 
 @runner('edit formula')
-def run_edit_formula(model_id: str, case_id: str, fact: Fact):
+def run_edit_formula(model_id: str,
+                     case_id: str,
+                     fact: Fact,
+                     original_formula='',
+                     new_formula='42',
+                     original_value='',
+                     new_value=''):
     from valsys.modeling.service import edit_formula
-    new_formula = '42'
+    assert fact is not None
+    if original_formula != '':
+        assert fact.formula == original_formula
+    if original_value != '':
+        assert fact.value == original_value
     fact.formula = new_formula
     efs = edit_formula(case_id, model_id, [ff.jsonify() for ff in [fact]])
     found = False
@@ -36,6 +46,8 @@ def run_edit_formula(model_id: str, case_id: str, fact: Fact):
         if f.uid == fact.uid:
             assert f.formula == new_formula
             found = True
+            if new_value != '':
+                assert f.value == new_value
     assert found
 
 

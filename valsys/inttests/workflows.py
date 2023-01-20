@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from valsys.utils import loggerIT as logger
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
@@ -5,12 +6,43 @@ from valsys.modeling.model.model import Model
 from valsys.inttests.utils import workflow
 
 
+def workflows():
+    from valsys.inttests.config import TestModelConfig
+    spawned_models = run_spawn_model(TestModelConfig.MODEL)
+
+    model_id = spawned_models[0].model_id
+
+    model = run_pull_model(model_id)
+    first_case_id = model.first_case_id
+    first_case = model.pull_case_by_id(first_case_id)
+    module_id = first_case.first_module.uid
+
+    new_module = run_add_child_module(model_id, first_case_id, module_id)
+    first_line_item = first_case.first_module.line_items[0]
+    first_fact = first_line_item.facts[0]
+
+    run_recalculate_model(model_id)
+    run_edit_formula(model_id, first_case_id, fact=first_fact)
+    run_edit_format(model_id, first_case_id, fact=first_fact)
+    run_tag_line_item(model_id, line_item_id=first_line_item.uid)
+    run_add_line_item(model_id, first_case, module_id)
+    run_pull_model_information(model_id)
+    run_pull_model_datasources(model_id)
+    run_remove_module(model_id, new_module.uid)
+    run_filter_user_models(model_id)
+    lid = len(first_case.first_module.line_items) - 1
+    run_delete_line_item(model_id, module_id,
+                         first_case.first_module.line_items[lid].uid)
+    #TODO: make this test changing the name of a different module
+    # to a modules name that currently exists.
+    run_rename_module(model_id, module_id, 'new name!')
+
+
 @workflow('spawn model')
-def run_spawn_model():
+def run_spawn_model(model_config: Dict[str, Any]):
     """
     SPAWN A MODEL
     """
-    from valsys.inttests.config import TestModelConfig
 
     # Import the spawn_model function from the modeling service
     from valsys.modeling.service import spawn_model
@@ -22,22 +54,22 @@ def run_spawn_model():
     user, password = API_USERNAME, API_PASSWORD
 
     template_id = SeedsLoader.template_id_by_name(
-        TestModelConfig.MODEL.get('templateName'))
+        model_config.get('templateName'))
 
     # Define the model seed configuration data
     model_seed_config = OrchestratorConfig(
         username=user,
         password=password,
-        num_forecast_years=TestModelConfig.MODEL.get('numForecastYears'),
-        num_historical_years=TestModelConfig.MODEL.get('numHistoricalYears'),
-        start_date=TestModelConfig.MODEL.get('startDate'),
+        num_forecast_years=model_config.get('numForecastYears'),
+        num_historical_years=model_config.get('numHistoricalYears'),
+        start_date=model_config.get('startDate'),
         model_configs=[
             OrchestratorModelConfig(
                 template_id=template_id,
-                company_name=TestModelConfig.MODEL.get('companyName'),
-                ticker=TestModelConfig.MODEL.get('ticker'),
-                industry=TestModelConfig.MODEL.get('industry'),
-                start_period=TestModelConfig.MODEL.get('startPeriod'),
+                company_name=model_config.get('companyName'),
+                ticker=model_config.get('ticker'),
+                industry=model_config.get('industry'),
+                start_period=model_config.get('startPeriod'),
             )
         ])
     # Spawn the model and obtain the new modelID
@@ -201,4 +233,3 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
     r = rename_module(model_id, module_id, new_name)
     assert r.get('data').get('module').get('name') == new_name
     r = rename_module(model_id, module_id, new_name)
-    print(r)

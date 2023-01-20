@@ -61,8 +61,7 @@ class TestModelingServiceHttpClient:
             url=url,
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-                "Host": None
+                "Authorization": f"Bearer {token}"
             },
         )
         mock_response.json.assert_called_once()
@@ -89,8 +88,7 @@ class TestModelingServiceHttpClient:
             headers={
                 "you": 1,
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-                "Host": None
+                "Authorization": f"Bearer {token}"
             },
         )
         mock_response.json.assert_called_once()
@@ -121,8 +119,7 @@ class TestModelingServiceHttpClient:
             headers={
                 "you": 1,
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-                "Host": None
+                "Authorization": f"Bearer {token}"
             },
         )
         assert err.value.url == url
@@ -151,8 +148,7 @@ class TestModelingServiceHttpClient:
             headers={
                 "you": 1,
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-                "Host": None
+                "Authorization": f"Bearer {token}"
             },
         )
         mock_response.json.assert_called_once()

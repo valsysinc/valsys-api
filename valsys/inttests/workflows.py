@@ -233,4 +233,3 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
     r = rename_module(model_id, module_id, new_name)
     assert r.get('data').get('module').get('name') == new_name
     r = rename_module(model_id, module_id, new_name)
-    print(r)

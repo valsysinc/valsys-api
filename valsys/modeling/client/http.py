@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Dict
+from valsys.config.config import HOST
 
 import requests
 
@@ -31,6 +32,8 @@ class ModelingServiceHttpClient:
             "Authorization": f"Bearer {self.auth_token}",
         }
         hdrs.update(auth_headers)
+        if HOST is not None:
+            hdrs.update({"Host": HOST})
         return hdrs
 
     def get(
@@ -50,17 +53,9 @@ class ModelingServiceHttpClient:
             headers=self._add_auth_headers(headers),
         )
         self.status_code = resp.status_code
-        if resp.status_code != expected_status:
-            try:
-                d = resp.json()
-            except:
-                d = {}
-            raise ModelingServiceGetException(
-                data=d,
-                url=url,
-                status_code=resp.status_code,
-            )
-        return resp.json()
+        if resp.status_code == expected_status:
+            return resp.json()
+        self.raise_err(ModelingServiceGetException, resp, url)
 
     def post(
         self,
@@ -82,14 +77,17 @@ class ModelingServiceHttpClient:
                              data=json.dumps(data))
         self.status_code = resp.status_code
 
-        if resp.status_code != expected_status:
-            try:
-                d = resp.json()
-            except:
-                d = {}
-            raise ModelingServicePostException(
-                data=d,
-                url=url,
-                status_code=resp.status_code,
-            )
-        return resp.json()
+        if resp.status_code == expected_status:
+            return resp.json()
+        self.raise_err(ModelingServicePostException, resp, url)
+
+    def raise_err(self, ex: Exception, resp, url: str):
+        try:
+            d = resp.json()
+        except:
+            d = {}
+        raise ex(
+            data=d,
+            url=url,
+            status_code=resp.status_code,
+        )

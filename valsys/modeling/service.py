@@ -193,17 +193,19 @@ def tag_line_item(model_id: str, line_item_id: str,
 
     """
     client = new_client()
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.LINE_ITEM_ID: line_item_id,
+        Headers.TAGS: tags
+    }
     try:
         ait = client.post(
             url=VSURL.ADD_ITEM_TAGS,
-            data={
-                Headers.MODEL_ID: model_id,
-                Headers.LINE_ITEM_ID: line_item_id,
-                Headers.TAGS: tags
-            },
+            data=payload,
         )
     except ModelingServicePostException as err:
-        raise TagLineItemException(f"error tagging line item: {str(err)}")
+        raise TagLineItemException(
+            f"error tagging line item: payload={payload} err={str(err)}")
     return LineItem.from_json(ait.get('data').get('lineItem'))
 
 
@@ -330,7 +332,18 @@ def pull_model_information(model_id: str) -> ModelInformation:
             url=VSURL.MODEL_INFO,
             headers={Headers.MODEL_IDS: model_id},
         )
-        cases = resp["data"]["models"][0]['model']
+        if resp.get('status') == Vars.SUCCESS:
+            if resp["data"]["models"]:
+                if len(resp["data"]["models"]) > 0:
+                    cases = resp["data"]["models"][0]['model']
+            else:
+                raise PullModelInformationException(
+                    f"could not pull model info for model={model_id}; no models returned"
+                )
+        else:
+            raise PullModelInformationException(
+                f"could not pull model info for model={model_id}; status={resp.get('status')}"
+            )
 
     except (ModelingServiceGetException, Exception) as err:
         raise PullModelInformationException(
@@ -434,7 +447,7 @@ def remove_module(model_id: str, module_id: str):
         )
     except ModelingServicePostException as err:
         raise RemoveModuleException(f'error removing module: {str(err)}')
-    return rm.get('status') == 'success'
+    return rm.get('status') == Vars.SUCCESS
 
 
 def rename_module(model_id: str, module_id: str, new_module_name: str):

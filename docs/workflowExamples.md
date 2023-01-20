@@ -5,7 +5,7 @@ This is a collection of examples of how to use the Valsys library..
 ## Spawn a model
 This workflow allows a model to be spawned from a template.
 
-In the below example, we show how to spawn a `SBUX` model and obtain its model `uid`. 
+In the below example, we show how to spawn a `PEP` model and obtain its model `uid`. 
 
 
 ```python linenums="1"
@@ -19,7 +19,7 @@ seed_config = {
     'numForecastYears': 3,
     'numHistoricalYears': 2,
     'tickers': [{
-        'ticker': 'SBUX'
+        'ticker': 'PEP'
     }, {
         'ticker': 'BYND'
     }]

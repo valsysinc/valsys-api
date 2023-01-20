@@ -63,7 +63,7 @@ def filter_user_models(tags: List[str] = None,
                        filter_term: str = '',
                        pagination=1) -> List[ModelDetailInformation]:
     """Search for a set of models, using the provided set of filters for the using user
-    
+
     Args:
         filter_on: List of strings of properties to filter on; allowed: `Name`, `Ticker`, `Geography`, `Industry`.
         filter_term: Will match according the props in the `filter_on` list.  
@@ -115,7 +115,7 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
             {
                 "status":  "success",
                 "modelID": "1234",
-                "ticker":  "SBUX"
+                "ticker":  "PEP"
             }
         ]
     }
@@ -149,7 +149,7 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
 
 def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     """Tag the model with `model_id` with the list of `tags`.
-    
+
     Note that this removes any existing tags;
     if you wanted to append tags, use the `append_tags` function.
 
@@ -182,12 +182,12 @@ def tag_line_item(model_id: str, line_item_id: str,
     """Tag a line item.
 
     Note that this replaces any existing tags on the line item.
-    
+
     Args:
         model_id: The ID of the model containing the line item
         line_item_id: The ID of the line item
         tags: The tags to give to the line item
-    
+
     Returns:
         LineItem from the backend, containing updated tags.
 
@@ -214,7 +214,7 @@ def share_model(model_id: str,
                 permission: str,
                 auth_token: str = None):
     """Share model to another user.
-    
+
     Args:
          model_id: ID of the model to share
          email: The email address of the user to share the model with
@@ -252,7 +252,7 @@ def dynamic_updates():
 
 def pull_model_groups() -> ModelGroups:
     """Pulls model groups.
-    
+
     Returns a list of `ModelGroup` objects under the `groups` attribute. 
     Each `ModelGroup` has a `uid`, `name`, `user_id`, `model_ids`
 
@@ -270,7 +270,7 @@ def pull_model_groups() -> ModelGroups:
 
 def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
     """Add a new model group.
-    
+
     Args:
         group_name: The name of the new model group
         model_ids: The IDs of the models to go into the group
@@ -294,12 +294,12 @@ def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
 def update_model_groups(uid: str, name: str,
                         model_ids: List[str]) -> ModelGroups:
     """Updates the models groups.
-    
+
     Args:
         uid: The UID of the model
         name: The name of the model group
         model_ids: The IDs
-    
+
     Returns:
         ModelGroups
     """
@@ -319,10 +319,10 @@ def update_model_groups(uid: str, name: str,
 
 def pull_model_information(model_id: str) -> ModelInformation:
     """Pulls the model information for the `model_id`.
-    
+
     Args:
         model_id: the ID of the required model.
-    
+
     Returns:
         The `ModelInformation` object for the model.
     """
@@ -353,10 +353,10 @@ def pull_model_information(model_id: str) -> ModelInformation:
 
 def pull_model(model_id: str) -> Model:
     """Pull a model by its ID.
-    
+
     Args:
         model_id: the ID of the required model.
-    
+
     Returns:
         The `Model` object for the model.
     """
@@ -376,10 +376,10 @@ def pull_model_datasources(model_id: str) -> str:
 
 def pull_case(case_id: str) -> Case:
     """Retreive a `Case` by its uid.
-    
+
     Args:
         case_id: the case's UID
-    
+
     Returns:
         The appropriate `Case` object.
     """
@@ -406,10 +406,10 @@ def append_tags(uid: str, tags: List[str]):
 
 def recalculate_model(model_id: str) -> List[Fact]:
     """Recalculates the model.
-    
+
     Args:
         model_id: The ID of the model to be recalculated.
-    
+
     Returns:
         List of Facts updated during the recalculation process.
     """
@@ -430,7 +430,7 @@ def recalculate_model(model_id: str) -> List[Fact]:
 
 def remove_module(model_id: str, module_id: str):
     """Removes the specified module from the model.
-    
+
     Args:
         model_id: The ID of the model.
         module_id: The ID of the module to be removed.
@@ -503,7 +503,7 @@ def add_child_module(parent_module_id: str, name: str, model_id: str,
 def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
                   order: int) -> LineItem:
     """Add a line item to an existing module.
-    
+
     Args:
         case_id: The caseID of the model
         model_id: The modelID
@@ -550,7 +550,7 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
 def delete_line_item(model_id: str, module_id: str,
                      line_item_id: str) -> Module:
     """Delete a line item from an existing module.
-    
+
     Args:
         model_id: The modelID
         module_id: The ID of the module containing the line item
@@ -601,13 +601,13 @@ def edit_format(case_id: str, model_id: str, facts: List[Fact]):
 
 def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
     """Edit the formula on the supplied facts.
-    
+
     Args:
         case_id: The caseID for where the facts live.
         model_id: The modelID for where the facts live.
         facts: The list of facts whose formulae are to be edited.
 
-    
+
     Returns:
         List of `Fact`s modified by the edit.
     """

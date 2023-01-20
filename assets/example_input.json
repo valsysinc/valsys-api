@@ -3,8 +3,8 @@
         {
             "tickers": [
                 {
-                    "ticker": "SBUX",
-                    "source": "dataSource|SBUX_US|jp"
+                    "ticker": "PEP",
+                    "source": "dataSource|PEP_US|jp"
                 }
             ],
             "templateName": "dcf-standard",
@@ -36,7 +36,7 @@
     "populateModulesConfig": [
         {
             "tickers": [
-                "SBUX"
+                "PEP"
             ],
             "parentModuleName": "Income Statement",
             "moduleName": "Operating Model",

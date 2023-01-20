@@ -6,7 +6,7 @@ from valsys.spawn.models import ModelSpawnConfigs, PopulateModulesConfig
 # is treated the same (i.e., every ticker in the dict has the same templateName,
 # but a different dict can use a different template name for other tickers.)
 model_spawn_config_json = [{
-    "tickers": ["SBUX", "BYND"],
+    "tickers": ["PEP", "BYND"],
     "templateName": "dcf-standard",
     "histPeriod": 2,
     "projPeriod": 3,
@@ -15,7 +15,7 @@ model_spawn_config_json = [{
 }]
 
 module_spawn_config_json = {
-    "tickers": ["SBUX"],
+    "tickers": ["PEP"],
     "parentModuleName":
     "Income Statement",
     "moduleName":

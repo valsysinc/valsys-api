@@ -20,7 +20,13 @@ class LineItem:
         FACTS = 'facts'
         ORDER = 'order'
 
-    def pull_fact_by_identifier(self, fact_identifier: str):
+    def pull_fact_by_identifier(self, fact_identifier: str) -> Fact:
+        """Extract a fact from the line item, by matching its
+        identifier with the target.
+        
+        A fact identifier is a string usually of the form
+        [MODULE[LINEITEM[YEAR]]].
+        """
         for fact in self.facts:
             if fact.identifier == fact_identifier:
                 return fact
@@ -38,7 +44,7 @@ class LineItem:
     def replace_fact(self, idx: int, new_fact: Fact):
         try:
             self.facts[idx] = new_fact
-        except IndexError as err:
+        except IndexError:
             raise Exception(
                 f"tried to replace fact at index {idx}; does not exist in facts list"
             )

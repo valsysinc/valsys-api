@@ -41,6 +41,11 @@ class Module:
                 return target
         return None
 
+    @property
+    def last_line_item(self):
+        l = len(self.line_items)
+        return self.line_items[l - 1]
+
     def pull_items_from_tags(self, tags: List[str]) -> List[LineItem]:
         items = []
 

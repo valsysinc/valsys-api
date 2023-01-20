@@ -1,10 +1,10 @@
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
-from valsys.inttests.runners.utils import workflow
+from valsys.inttests.runners.utils import runner
 
 
-@workflow('spawn model')
+@runner('spawn model')
 def run_spawn_model(model_config):
     """
     SPAWN A MODEL
@@ -19,13 +19,13 @@ def run_spawn_model(model_config):
     return spawned_model_id
 
 
-@workflow('pull model')
+@runner('pull model')
 def run_pull_model(model_id: str) -> Model:
     from valsys.modeling.service import pull_model
     return pull_model(model_id)
 
 
-@workflow('edit formula')
+@runner('edit formula')
 def run_edit_formula(model_id: str, case_id: str, fact: Fact):
     from valsys.modeling.service import edit_formula
     new_formula = '42'
@@ -39,7 +39,7 @@ def run_edit_formula(model_id: str, case_id: str, fact: Fact):
     assert found
 
 
-@workflow('edit format')
+@runner('edit format')
 def run_edit_format(model_id: str, case_id: str, fact: Fact):
     from valsys.modeling.service import edit_format
     new_format = '{"thing":42}'
@@ -53,7 +53,7 @@ def run_edit_format(model_id: str, case_id: str, fact: Fact):
     assert found
 
 
-@workflow('tag line item')
+@runner('tag line item')
 def run_tag_line_item(model_id: str, line_item_id: str):
     from valsys.modeling.service import tag_line_item
     import uuid
@@ -63,7 +63,7 @@ def run_tag_line_item(model_id: str, line_item_id: str):
     assert tli.tags == new_tags
 
 
-@workflow('add line item')
+@runner('add line item')
 def run_add_line_item(model_id: str, case: Case, module_id: str):
     from valsys.modeling.service import add_line_item
     from valsys.inttests.config import AddLineItemConfig
@@ -76,7 +76,7 @@ def run_add_line_item(model_id: str, case: Case, module_id: str):
     assert new_line_item.order == new_line_item_order
 
 
-@workflow('remove line item')
+@runner('remove line item')
 def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
     from valsys.modeling.service import delete_line_item
     from valsys.modeling.service import pull_model
@@ -99,7 +99,7 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
         assert "cannot find line item with id" in str(err)
 
 
-@workflow('filter user models')
+@runner('filter user models')
 def run_filter_user_models(model_id: str):
     from valsys.modeling.service import filter_user_models
     found = False
@@ -110,20 +110,20 @@ def run_filter_user_models(model_id: str):
     assert found
 
 
-@workflow('pull model data sources')
+@runner('pull model data sources')
 def run_pull_model_datasources(model_id: str):
     from valsys.modeling.service import pull_model_datasources
     ds = pull_model_datasources(model_id)
     assert isinstance(ds, str)
 
 
-@workflow('pull model information')
+@runner('pull model information')
 def run_pull_model_information(model_id: str):
     from valsys.modeling.service import pull_model_information
     pull_model_information(model_id)
 
 
-@workflow('add child module')
+@runner('add child module')
 def run_add_child_module(model_id: str, case_id: str, module_id: str):
     from valsys.modeling.service import add_child_module
     new_module_name = "new Module"
@@ -133,7 +133,7 @@ def run_add_child_module(model_id: str, case_id: str, module_id: str):
     return new_module
 
 
-@workflow('remove module')
+@runner('remove module')
 def run_remove_module(model_id: str, module_id: str):
     from valsys.modeling.service import remove_module
     from valsys.modeling.service import pull_model
@@ -162,13 +162,13 @@ def run_remove_module(model_id: str, module_id: str):
         pass
 
 
-@workflow('recalculate model')
+@runner('recalculate model')
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
     assert recalculate_model(model_id)
 
 
-@workflow('rename module')
+@runner('rename module')
 def run_rename_module(model_id: str, module_id: str, new_name: str):
     from valsys.modeling.service import rename_module
     r = rename_module(model_id, module_id, new_name)

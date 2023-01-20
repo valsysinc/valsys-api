@@ -3,6 +3,7 @@ from valsys.utils.logging import loggerIT
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config
 import valsys.modeling.service as Modeling
+from valsys.inttests.utils import workflow
 
 
 def qa_script():
@@ -35,6 +36,7 @@ def qa_script():
     }
 
 
+@workflow('qa tests')
 def run_qa_script():
 
     qa_flow = qa_script()

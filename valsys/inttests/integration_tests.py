@@ -3,6 +3,7 @@ import datetime
 from valsys.config.config import API_PASSWORD, API_USERNAME
 import valsys.inttests.runners.runners as Runners
 from valsys.inttests.utils import gen_orch_config
+from valsys.inttests.utils import workflow
 
 
 def integration_test_config():
@@ -20,6 +21,7 @@ def integration_test_config():
     }
 
 
+@workflow('integration tests')
 def run_integration_tests():
 
     spawned_models = Runners.run_spawn_model(
@@ -46,9 +48,8 @@ def run_integration_tests():
     Runners.run_pull_model_datasources(model_id)
     Runners.run_remove_module(model_id, new_module.uid)
     Runners.run_filter_user_models(model_id)
-    lid = len(first_case.first_module.line_items) - 1
     Runners.run_delete_line_item(model_id, module_id,
-                                 first_case.first_module.line_items[lid].uid)
+                                 first_case.first_module.last_line_item.uid)
     #TODO: make this test changing the name of a different module
     # to a modules name that currently exists.
     Runners.run_rename_module(model_id, module_id, 'new name!')

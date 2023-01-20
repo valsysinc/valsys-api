@@ -1,3 +1,4 @@
+from typing import List
 from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
 from valsys.seeds.loader import SeedsLoader
 
@@ -23,3 +24,35 @@ def gen_orch_config(cfg, user, password):
             )
         ])
     return model_seed_config
+
+
+def run_each_allow_fail(funcs) -> List[str]:
+    """Each function is allowed to execute;
+    if any Exceptions are thrown, they are caught
+    and the associated error message stored.
+    
+    All funcs are executed in order.
+    """
+    fails = []
+    for func in funcs:
+        try:
+            func()
+        except Exception as err:
+            fails.append(str(err))
+    return fails
+
+
+from valsys.utils import loggerIT as logger
+
+
+def workflow(nm: str):
+
+    def real_decorator(function):
+
+        def wrapper(*args, **kwargs):
+            logger.info(f"running workflow: {nm}")
+            return function(*args, **kwargs)
+
+        return wrapper
+
+    return real_decorator

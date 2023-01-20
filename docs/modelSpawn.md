@@ -50,8 +50,8 @@ This provides a valid example of a configuration file which can be passed to the
         {
             "tickers": [
                 {
-                    "ticker": "SBUX",
-                    "source": "dataSource|SBUX_US|jp"
+                    "ticker": "PEP",
+                    "source": "dataSource|PEP_US|jp"
                 }
             ],
             "templateName": "dcf-standard",
@@ -83,7 +83,7 @@ This provides a valid example of a configuration file which can be passed to the
     "populateModulesConfig": [
         {
             "tickers": [
-                "SBUX"
+                "PEP"
             ],
             "parentModuleName": "Income Statement",
             "moduleName": "Operating Model",
@@ -236,11 +236,11 @@ Using this data structure we then assemble a list of `SampleModelSeed`s
 ```python linenums="1"
 model_seeds = [
     SampleModelSeed(companyName='STARBUCKS CORP',
-                    ticker='SBUX',
+                    ticker='PEP',
                     IndustryGroup='RETAIL-EATING & DRINKING PLACES',
                     template_id='d87b8446-38a1-4fd4-ad71-a40c3ef77b0f',
                     fiscalYear=2019,
-                    source='SBUX_US|JP')
+                    source='PEP_US|JP')
 ]
 
 ```

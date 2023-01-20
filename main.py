@@ -19,11 +19,19 @@ def main(args):
         login()
     elif mode == VALID_MODES['INTTESTS']:
         print("ARGS >>", args)
-        os.environ['VALSYS_API_BUILD'] = 'inttest'
-        os.environ['VALSYS_API_SOCKET'] = args[1]
-        os.environ['VALSYS_API_SERVER'] = args[2]
-        os.environ['VALSYS_API_USER'] = args[3]
-        os.environ['VALSYS_API_PASSWORD'] = args[4]
+        if len(args) == 6:
+            os.environ['VALSYS_API_BUILD'] = 'inttest'
+            os.environ['VALSYS_API_SOCKET_ORCH'] = args[1]
+            os.environ['VALSYS_API_SOCKET'] = args[2]
+            os.environ['VALSYS_API_SERVER'] = args[3]
+            os.environ['VALSYS_API_USER'] = args[4]
+            os.environ['VALSYS_API_PASSWORD'] = args[5]
+        else:
+            os.environ['VALSYS_API_BUILD'] = 'inttest'
+            os.environ['VALSYS_API_SOCKET'] = args[1]
+            os.environ['VALSYS_API_SERVER'] = args[2]
+            os.environ['VALSYS_API_USER'] = args[3]
+            os.environ['VALSYS_API_PASSWORD'] = args[4]
         from valsys.inttests.run import run_workflows
 
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")

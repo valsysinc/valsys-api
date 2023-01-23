@@ -1,4 +1,4 @@
-from valsys.config.config import BASE_SCK, BASE_URL, BASE_ORCH
+from valsys.config.config import BASE_ORCH, BASE_SCK, BASE_URL
 
 
 class VSURL:

@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from valsys.modeling.exceptions import FilterModelsException, SpawnModelResponseException
+from valsys.modeling.exceptions import (
+    FilterModelsException,
+    SpawnModelResponseException,
+)
 
 
 @dataclass

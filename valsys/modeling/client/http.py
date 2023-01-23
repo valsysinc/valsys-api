@@ -2,9 +2,10 @@ import json
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Dict
-from valsys.config.config import HOST
 
 import requests
+
+from valsys.config.config import HOST
 
 from .exceptions import (
     ModelingServiceGetException,

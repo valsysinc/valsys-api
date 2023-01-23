@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from valsys.config.env import get_envfiles
 from valsys.utils.utils import read_env
 
+
 BUILDS_TO_LOAD_FROM_ENV_FILES = ['local', 'test']
 
 

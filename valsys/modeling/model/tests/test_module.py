@@ -1,5 +1,5 @@
-from valsys.modeling.model.module import Module
 from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.model.module import Module
 
 
 def module_with_no_children():

@@ -34,6 +34,17 @@ class Model(object):
                         return cm
         raise Exception(f'cannot find module with id {module_id}')
 
+    def pull_module_by_name(self, module_name: str):
+        for case in self.cases:
+            for module in case.modules:
+                if module.name == module_name:
+                    return module
+                for cm in module.child_modules:
+                    if cm.name == module_name:
+                        return cm
+
+        raise Exception(f'cannot find module with name {module_name}')
+
     def pull_line_item(self, line_item_id: str):
         """Extract a line item by ID from the model.
         

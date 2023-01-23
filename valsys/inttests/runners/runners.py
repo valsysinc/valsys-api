@@ -19,6 +19,14 @@ def run_spawn_model(model_config):
     return spawned_model_id
 
 
+@runner('spawn single model')
+def run_spawn_single_model(model_config) -> str:
+    """
+    SPAWN A SINGLE MODEL
+    """
+    return run_spawn_model(model_config)[0].model_id
+
+
 @runner('pull model')
 def run_pull_model(model_id: str) -> Model:
     from valsys.modeling.service import pull_model

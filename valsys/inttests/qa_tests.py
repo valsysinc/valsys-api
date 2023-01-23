@@ -36,6 +36,34 @@ def qa_script():
     }
 
 
+def run_qa_edit_formula(model, edit_formula_config):
+    module = model.pull_module_by_name(edit_formula_config['startingModule'])
+
+    tcid = f"[{edit_formula_config['startingModule']}[{edit_formula_config['targetLineItem']}[{edit_formula_config['targetCellPeriod']}]]]"
+    loggerIT.info(
+        f"searching for fact={tcid} in line item={edit_formula_config['targetLineItem']}"
+    )
+
+    li = module.pull_item_by_name(edit_formula_config['targetLineItem'])
+    loggerIT.info(
+        f"editing fact formula from {edit_formula_config['originalCellFormula']} to {edit_formula_config['newCellFormula']}"
+    )
+    Runners.run_edit_formula(
+        model.uid,
+        model.first_case_id,
+        fact=li.pull_fact_by_identifier(tcid),
+        original_formula=edit_formula_config['originalCellFormula'],
+        new_formula=edit_formula_config['newCellFormula'],
+        original_value=edit_formula_config['originalCellValue'],
+        new_value=edit_formula_config['newCellValue'])
+    Runners.run_recalculate_model(model.uid)
+
+    #TODO
+    # obtain implied premium value
+    # recalc
+    # obtain implied premium value (different to above)
+
+
 @workflow('qa tests')
 def run_qa_script():
 
@@ -49,36 +77,8 @@ def run_qa_script():
                                         password)
 
     # Spawn the model and obtain the modelID
-    mid = Runners.run_spawn_model(model_seed_config)[0].model_id
+    mid = Runners.run_spawn_single_model(model_seed_config)
     model = Runners.run_pull_model(mid)
     edit_formula_config = qa_flow['steps'][0]
-    module = model.pull_module_by_name(edit_formula_config['startingModule'])
-
-    tcid = f"[{edit_formula_config['startingModule']}[{edit_formula_config['targetLineItem']}[{edit_formula_config['targetCellPeriod']}]]]"
-    loggerIT.info(
-        f"searching for fact={tcid} in line item={edit_formula_config['targetLineItem']}"
-    )
-
-    li = module.pull_item_by_name(edit_formula_config['targetLineItem'])
-    fact = li.pull_fact_by_identifier(tcid)
-    loggerIT.info(
-        f"editing fact formula from {edit_formula_config['originalCellFormula']} to {edit_formula_config['newCellFormula']}"
-    )
-    Runners.run_edit_formula(
-        mid,
-        model.first_case_id,
-        fact,
-        original_formula=edit_formula_config['originalCellFormula'],
-        new_formula=edit_formula_config['newCellFormula'],
-        original_value=edit_formula_config['originalCellValue'],
-        new_value=edit_formula_config['newCellValue'])
-    loggerIT.info(f"fact found: value {fact.value}")
-
-    Runners.run_recalculate_model(model.uid)
-
-    #TODO
-    # obtain implied premium value
-    # recalc
-    # obtain implied premium value (different to above)
-
-    return mid
+    if edit_formula_config.get('type') == 'edit_formula':
+        run_qa_edit_formula(model, edit_formula_config)

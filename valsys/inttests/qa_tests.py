@@ -4,6 +4,7 @@ from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.logging import loggerIT
 from valsys.inttests.runners import runners as Runners
+from valsys.modeling.model.model import Model
 
 
 def qa_script():
@@ -32,11 +33,16 @@ def qa_script():
             'newCellFormula':
             'AVERAGE([DCF[EBIT Margin[2015]]]:[DCF[EBIT Margin[2019]]])',
             'newCellValue': 0.1526595564601617,
+        }, {
+            'type': 'edit_line_item',
+            'startingModule': 'Operating Income',
+            'targetLineItem': 'Operating Profit',
+            'targetCellPeriod': '2015',
         }],
     }
 
 
-def run_qa_edit_formula(model, edit_formula_config):
+def run_qa_edit_formula(model: Model, edit_formula_config):
     module = model.pull_module_by_name(edit_formula_config['startingModule'])
 
     tcid = f"[{edit_formula_config['startingModule']}[{edit_formula_config['targetLineItem']}[{edit_formula_config['targetCellPeriod']}]]]"
@@ -64,6 +70,15 @@ def run_qa_edit_formula(model, edit_formula_config):
     # obtain implied premium value (different to above)
 
 
+def run_qa_add_line_item(model: Model, config):
+    opinc = model.pull_module_by_name(config['startingModule'])
+    print(opinc.uid)
+    line_item = opinc.pull_item_by_name(config['targetLineItem'])
+    ticd = f"[{config['startingModule']}[{config['targetLineItem']}[{config['targetCellPeriod']}]]]"
+    fact = line_item.pull_fact_by_identifier(ticd)
+    print(fact.formula, fact.value)
+
+
 @workflow('qa tests')
 def run_qa_script():
 
@@ -79,6 +94,8 @@ def run_qa_script():
     # Spawn the model and obtain the modelID
     mid = Runners.run_spawn_single_model(model_seed_config)
     model = Runners.run_pull_model(mid)
-    edit_formula_config = qa_flow['steps'][0]
-    if edit_formula_config.get('type') == 'edit_formula':
-        run_qa_edit_formula(model, edit_formula_config)
+    for step in qa_flow['steps']:
+        if step.get('type') == 'edit_formula':
+            run_qa_edit_formula(model, step)
+        if step.get('type') == 'edit_line_item':
+            run_qa_add_line_item(model, step)

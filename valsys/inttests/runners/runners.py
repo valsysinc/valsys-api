@@ -43,7 +43,7 @@ def run_edit_formula(model_id: str,
                      original_value='',
                      new_value=''):
     from valsys.modeling.service import edit_formula
-    assert_not_none(fact, 'fact')
+    assert_not_none(fact, 'fact exists')
 
     if original_formula != '':
         assert_equal(fact.formula, original_formula, 'original formula')

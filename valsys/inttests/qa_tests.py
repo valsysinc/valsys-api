@@ -4,7 +4,6 @@ from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config, workflow, gen_cell_identifier
 from valsys.utils.logging import loggerIT
 from valsys.inttests.runners import runners as Runners
-from valsys.modeling.model.model import Model
 from valsys.modeling.model.line_item import LineItem
 
 
@@ -113,7 +112,8 @@ def qa_script():
     }
 
 
-def run_qa_edit_formula(model: Model, edit_formula_config):
+def run_qa_edit_formula(model_id: str, edit_formula_config):
+    model = Runners.run_pull_model(model_id)
     module = model.pull_module_by_name(edit_formula_config['startingModule'])
 
     tcid = gen_cell_identifier(edit_formula_config)
@@ -141,7 +141,9 @@ def run_qa_edit_formula(model: Model, edit_formula_config):
     # obtain implied premium value (different to above)
 
 
-def run_qa_add_line_item(model: Model, config):
+def run_qa_add_line_item(model_id: str, config):
+    model = Runners.run_pull_model(model_id)
+
     opinc = model.pull_module_by_name(config['startingModule'])
     line_item = opinc.pull_item_by_name(config['targetLineItem'])
     ticd = gen_cell_identifier(config)
@@ -168,7 +170,9 @@ def run_qa_add_line_item(model: Model, config):
                              original_value=nli_config['originalCellValue'])
 
 
-def run_qa_add_module(model: Model, config):
+def run_qa_add_module(model_id: str, config):
+    model = Runners.run_pull_model(model_id)
+
     nm = Runners.run_add_child_module(model.uid,
                                       model.first_case_id,
                                       module_id=model.pull_module_by_name(
@@ -201,20 +205,20 @@ def run_qa_add_module(model: Model, config):
                                  new_value=fact_edit.get('expectedValue', ''))
 
 
-def run_qa_rename_line_item(m: Model, config):
-    model = Runners.run_pull_model(m.uid)
+def run_qa_rename_line_item(model_id: str, config):
+    model = Runners.run_pull_model(model_id)
     li = model.pull_line_item_by_name(config['parentModule'],
                                       config['originalLineItemName'])
     Runners.run_rename_line_item(model.uid, li, config['newLineItemName'])
-    m2 = Runners.run_pull_model(m.uid)
+    m2 = Runners.run_pull_model(model_id)
     li2 = m2.pull_line_item_by_name(config['parentModule'],
                                     config['checkingLineItem']['name'])
     f2 = li2.pull_fact_by_identifier(config['checkingLineItem']['fact'])
     assert f2.formula == config['checkingLineItem']['formula']
-    
+
     # Now undo
     Runners.run_rename_line_item(model.uid, li, config['originalLineItemName'])
-    m3 = Runners.run_pull_model(m.uid)
+    m3 = Runners.run_pull_model(model_id)
     li3 = m3.pull_line_item_by_name(config['parentModule'],
                                     config['checkingLineItem']['name'])
     f3 = li3.pull_fact_by_identifier(config['checkingLineItem']['fact'])
@@ -244,5 +248,5 @@ def run_qa_script():
         'rename_line_item': run_qa_rename_line_item
     }
 
-    for step in qa_flow['steps']:
-        steps[step.get('type')](model, step)
+    for step_config in qa_flow['steps']:
+        steps[step_config.get('type')](model.uid, step_config)

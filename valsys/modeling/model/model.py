@@ -58,6 +58,10 @@ class Model(object):
                             return cline_item
         raise Exception(f'cannot find line item with id {line_item_id}')
 
+    def pull_line_item_by_name(self, module_name: str, line_item_name: str):
+        module = self.pull_module_by_name(module_name)
+        return module.pull_item_by_name(line_item_name)
+
     def pull_case_by_id(self, id) -> Case:
         for case in self.cases:
             if case.uid == id:

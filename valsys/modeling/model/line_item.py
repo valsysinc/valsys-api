@@ -64,10 +64,21 @@ class LineItem:
     def from_json(cls, data):
         return cls(uid=data[cls.fields.ID],
                    name=data[cls.fields.NAME],
+                   tags=data.get(cls.fields.TAGS, []),
+                   order=data.get(cls.fields.ORDER, ''),
                    facts=list(
                        map(
                            Fact.from_json,
                            data.get(cls.fields.EDGES,
-                                    {}).get(cls.fields.FACTS, []))),
-                   tags=data.get(cls.fields.TAGS, []),
-                   order=data.get(cls.fields.ORDER, ''))
+                                    {}).get(cls.fields.FACTS, []))))
+
+    def jsonify(self):
+        return {
+            self.fields.ID: self.uid,
+            self.fields.NAME: self.name,
+            self.fields.ORDER: self.order,
+            self.fields.TAGS: self.tags,
+            self.fields.EDGES: {
+                self.fields.FACTS: [f.jsonify() for f in self.facts]
+            }
+        }

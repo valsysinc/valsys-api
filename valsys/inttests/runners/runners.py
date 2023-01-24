@@ -2,6 +2,7 @@ from valsys.inttests.runners.utils import runner
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
+from valsys.modeling.model.line_item import LineItem
 from valsys.inttests.runners.utils import assert_equal, assert_not_none
 
 
@@ -153,9 +154,12 @@ def run_pull_model_information(model_id: str):
 
 
 @runner('add child module')
-def run_add_child_module(model_id: str, case_id: str, module_id: str):
+def run_add_child_module(model_id: str,
+                         case_id: str,
+                         module_id: str,
+                         new_module_name="new Module"):
     from valsys.modeling.service import add_child_module
-    new_module_name = "new Module"
+
     new_module = add_child_module(module_id, new_module_name, model_id,
                                   case_id)
     assert new_module.name == new_module_name
@@ -203,3 +207,14 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
     r = rename_module(model_id, module_id, new_name)
     assert r.get('data').get('module').get('name') == new_name
     r = rename_module(model_id, module_id, new_name)
+
+
+@runner('rename line item')
+def run_rename_line_item(model_id: str, line_item: LineItem,
+                         new_line_item_name: str):
+    from valsys.modeling.service import edit_line_items
+    line_item.name = new_line_item_name
+    nli = edit_line_items(model_id, [line_item])[0]
+
+    assert nli.uid == line_item.uid
+    assert nli.name == line_item.name

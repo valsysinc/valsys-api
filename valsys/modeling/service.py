@@ -616,3 +616,17 @@ def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
                       case_id=case_id,
                       model_id=model_id,
                       facts=facts)
+
+
+def edit_line_items(model_id: str,
+                    line_items: List[LineItem]) -> List[LineItem]:
+    client = new_client()
+    payload = {
+        Headers.MODEL_ID: model_id,
+        "lineItems": [li.jsonify() for li in line_items],
+    }
+    r = client.post(url=VSURL.EDIT_LINE_ITEMS, data=payload)
+    if r.get('status') != Vars.SUCCESS:
+        raise Exception(f'line item editing {r.get("error")}')
+    resp = [LineItem.from_json(j) for j in r.get('data').get('lineItems')]
+    return resp

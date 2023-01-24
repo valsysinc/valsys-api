@@ -108,13 +108,12 @@ def run_qa_add_line_item(model: Model, config):
         new_line_item_name=nli_config['targetLineItem'],
         new_line_item_order=line_item.order + 1)
     fid = gen_cell_identifier(nli_config)
-    Runners.run_edit_formula(
-        model.uid,
-        model.first_case_id,
-        nli.pull_fact_by_identifier(fid),
-        new_formula=nli_config['newCellFormula'],
-        new_value=nli_config['newCellValue'],
-        original_value=nli_config['originalCellValue'])
+    Runners.run_edit_formula(model.uid,
+                             model.first_case_id,
+                             nli.pull_fact_by_identifier(fid),
+                             new_formula=nli_config['newCellFormula'],
+                             new_value=nli_config['newCellValue'],
+                             original_value=nli_config['originalCellValue'])
 
 
 @workflow('qa tests')
@@ -132,8 +131,11 @@ def run_qa_script():
     # Spawn the model and obtain the modelID
     mid = Runners.run_spawn_single_model(model_seed_config)
     model = Runners.run_pull_model(mid)
+
+    steps = {
+        'edit_formula': run_qa_edit_formula,
+        'edit_line_item': run_qa_add_line_item
+    }
+
     for step in qa_flow['steps']:
-        if step.get('type') == 'edit_formula':
-            run_qa_edit_formula(model, step)
-        if step.get('type') == 'edit_line_item':
-            run_qa_add_line_item(model, step)
+        steps[step.get('type')](model, step)

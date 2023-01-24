@@ -153,9 +153,12 @@ def run_pull_model_information(model_id: str):
 
 
 @runner('add child module')
-def run_add_child_module(model_id: str, case_id: str, module_id: str):
+def run_add_child_module(model_id: str,
+                         case_id: str,
+                         module_id: str,
+                         new_module_name="new Module"):
     from valsys.modeling.service import add_child_module
-    new_module_name = "new Module"
+
     new_module = add_child_module(module_id, new_module_name, model_id,
                                   case_id)
     assert new_module.name == new_module_name

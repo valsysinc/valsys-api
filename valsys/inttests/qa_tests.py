@@ -85,12 +85,30 @@ def qa_script():
                 'formula':
                 '[Geographic Disaggregation[United Kingdom[2015]]]*1.05',
                 'expectedValue': 64814814.225
+            }, {
+                'lineItem': 'Total',
+                'fact': '[Geographic Disaggregation[Total[2015]]]',
+                'formula':
+                '[Geographic Disaggregation[United States[2015]]] +[Geographic Disaggregation[United Kingdom[2015]]]',
+                'expectedValue': 185185183.5
+            }, {
+                'lineItem': 'Other',
+                'fact': '[Geographic Disaggregation[Other[2015]]]',
+                'formula': '[Geographic Disaggregation[Total[2015]]] *1.2',
+                'expectedValue': 222222220.2
             }]
         }, {
             'type': 'rename_line_item',
             'parentModule': 'Geographic Disaggregation',
             'originalLineItemName': "Total",
-            'newLineItemName': 'abcdefg'
+            'newLineItemName': 'abcdefg',
+            'checkingLineItem': {
+                'name': 'Other',
+                'fact': '[Geographic Disaggregation[Other[2015]]]',
+                'formula': '[Geographic Disaggregation[abcdefg[2015]]] *1.2',
+                'originalFormula':
+                '[Geographic Disaggregation[Total[2015]]] *1.2'
+            }
         }],
     }
 
@@ -183,8 +201,24 @@ def run_qa_add_module(model: Model, config):
                                  new_value=fact_edit.get('expectedValue', ''))
 
 
-def run_qa_rename_line_item(model: Model, config):
-    pass
+def run_qa_rename_line_item(m: Model, config):
+    model = Runners.run_pull_model(m.uid)
+    li = model.pull_line_item_by_name(config['parentModule'],
+                                      config['originalLineItemName'])
+    Runners.run_rename_line_item(model.uid, li, config['newLineItemName'])
+    m2 = Runners.run_pull_model(m.uid)
+    li2 = m2.pull_line_item_by_name(config['parentModule'],
+                                    config['checkingLineItem']['name'])
+    f2 = li2.pull_fact_by_identifier(config['checkingLineItem']['fact'])
+    assert f2.formula == config['checkingLineItem']['formula']
+    
+    # Now undo
+    Runners.run_rename_line_item(model.uid, li, config['originalLineItemName'])
+    m3 = Runners.run_pull_model(m.uid)
+    li3 = m3.pull_line_item_by_name(config['parentModule'],
+                                    config['checkingLineItem']['name'])
+    f3 = li3.pull_fact_by_identifier(config['checkingLineItem']['fact'])
+    assert f3.formula == config['checkingLineItem']['originalFormula']
 
 
 @workflow('qa tests')

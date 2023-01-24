@@ -1,10 +1,11 @@
 import datetime
-
+from typing import List
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config, workflow, gen_cell_identifier
 from valsys.utils.logging import loggerIT
 from valsys.inttests.runners import runners as Runners
 from valsys.modeling.model.model import Model
+from valsys.modeling.model.line_item import LineItem
 
 
 def qa_script():
@@ -65,7 +66,31 @@ def qa_script():
             'newModuleName':
             "Geographic Disaggregation",
             'newLineItems':
-            ['United States', 'United Kingdom', 'Other', 'Total']
+            ['United States', 'United Kingdom', 'Other', 'Total'],
+            'factEdits': [{
+                'lineItem': 'United States',
+                'fact': '[Geographic Disaggregation[United States[2015]]]',
+                'inputValue': 123456789,
+                'formula': '123456789',
+                'expectedValue': 123456789
+            }, {
+                'lineItem': 'United Kingdom',
+                'fact': '[Geographic Disaggregation[United Kingdom[2015]]]',
+                'formula':
+                '[Geographic Disaggregation[United States[2015]]]/2',
+                'expectedValue': 61728394.5
+            }, {
+                'lineItem': 'United Kingdom',
+                'fact': '[Geographic Disaggregation[United Kingdom[2016]]]',
+                'formula':
+                '[Geographic Disaggregation[United Kingdom[2015]]]*1.05',
+                'expectedValue': 64814814.225
+            }]
+        }, {
+            'type': 'rename_line_item',
+            'parentModule': 'Geographic Disaggregation',
+            'originalLineItemName': "Total",
+            'newLineItemName': 'abcdefg'
         }],
     }
 
@@ -132,6 +157,7 @@ def run_qa_add_module(model: Model, config):
                                           config['parentModule']).uid,
                                       new_module_name=config['newModuleName'])
     order = 1
+    nlis: List[LineItem] = []
     for new_line_item_name in config['newLineItems']:
         nli = Runners.run_add_line_item(model_id=model.uid,
                                         case=model.first_case,
@@ -139,6 +165,26 @@ def run_qa_add_module(model: Model, config):
                                         new_line_item_name=new_line_item_name,
                                         new_line_item_order=order)
         order += 1
+        nlis.append(nli)
+
+    for fact_edit in config['factEdits']:
+        for li in nlis:
+            if li.name == fact_edit['lineItem']:
+                line_item = li
+                break
+        fact = line_item.pull_fact_by_identifier(fact_edit['fact'])
+        if fact_edit.get('inputValue', '') != '':
+            fact.value = fact_edit['inputValue']
+
+        Runners.run_edit_formula(model_id=model.uid,
+                                 case_id=model.first_case_id,
+                                 fact=fact,
+                                 new_formula=fact_edit.get('formula', ''),
+                                 new_value=fact_edit.get('expectedValue', ''))
+
+
+def run_qa_rename_line_item(model: Model, config):
+    pass
 
 
 @workflow('qa tests')
@@ -160,7 +206,8 @@ def run_qa_script():
     steps = {
         'edit_formula': run_qa_edit_formula,
         'edit_line_item': run_qa_add_line_item,
-        'add_module': run_qa_add_module
+        'add_module': run_qa_add_module,
+        'rename_line_item': run_qa_rename_line_item
     }
 
     for step in qa_flow['steps']:

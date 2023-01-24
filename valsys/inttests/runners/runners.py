@@ -2,6 +2,7 @@ from valsys.inttests.runners.utils import runner
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
+from valsys.inttests.runners.utils import assert_equal, assert_not_none
 
 
 @runner('spawn model')
@@ -42,20 +43,23 @@ def run_edit_formula(model_id: str,
                      original_value='',
                      new_value=''):
     from valsys.modeling.service import edit_formula
-    assert fact is not None
+    assert_not_none(fact, 'fact')
+
     if original_formula != '':
-        assert fact.formula == original_formula
+        assert_equal(fact.formula, original_formula, 'original formula')
+
     if original_value != '':
-        assert fact.value == original_value
+        assert_equal(fact.value, original_value, 'original value')
+
     fact.formula = new_formula
     efs = edit_formula(case_id, model_id, [ff.jsonify() for ff in [fact]])
     found = False
     for f in efs:
         if f.uid == fact.uid:
-            assert f.formula == new_formula
+            assert_equal(f.formula, new_formula, 'new formula')
             found = True
             if new_value != '':
-                assert f.value == new_value
+                assert_equal(f.value, new_value, 'new value')
     assert found
 
 
@@ -84,16 +88,21 @@ def run_tag_line_item(model_id: str, line_item_id: str):
 
 
 @runner('add line item')
-def run_add_line_item(model_id: str, case: Case, module_id: str):
+def run_add_line_item(model_id: str,
+                      case: Case,
+                      module_id: str,
+                      new_line_item_name=None,
+                      new_line_item_order=None):
     from valsys.modeling.service import add_line_item
     from valsys.inttests.config import AddLineItemConfig
-    new_line_item_name = AddLineItemConfig.NAME
-    new_line_item_order = AddLineItemConfig.ORDER
+    new_line_item_name = new_line_item_name or AddLineItemConfig.NAME
+    new_line_item_order = new_line_item_order or AddLineItemConfig.ORDER
     new_line_item = add_line_item(case.uid, model_id, module_id,
                                   new_line_item_name, new_line_item_order)
 
     assert new_line_item.name == new_line_item_name
     assert new_line_item.order == new_line_item_order
+    return new_line_item
 
 
 @runner('remove line item')

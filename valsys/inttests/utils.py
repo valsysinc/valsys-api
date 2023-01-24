@@ -5,6 +5,10 @@ from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
 from valsys.utils import loggerIT as logger
 
 
+def gen_cell_identifier(config):
+    return f"[{config['startingModule']}[{config['targetLineItem']}[{config['targetCellPeriod']}]]]"
+
+
 def gen_orch_config(cfg, user, password):
 
     template_id = SeedsLoader.template_id_by_name(cfg.get('templateName'))
@@ -42,8 +46,6 @@ def run_each_allow_fail(funcs) -> List[str]:
         except Exception as err:
             fails.append(str(err))
     return fails
-
-
 
 
 def workflow(nm: str):

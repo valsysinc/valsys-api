@@ -206,3 +206,9 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
     r = rename_module(model_id, module_id, new_name)
     assert r.get('data').get('module').get('name') == new_name
     r = rename_module(model_id, module_id, new_name)
+
+
+@runner('rename line item')
+def run_rename_line_item(model_id: str, line_item):
+    from valsys.modeling.service import edit_line_items
+    return edit_line_items(model_id, [line_item])

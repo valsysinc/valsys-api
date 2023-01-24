@@ -57,6 +57,15 @@ def qa_script():
                 "newCellFormula":
                 "SUM([Operating Income[Operating Profit[2015]]],[Operating Income[Venezuela impairment charges[2015]]])"
             }
+        }, {
+            'type':
+            'add_module',
+            'parentModule':
+            'DCF',
+            'newModuleName':
+            "Geographic Disaggregation",
+            'newLineItems':
+            ['United States', 'United Kingdom', 'Other', 'Total']
         }],
     }
 
@@ -108,16 +117,28 @@ def run_qa_add_line_item(model: Model, config):
         new_line_item_name=nli_config['targetLineItem'],
         new_line_item_order=line_item.order + 1)
     fid = gen_cell_identifier(nli_config)
-    Runners.run_edit_formula(model.uid,
-                             model.first_case_id,
-                             nli.pull_fact_by_identifier(fid),
+    Runners.run_edit_formula(model_id=model.uid,
+                             case_id=model.first_case_id,
+                             fact=nli.pull_fact_by_identifier(fid),
                              new_formula=nli_config['newCellFormula'],
                              new_value=nli_config['newCellValue'],
                              original_value=nli_config['originalCellValue'])
 
 
 def run_qa_add_module(model: Model, config):
-    pass
+    nm = Runners.run_add_child_module(model.uid,
+                                      model.first_case_id,
+                                      module_id=model.pull_module_by_name(
+                                          config['parentModule']).uid,
+                                      new_module_name=config['newModuleName'])
+    order = 1
+    for new_line_item_name in config['newLineItems']:
+        nli = Runners.run_add_line_item(model_id=model.uid,
+                                        case=model.first_case,
+                                        module_id=nm.uid,
+                                        new_line_item_name=new_line_item_name,
+                                        new_line_item_order=order)
+        order += 1
 
 
 @workflow('qa tests')

@@ -116,6 +116,10 @@ def run_qa_add_line_item(model: Model, config):
                              original_value=nli_config['originalCellValue'])
 
 
+def run_qa_add_module(model: Model, config):
+    pass
+
+
 @workflow('qa tests')
 def run_qa_script():
 
@@ -134,7 +138,8 @@ def run_qa_script():
 
     steps = {
         'edit_formula': run_qa_edit_formula,
-        'edit_line_item': run_qa_add_line_item
+        'edit_line_item': run_qa_add_line_item,
+        'add_module': run_qa_add_module
     }
 
     for step in qa_flow['steps']:

@@ -19,7 +19,7 @@ def main(args):
         login()
     elif mode == VALID_MODES['INTTESTS']:
         print("ARGS >>", args)
-        if len(args) == 6:
+        if len(args) == 7:
             os.environ['VALSYS_API_BUILD'] = 'inttest'
             os.environ['VALSYS_API_SOCKET_ORCH'] = args[1]
             os.environ['VALSYS_API_SOCKET'] = args[2]

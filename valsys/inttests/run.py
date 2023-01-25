@@ -10,11 +10,18 @@ from valsys.modeling.vars import Vars
 from valsys.utils import loggerIT as logger
 
 
-def run_workflows():
+def run_workflows(opts):
     logger.info('running integration tests')
     logger.info(f'modeling service HTTP URL:{BASE_URL}')
     logger.info(f'modeling service SOCK URL:{BASE_SCK}')
-    workflow_funcs = [run_integration_tests, run_qa_script]
+    #workflow_funcs = [run_integration_tests, run_qa_script]
+    workflow_funcs = []
+    if 'integration' in opts:
+        workflow_funcs.append(run_integration_tests)
+    if 'qa' in opts:
+        workflow_funcs.append(run_qa_script)
+    if len(workflow_funcs) == 0:
+        workflow_funcs = [run_integration_tests, run_qa_script]
     fails = run_each_allow_fail(workflow_funcs)
     if len(fails) > 0:
         logger.info(f"FAILED: {', '.join(fails)}")

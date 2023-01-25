@@ -26,16 +26,18 @@ def main(args):
             os.environ['VALSYS_API_SERVER'] = args[3]
             os.environ['VALSYS_API_USER'] = args[4]
             os.environ['VALSYS_API_PASSWORD'] = args[5]
+            opts = args[6:]
         else:
             os.environ['VALSYS_API_BUILD'] = 'inttest'
             os.environ['VALSYS_API_SOCKET'] = args[1]
             os.environ['VALSYS_API_SERVER'] = args[2]
             os.environ['VALSYS_API_USER'] = args[3]
             os.environ['VALSYS_API_PASSWORD'] = args[4]
+            opts = args[5:]
 
         from valsys.inttests.run import run_workflows
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-        run_workflows()
+        run_workflows(opts)
     elif mode == VALID_MODES['SPAWN']:
         from valsys.utils import logger
         logger.info(f"start")

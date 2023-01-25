@@ -33,9 +33,9 @@ def main(args):
             os.environ['VALSYS_API_USER'] = args[3]
             os.environ['VALSYS_API_PASSWORD'] = args[4]
 
-        from valsys.inttests.run import wait_then_run_tests
+        from valsys.inttests.run import run_workflows
         print(pyfiglet.figlet_format(NAME), f"{' '*10} v{VERSION}")
-        wait_then_run_tests()
+        run_workflows()
     elif mode == VALID_MODES['SPAWN']:
         from valsys.utils import logger
         logger.info(f"start")

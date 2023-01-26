@@ -35,7 +35,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.utils import facts_list
+from valsys.modeling.utils import facts_list, line_items_list
 from valsys.modeling.vars import Vars
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
@@ -623,10 +623,10 @@ def edit_line_items(model_id: str,
     client = new_client()
     payload = {
         Headers.MODEL_ID: model_id,
-        "lineItems": [li.jsonify() for li in line_items],
+        Headers.LINE_ITEMS: [li.jsonify() for li in line_items],
     }
     r = client.post(url=VSURL.EDIT_LINE_ITEMS, data=payload)
     if r.get('status') != Vars.SUCCESS:
         raise Exception(f'line item editing {r.get("error")}')
-    resp = [LineItem.from_json(j) for j in r.get('data').get('lineItems')]
-    return resp
+
+    return line_items_list(r.get('data').get('lineItems'))

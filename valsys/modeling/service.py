@@ -630,3 +630,13 @@ def edit_line_items(model_id: str,
         raise Exception(f'line item editing {r.get("error")}')
 
     return line_items_list(r.get('data').get('lineItems'))
+
+
+def add_column(model_id: str, module_id: str, new_period: float):
+    url = VSURL.ADD_COLUMN
+    pass
+
+
+def copy_model(model_id: str):
+    url = VSURL.COPY_MODEL
+    pass

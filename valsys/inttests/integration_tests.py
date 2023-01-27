@@ -54,3 +54,4 @@ def run_integration_tests():
     Runners.run_rename_module(model_id, module_id, 'new name!')
     m = model.first_case.first_module
     Runners.run_add_column(model_id, m.uid, m.periods.pop() + 1)
+    Runners.run_add_column(model_id, m.uid, m.periods[0] - 1)

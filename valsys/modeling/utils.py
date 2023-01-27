@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Protocol
 
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.vars import Vars
+from valsys.modeling.vars import Vars, Resp
 
 
 class Deserialiseable(Protocol):
@@ -25,7 +25,14 @@ def line_items_list(line_items: List[Dict[str, Any]]) -> List[LineItem]:
     return from_list(LineItem, line_items)
 
 
-def check_success(resp, desc, exception=Exception):
-    if resp.get('status') != Vars.SUCCESS:
-        raise exception(f'{desc} failed {resp.get("error")}')
+def check_success(resp: Dict[str, Any],
+                  desc: str,
+                  exception: Exception = Exception):
+    '''Check to see if the supplied response dict has
+    a successful status.
+    
+    If not "success", then an exception is raised along with the provided description
+    for context. Custom exception classes can be pased in.'''
+    if resp.get(Resp.STATUS) != Vars.SUCCESS:
+        raise exception(f'{desc} failed {resp.get(Resp.ERROR)}')
     return True

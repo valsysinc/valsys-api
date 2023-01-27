@@ -29,3 +29,5 @@ class Resp:
     LINE_ITEM = 'lineItem'
     LINE_ITEMS = 'lineItems'
     FACTS = 'facts'
+    STATUS = 'status'
+    ERROR = 'error'

@@ -35,7 +35,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.utils import facts_list, line_items_list
+from valsys.modeling.utils import facts_list, line_items_list, check_success
 from valsys.modeling.vars import Vars
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
@@ -92,7 +92,7 @@ def filter_user_models(tags: List[str] = None,
     filters.set_filter_on(filter_on)
 
     headers = {
-        'pagination': str(pagination),
+        Headers.PAGINATION: str(pagination),
     }
     client = new_client()
     try:
@@ -162,9 +162,9 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     client = new_client(auth_token)
     payload = {
         Headers.MODEL_ID: model_id,
-        "tags": tags,
-        "update": True,
-        "rollForward": True,
+        Headers.TAGS: tags,
+        Headers.UPDATE: True,
+        Headers.ROLL_FORWARD: True,
     }
     try:
         return client.post(
@@ -422,10 +422,11 @@ def recalculate_model(model_id: str) -> List[Fact]:
         raise RecalculateModelException(
             f"error posting model for recalculating: {str(err)}")
 
-    if resp.get('status') == Vars.SUCCESS:
-        return facts_list(resp.get('data').get('facts'))
-    raise RecalculateModelException(
-        f"error recalculating model: {resp.get('error')}")
+    check_success(resp,
+                  'recalculating model',
+                  exception=RecalculateModelException)
+
+    return facts_list(resp.get('data').get('facts'))
 
 
 def remove_module(model_id: str, module_id: str):
@@ -453,7 +454,7 @@ def remove_module(model_id: str, module_id: str):
 def rename_module(model_id: str, module_id: str, new_module_name: str):
     client = new_client()
 
-    rm = client.post(
+    r = client.post(
         url=VSURL.RENAME_MODULE,
         data={
             Headers.MODEL_ID: model_id,
@@ -461,7 +462,8 @@ def rename_module(model_id: str, module_id: str, new_module_name: str):
             Headers.NAME: new_module_name
         },
     )
-    return rm
+    check_success(r, 'adding column')
+    return Module.from_json(r.get('data').get('module'))
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -587,8 +589,7 @@ def edit_facts(url: str, case_id: str, model_id: str,
         url=url,
         data=payload,
     )
-    if resp.get('status') != Vars.SUCCESS:
-        raise Exception(f'fact editing {resp.get("error")}')
+    check_success(resp, 'fact editing')
     return facts_list(resp.get('data').get('facts'))
 
 
@@ -626,15 +627,32 @@ def edit_line_items(model_id: str,
         Headers.LINE_ITEMS: [li.jsonify() for li in line_items],
     }
     r = client.post(url=VSURL.EDIT_LINE_ITEMS, data=payload)
-    if r.get('status') != Vars.SUCCESS:
-        raise Exception(f'line item editing {r.get("error")}')
-
+    check_success(r, 'line item editing')
     return line_items_list(r.get('data').get('lineItems'))
 
 
-def add_column(model_id: str, module_id: str, new_period: float):
+def add_column(model_id: str, module_id: str, new_period: float) -> Module:
+    """Add a column/period to the module
+
+    Args:
+        model_id: The modelID for the module.
+        module_id: The ID of the module which is to have a new column.
+        new_period: The period for the new column
+
+
+    Returns:
+        The new `Module` object, with the new column.
+    """
     url = VSURL.ADD_COLUMN
-    pass
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.MODULE_ID: module_id,
+        Headers.NEW_PERIOD: new_period
+    }
+    client = new_client()
+    r = client.post(url, data=payload)
+    check_success(r, 'adding column')
+    return Module.from_json(r.get('data').get('module'))
 
 
 def copy_model(model_id: str):

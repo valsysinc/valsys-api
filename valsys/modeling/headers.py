@@ -11,3 +11,7 @@ class Headers:
     ORDER = "order"
     MODULE_ID = "moduleID"
     TAGS = 'tags'
+    NEW_PERIOD = 'newPeriod'
+    ROLL_FORWARD = 'rollForward'
+    UPDATE = "update"
+    PAGINATION = 'pagination'

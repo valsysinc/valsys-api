@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Protocol
 
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.vars import Vars
 
 
 class Deserialiseable(Protocol):
@@ -22,3 +23,9 @@ def facts_list(facts: List[Dict[str, Any]]) -> List[Fact]:
 def line_items_list(line_items: List[Dict[str, Any]]) -> List[LineItem]:
     """Builds a list of Line Item objects from a list of line item jsons."""
     return from_list(LineItem, line_items)
+
+
+def check_success(resp, desc, exception=Exception):
+    if resp.get('status') != Vars.SUCCESS:
+        raise exception(f'{desc} failed {resp.get("error")}')
+    return True

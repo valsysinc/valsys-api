@@ -14,7 +14,6 @@ def run_workflows(opts):
     logger.info('running integration tests')
     logger.info(f'modeling service HTTP URL:{BASE_URL}')
     logger.info(f'modeling service SOCK URL:{BASE_SCK}')
-    #workflow_funcs = [run_integration_tests, run_qa_script]
     workflow_funcs = []
     if 'integration' in opts:
         workflow_funcs.append(run_integration_tests)

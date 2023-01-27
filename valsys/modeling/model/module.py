@@ -63,6 +63,15 @@ class Module:
             item.facts = sorted_facts
         return items
 
+    @property
+    def periods(self) -> List[float]:
+        periods = set()
+        for fact in self.line_items[0].facts:
+            periods.add(fact.period)
+        pl = list(periods)
+        pl.sort()
+        return pl
+
     def pull_item_by_name(self, name: str) -> LineItem:
         """Extract and return the line item with
         the provided name.

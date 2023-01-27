@@ -22,7 +22,6 @@ from valsys.modeling.exceptions import (
     TagModelException,
     UpdateModelGroupsException,
 )
-from valsys.modeling.headers import Headers
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
@@ -36,7 +35,7 @@ from valsys.modeling.models import (
     SpawnedModelInfo,
 )
 from valsys.modeling.utils import facts_list, line_items_list, check_success
-from valsys.modeling.vars import Vars
+from valsys.modeling.vars import Vars, Headers, Resp
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
@@ -103,7 +102,7 @@ def filter_user_models(tags: List[str] = None,
         raise err
     return [
         ModelDetailInformation.from_json(j)
-        for j in resp.get('data').get('models')
+        for j in resp.get(Resp.DATA).get(Resp.MODELS)
     ]
 
 
@@ -128,7 +127,7 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
         resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
         smi = []
         fds = []
-        for m in resp.get('models'):
+        for m in resp.get(Resp.MODELS):
             if m.get('status') == Vars.SUCCESS:
                 smi.append(SpawnedModelInfo.from_json(m))
             else:
@@ -206,7 +205,7 @@ def tag_line_item(model_id: str, line_item_id: str,
     except ModelingServicePostException as err:
         raise TagLineItemException(
             f"error tagging line item: payload={payload} err={str(err)}")
-    return LineItem.from_json(ait.get('data').get('lineItem'))
+    return LineItem.from_json(ait.get(Resp.DATA).get(Resp.LINE_ITEM))
 
 
 def share_model(model_id: str,
@@ -265,7 +264,7 @@ def pull_model_groups() -> ModelGroups:
     except ModelingServiceGetException as err:
         raise PullModelGroupsException(
             f"error pulling model groups: {str(err)}")
-    return ModelGroups.from_json(g.get('data'))
+    return ModelGroups.from_json(g.get(Resp.DATA))
 
 
 def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
@@ -288,7 +287,7 @@ def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
     except ModelingServicePostException as err:
         raise NewModelGroupsException(
             f"error adding new model groups: {str(err)}")
-    return ModelGroups.from_json(g.get('data'))
+    return ModelGroups.from_json(g.get(Resp.DATA))
 
 
 def update_model_groups(uid: str, name: str,
@@ -314,7 +313,7 @@ def update_model_groups(uid: str, name: str,
     except ModelingServicePostException as err:
         raise UpdateModelGroupsException(str(err))
 
-    return ModelGroups.from_json(g.get('data'))
+    return ModelGroups.from_json(g.get(Resp.DATA))
 
 
 def pull_model_information(model_id: str) -> ModelInformation:
@@ -335,7 +334,7 @@ def pull_model_information(model_id: str) -> ModelInformation:
         if resp.get('status') == Vars.SUCCESS:
             if resp["data"]["models"]:
                 if len(resp["data"]["models"]) > 0:
-                    cases = resp["data"]["models"][0]['model']
+                    cases = resp["data"]["models"][0][Resp.MODEL]
             else:
                 raise PullModelInformationException(
                     f"could not pull model info for model={model_id}; no models returned"
@@ -364,9 +363,9 @@ def pull_model(model_id: str) -> Model:
 
     resp = client.get(
         url=VSURL.PULL_MODEL,
-        headers={"modelId": model_id},
+        headers={Headers.MODEL_ID: model_id},
     )
-    return Model.from_json(resp.get('data').get('model'))
+    return Model.from_json(resp.get(Resp.DATA).get(Resp.MODEL))
 
 
 def pull_model_datasources(model_id: str) -> str:
@@ -420,13 +419,13 @@ def recalculate_model(model_id: str) -> List[Fact]:
         resp = client.post(url=VSURL.RECALC_MODEL, data=payload)
     except ModelingServicePostException as err:
         raise RecalculateModelException(
-            f"error posting model for recalculating: {str(err)}")
+            f"error recalculating model: {str(err)}")
 
     check_success(resp,
                   'recalculating model',
                   exception=RecalculateModelException)
 
-    return facts_list(resp.get('data').get('facts'))
+    return facts_list(resp.get(Resp.DATA).get(Resp.FACTS))
 
 
 def remove_module(model_id: str, module_id: str):
@@ -463,7 +462,7 @@ def rename_module(model_id: str, module_id: str, new_module_name: str):
         },
     )
     check_success(r, 'adding column')
-    return Module.from_json(r.get('data').get('module'))
+    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -536,7 +535,7 @@ def add_line_item(case_id: str, model_id: str, module_id: str, name: str,
             f"error adding line item to model={model_id} module={module_id}; {str(err)}"
         )
     try:
-        line_items = resp["data"]["module"]['edges']['lineItems']
+        line_items = resp["data"]["module"]['edges'][Resp.LINE_ITEMS]
     except KeyError as err:
         raise AddLineItemException(
             "error adding line item: invalid data structure")
@@ -571,7 +570,7 @@ def delete_line_item(model_id: str, module_id: str,
             Headers.MODULE_ID: module_id,
         },
     )
-    module = Module.from_json(resp.get('data').get('module'))
+    module = Module.from_json(resp.get(Resp.DATA).get(Resp.MODULE))
     return module
 
 
@@ -590,7 +589,7 @@ def edit_facts(url: str, case_id: str, model_id: str,
         data=payload,
     )
     check_success(resp, 'fact editing')
-    return facts_list(resp.get('data').get('facts'))
+    return facts_list(resp.get(Resp.DATA).get(Resp.FACTS))
 
 
 def edit_format(case_id: str, model_id: str, facts: List[Fact]):
@@ -628,7 +627,7 @@ def edit_line_items(model_id: str,
     }
     r = client.post(url=VSURL.EDIT_LINE_ITEMS, data=payload)
     check_success(r, 'line item editing')
-    return line_items_list(r.get('data').get('lineItems'))
+    return line_items_list(r.get(Resp.DATA).get(Resp.LINE_ITEMS))
 
 
 def add_column(model_id: str, module_id: str, new_period: float) -> Module:
@@ -652,7 +651,7 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'adding column')
-    return Module.from_json(r.get('data').get('module'))
+    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
 def copy_model(model_id: str):

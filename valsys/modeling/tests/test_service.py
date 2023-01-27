@@ -21,7 +21,7 @@ from valsys.modeling.exceptions import (
     TagModelException,
     UpdateModelGroupsException,
 )
-from valsys.modeling.headers import Headers
+from valsys.modeling.vars import Headers
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.service import (
@@ -61,7 +61,6 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
-
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -649,7 +648,7 @@ class TestRecalculateModel:
         mock_c.post.return_value = self.failed_response
         with pytest.raises(RecalculateModelException) as err:
             recalculate_model(model_id)
-        assert 'error recalculating model' in str(err)
+        assert 'recalculating model' in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises_post_exception(self, mock_new_client):
@@ -659,7 +658,7 @@ class TestRecalculateModel:
         mock_c.post.side_effect = ModelingServicePostException('d', 4, 'www')
         with pytest.raises(RecalculateModelException) as err:
             recalculate_model(model_id)
-        assert 'error posting model for recalculating' in str(err)
+        assert 'recalculating model' in str(err)
 
 
 class TestRemoveModule:

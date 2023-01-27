@@ -205,7 +205,7 @@ def run_recalculate_model(model_id: str):
 def run_rename_module(model_id: str, module_id: str, new_name: str):
     from valsys.modeling.service import rename_module
     r = rename_module(model_id, module_id, new_name)
-    assert r.get('data').get('module').get('name') == new_name
+    assert r.name == new_name
     r = rename_module(model_id, module_id, new_name)
 
 
@@ -218,3 +218,16 @@ def run_rename_line_item(model_id: str, line_item: LineItem,
 
     assert nli.uid == line_item.uid
     assert nli.name == line_item.name
+
+
+@runner('add column')
+def run_add_column(model_id: str, module_id: str, new_period: float):
+    from valsys.modeling.service import add_column
+    nm = add_column(model_id, module_id, new_period)
+    for line_item in nm.line_items:
+        found = False
+        for fact in line_item.facts:
+            if fact.period == new_period:
+                found = True
+                break
+        assert found

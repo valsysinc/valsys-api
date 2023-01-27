@@ -52,3 +52,4 @@ def run_integration_tests():
     #TODO: make this test changing the name of a different module
     # to a modules name that currently exists.
     Runners.run_rename_module(model_id, module_id, 'new name!')
+    Runners.run_add_column(model_id, module_id, 2023)

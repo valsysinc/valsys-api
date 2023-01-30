@@ -218,6 +218,14 @@ def run_add_column(model_id: str, module_id: str, new_period: float):
         assert found
 
 
+@runner('delete column')
+def run_delete_column(model_id: str, module_id: str, period: float):
+    rc = Modeling.delete_column(model_id, module_id, period)
+    for line_item in rc.line_items:
+        for fact in line_item.facts:
+            assert fact.period != period
+
+
 @runner('copy model')
 def run_copy_model(model_id: str):
     nm = Modeling.copy_model(model_id)

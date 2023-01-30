@@ -659,11 +659,12 @@ def delete_column(model_id: str, module_id: str, period: float):
     payload = {
         Headers.MODEL_ID: model_id,
         Headers.MODULE_ID: module_id,
-        Headers.NEW_PERIOD: period
+        'period': period
     }
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'delete column')
+    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
 def copy_model(model_id: str) -> Model:
@@ -680,5 +681,4 @@ def copy_model(model_id: str) -> Model:
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'copy model')
-
     return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))

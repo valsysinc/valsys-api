@@ -56,4 +56,6 @@ def run_integration_tests():
                            first_module.periods.pop() + 1)
     Runners.run_add_column(model_id, first_module.uid,
                            first_module.periods[0] - 1)
+    Runners.run_delete_column(model_id, first_module.uid,
+                              first_module.periods[0] - 1)
     Runners.run_copy_model(model_id)

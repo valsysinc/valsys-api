@@ -217,6 +217,13 @@ def run_add_column(model_id: str, module_id: str, new_period: float):
                 break
         assert found
 
+    # Now try to add again (the column that was just add):
+    # it should fail
+    try:
+        Modeling.add_column(model_id, module_id, new_period)
+    except Exception as err:
+        assert 'suggested period is invalid' in str(err)
+
 
 @runner('delete column')
 def run_delete_column(model_id: str, module_id: str, period: float):

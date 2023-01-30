@@ -654,6 +654,18 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
+def delete_column(model_id: str, module_id: str, period: float):
+    url = VSURL.DELETE_COLUMN
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.MODULE_ID: module_id,
+        Headers.NEW_PERIOD: period
+    }
+    client = new_client()
+    r = client.post(url, data=payload)
+    check_success(r, 'delete column')
+
+
 def copy_model(model_id: str) -> Model:
     """Copy the model.
     

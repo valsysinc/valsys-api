@@ -7,7 +7,13 @@ def runner(nm: str):
 
         def wrapper(*args, **kwargs):
             logger.info(f"running: {nm}")
-            return function(*args, **kwargs)
+            try:
+                res = function(*args, **kwargs)
+            except Exception as err:
+                logger.error(f"failed: {nm} {err}")
+                raise
+
+            return res
 
         return wrapper
 

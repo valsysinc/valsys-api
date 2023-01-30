@@ -206,6 +206,7 @@ def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
             assert line_item.order == order
             found = True
     assert found
+    nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
 
 
 @runner('rename line item')

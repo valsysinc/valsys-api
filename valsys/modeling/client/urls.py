@@ -13,6 +13,7 @@ class VSURL:
     CASE = f"{BASE_URL}/modeling/case"
 
     ADD_COLUMN = f"{BASE_URL}/modeling/edit/add-column"
+    DELETE_COLUMN = f"{BASE_URL}/modeling/edit/delete-column"
     COPY_MODEL = f"{BASE_URL}/modeling/edit/copy-model"
     MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/edit/model-properties"
     RENAME_MODULE = f"{BASE_URL}/modeling/edit/module"

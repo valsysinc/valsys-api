@@ -48,3 +48,7 @@ class FilterModelsException(Exception):
 
 class SpawnModelResponseException(Exception):
     pass
+
+
+class DeleteColumnException(Exception):
+    pass

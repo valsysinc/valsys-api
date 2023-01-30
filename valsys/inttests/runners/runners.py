@@ -225,6 +225,13 @@ def run_delete_column(model_id: str, module_id: str, period: float):
         for fact in line_item.facts:
             assert fact.period != period
 
+    # Now try to delete again (the column that was just deleted):
+    # it should fail
+    try:
+        Modeling.delete_column(model_id, module_id, period)
+    except Exception as err:
+        assert 'suggested period is invalid' in str(err)
+
 
 @runner('copy model')
 def run_copy_model(model_id: str):

@@ -442,7 +442,18 @@ def remove_module(model_id: str, module_id: str):
     return rm.get('status') == Vars.SUCCESS
 
 
-def rename_module(model_id: str, module_id: str, new_module_name: str):
+def rename_module(model_id: str, module_id: str,
+                  new_module_name: str) -> Module:
+    """Rename the module.
+    
+    Args:
+        model_id: the ID of the model
+        module_id: the ID of the module to be renamed
+        new_module_name: the new name of the module.
+    
+    Returns:
+        The new renamed module object.
+    """
     client = new_client()
 
     r = client.post(
@@ -458,7 +469,17 @@ def rename_module(model_id: str, module_id: str, new_module_name: str):
 
 
 def reorder_module(model_id: str, module_id: str, line_item_id: str,
-                   order: int):
+                   order: int) -> Module:
+    """
+    Args:
+        model_id: the ID of the model
+        module_id: the ID of the module
+        line_item_id: the ID of the line item to be reordered
+        order: the new order of the line item in the module
+    
+    Returns:
+        The new reordered module object.
+    """
     url = VSURL.REORDER_MODULE
     payload = {
         Headers.MODEL_ID: model_id,

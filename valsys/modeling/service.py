@@ -654,6 +654,19 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
-def copy_model(model_id: str):
+def copy_model(model_id: str) -> Model:
+    """Copy the model.
+    
+    Args:
+        model_id: The modelID to be copied
+    
+    Returns:
+        The new model.
+    """
     url = VSURL.COPY_MODEL
-    pass
+    payload = {Headers.MODEL_ID: model_id}
+    client = new_client()
+    r = client.post(url, data=payload)
+    check_success(r, 'copy model')
+
+    return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))

@@ -216,3 +216,14 @@ def run_add_column(model_id: str, module_id: str, new_period: float):
                 found = True
                 break
         assert found
+
+
+@runner('copy model')
+def run_copy_model(model_id: str):
+    nm = Modeling.copy_model(model_id)
+    # TODO: modeling service has a bug whereby the
+    # created at time of the new model is identical
+    # to the original model. This is to be fixed.
+    # Once fixed, this should be checked for in this test.
+    # Ticket: MOD-6
+    assert nm.uid != model_id

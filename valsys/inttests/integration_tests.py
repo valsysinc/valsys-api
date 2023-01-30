@@ -31,13 +31,12 @@ def run_integration_tests():
     model = Runners.run_pull_model(model_id)
     first_case_id = model.first_case_id
     first_case = model.pull_case_by_id(first_case_id)
-    module_id = first_case.first_module.uid
-
+    first_module = model.first_case.first_module
+    module_id = first_module.uid
+    first_line_item = first_module.line_items[0]
+    first_fact = first_line_item.facts[0]
     new_module = Runners.run_add_child_module(model_id, first_case_id,
                                               module_id)
-    first_line_item = first_case.first_module.line_items[0]
-    first_fact = first_line_item.facts[0]
-
     Runners.run_recalculate_model(model_id)
     Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
     Runners.run_edit_format(model_id, first_case_id, fact=first_fact)
@@ -48,10 +47,13 @@ def run_integration_tests():
     Runners.run_remove_module(model_id, new_module.uid)
     Runners.run_filter_user_models(model_id)
     Runners.run_delete_line_item(model_id, module_id,
-                                 first_case.first_module.last_line_item.uid)
+                                 first_module.last_line_item.uid)
     #TODO: make this test changing the name of a different module
     # to a modules name that currently exists.
     Runners.run_rename_module(model_id, module_id, 'new name!')
-    m = model.first_case.first_module
-    Runners.run_add_column(model_id, m.uid, m.periods.pop() + 1)
-    Runners.run_add_column(model_id, m.uid, m.periods[0] - 1)
+
+    Runners.run_add_column(model_id, first_module.uid,
+                           first_module.periods.pop() + 1)
+    Runners.run_add_column(model_id, first_module.uid,
+                           first_module.periods[0] - 1)
+    Runners.run_copy_model(model_id)

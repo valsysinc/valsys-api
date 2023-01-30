@@ -58,4 +58,6 @@ def run_integration_tests():
                            first_module.periods[0] - 1)
     Runners.run_delete_column(model_id, first_module.uid,
                               first_module.periods[0] - 1)
+    Runners.run_reorder_module(model_id, first_module.uid, first_line_item.uid,
+                               first_line_item.order + 4)
     Runners.run_copy_model(model_id)

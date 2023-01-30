@@ -196,6 +196,18 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
     r = Modeling.rename_module(model_id, module_id, new_name)
 
 
+@runner('reorder module')
+def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
+                       order: int):
+    nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
+    found = False
+    for line_item in nm.line_items:
+        if line_item.uid == line_item_id:
+            assert line_item.order == order
+            found = True
+    assert found
+
+
 @runner('rename line item')
 def run_rename_line_item(model_id: str, line_item: LineItem,
                          new_line_item_name: str):

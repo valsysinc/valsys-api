@@ -26,7 +26,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.utils import facts_list, line_items_list, check_success
+from valsys.modeling.utils import facts_list, line_items_list, check_success, module_from_resp
 from valsys.modeling.vars import Vars, Headers, Resp
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
@@ -454,7 +454,22 @@ def rename_module(model_id: str, module_id: str, new_module_name: str):
         },
     )
     check_success(r, 'adding column')
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
+
+
+def reorder_module(model_id: str, module_id: str, line_item_id: str,
+                   order: int):
+    url = VSURL.REORDER_MODULE
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.MODULE_ID: module_id,
+        Headers.LINE_ITEM_ID: line_item_id,
+        Headers.ORDER: order
+    }
+    c = new_client()
+    r = c.post(url, data=payload)
+    check_success(r, 'reorder module')
+    return module_from_resp(r)
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -562,8 +577,7 @@ def delete_line_item(model_id: str, module_id: str,
             Headers.MODULE_ID: module_id,
         },
     )
-    module = Module.from_json(resp.get(Resp.DATA).get(Resp.MODULE))
-    return module
+    return module_from_resp(resp)
 
 
 def edit_facts(url: str, case_id: str, model_id: str,
@@ -643,7 +657,7 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'adding column')
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
 
 
 def delete_column(model_id: str, module_id: str, period: float):
@@ -656,7 +670,7 @@ def delete_column(model_id: str, module_id: str, period: float):
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'delete column', exception=DeleteColumnException)
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
 
 
 def copy_model(model_id: str) -> Model:

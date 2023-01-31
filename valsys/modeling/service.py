@@ -8,20 +8,12 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException,
-    AddLineItemException,
-    FilterModelsException,
-    NewModelGroupsException,
-    PullModelGroupsException,
-    PullModelInformationException,
-    RecalculateModelException,
-    RemoveModuleException,
-    ShareModelException,
-    SpawnModelResponseException,
-    TagLineItemException,
-    TagModelException,
-    UpdateModelGroupsException,
-)
+    AddChildModuleException, AddLineItemException, FilterModelsException,
+    NewModelGroupsException, PullModelGroupsException,
+    PullModelInformationException, RecalculateModelException,
+    RemoveModuleException, ShareModelException, SpawnModelResponseException,
+    TagLineItemException, TagModelException, UpdateModelGroupsException,
+    DeleteColumnException)
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
@@ -654,6 +646,19 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
+def delete_column(model_id: str, module_id: str, period: float):
+    url = VSURL.DELETE_COLUMN
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.MODULE_ID: module_id,
+        'period': period
+    }
+    client = new_client()
+    r = client.post(url, data=payload)
+    check_success(r, 'delete column', exception=DeleteColumnException)
+    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+
+
 def copy_model(model_id: str) -> Model:
     """Copy the model.
     
@@ -668,5 +673,4 @@ def copy_model(model_id: str) -> Model:
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'copy model')
-
     return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))

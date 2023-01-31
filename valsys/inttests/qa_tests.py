@@ -117,14 +117,7 @@ def run_qa_edit_formula(model_id: str, edit_formula_config):
     module = model.pull_module_by_name(edit_formula_config['startingModule'])
 
     tcid = gen_cell_identifier(edit_formula_config)
-    loggerIT.info(
-        f"searching for fact={tcid} in line item={edit_formula_config['targetLineItem']}"
-    )
-
     li = module.pull_item_by_name(edit_formula_config['targetLineItem'])
-    loggerIT.info(
-        f"editing fact formula from {edit_formula_config['originalCellFormula']} to {edit_formula_config['newCellFormula']}"
-    )
     Runners.run_edit_formula(
         model.uid,
         model.first_case_id,

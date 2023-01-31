@@ -127,13 +127,8 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
 
 @runner('filter user models')
 def run_filter_user_models(model_id: str):
-    found = False
     ms = Modeling.filter_user_models()
-
-    for m in ms:
-        if m.uid == model_id:
-            found = True
-    assert_equal(found, True, 'filter model')
+    Check.uid(ms, model_id)
 
 
 @runner('pull model data sources')

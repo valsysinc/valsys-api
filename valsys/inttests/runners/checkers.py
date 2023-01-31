@@ -18,3 +18,11 @@ def period(nm: Module, new_period: float):
                 found = True
                 break
         assert found
+
+
+def uid(ms, target):
+    found = False
+    for m in ms:
+        if m.uid == target:
+            found = True
+    assert found

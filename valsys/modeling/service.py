@@ -31,6 +31,7 @@ from valsys.modeling.vars import Vars, Headers, Resp
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
+from valsys.utils.time import tomorrow
 
 
 class ModelingActions:
@@ -45,7 +46,7 @@ def health():
 
 def filter_user_models(tags: List[str] = None,
                        model_type: str = 'user',
-                       max_date: str = "2023-01-31T00:00:00.000Z",
+                       max_date: str = tomorrow(),
                        min_date: str = "2002-01-01T00:00:00.000Z",
                        tag_filter_type: str = '',
                        geo_filters: List[str] = None,

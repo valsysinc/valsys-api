@@ -1,13 +1,11 @@
-import datetime
-
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_orch_config, workflow
+from valsys.utils.time import yesterday
 
 
 def integration_test_config():
-    sd = (datetime.datetime.utcnow() -
-          datetime.timedelta(days=1)).isoformat() + "Z"
+
     return {
         'companyName': 'Pepsi',
         'ticker': 'PEP',
@@ -16,7 +14,7 @@ def integration_test_config():
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
         'startPeriod': 2019,
-        'startDate': sd
+        'startDate': yesterday()
     }
 
 

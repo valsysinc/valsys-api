@@ -6,6 +6,8 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.inttests.runners.utils import assert_equal, assert_not_none
 import valsys.modeling.service as Modeling
 
+import valsys.inttests.runners.checkers as Check
+
 
 @runner('spawn model')
 def run_spawn_model(model_config):
@@ -127,10 +129,11 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
 def run_filter_user_models(model_id: str):
     found = False
     ms = Modeling.filter_user_models()
+
     for m in ms:
         if m.uid == model_id:
             found = True
-    assert found
+    assert_equal(found, True, 'filter model')
 
 
 @runner('pull model data sources')
@@ -200,13 +203,18 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
 def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
                        order: int):
     nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
-    found = False
-    for line_item in nm.line_items:
-        if line_item.uid == line_item_id:
-            assert line_item.order == order
-            found = True
-    assert found
+
+    Check.order(nm, line_item_id, order)
+    # Check that can reorder to its own position
     nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
+    Check.order(nm, line_item_id, order)
+    # Check cannot reorder to a negative position
+    # TODO: these should cause an err:
+    # MOD-7
+    nm = Modeling.reorder_module(model_id, module_id, line_item_id, -1)
+    Check.order(nm, line_item_id, -1)
+    nm = Modeling.reorder_module(model_id, module_id, line_item_id, 10000)
+    Check.order(nm, line_item_id, 10000)
 
 
 @runner('rename line item')
@@ -222,13 +230,7 @@ def run_rename_line_item(model_id: str, line_item: LineItem,
 @runner('add column')
 def run_add_column(model_id: str, module_id: str, new_period: float):
     nm = Modeling.add_column(model_id, module_id, new_period)
-    for line_item in nm.line_items:
-        found = False
-        for fact in line_item.facts:
-            if fact.period == new_period:
-                found = True
-                break
-        assert found
+    Check.period(nm, new_period)
 
     # Now try to add again (the column that was just add):
     # it should fail

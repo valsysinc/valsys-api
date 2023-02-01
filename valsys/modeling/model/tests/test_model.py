@@ -1,6 +1,5 @@
 from valsys.modeling.model.model import ModelInformation, Model
-from valsys.modeling.model.case import Case
-from valsys.modeling.model.module import Module
+from valsys.modeling.model.tests.factories import model_factory
 import pytest
 
 
@@ -46,50 +45,6 @@ from dataclasses import dataclass
 @dataclass
 class FakeCase:
     case: str
-
-
-def model_factory(model_id='uid42', nmodules=2, nchild_modules=1):
-
-    cid = '1'
-    start_period = 2019
-
-    modules = []
-    for m in range(nmodules):
-        parent_module_name = f"module {m}"
-        parent_module_id = str(m)
-        child_module_names = []
-        for cmn in range(nchild_modules):
-            child_module_names.append((f"{parent_module_id}{cmn}",
-                                       f"{parent_module_name} child {cmn}"))
-
-        modules.append({
-            Module.fields.ID: parent_module_id,
-            Module.fields.NAME: parent_module_name,
-            Module.fields.MODULE_START: start_period,
-            Module.fields.EDGES: {
-                Module.fields.CHILD_MODULES: [{
-                    Module.fields.ID:
-                    cid,
-                    Module.fields.NAME:
-                    cmn,
-                    Module.fields.MODULE_START:
-                    start_period
-                } for cid, cmn in child_module_names]
-            }
-        })
-
-    return Model.from_json({
-        Model.fields.ID: model_id,
-        Model.fields.EDGES: {
-            Model.fields.CASES: [{
-                Case.fields.ID: cid,
-                Case.fields.START_PERIOD: start_period,
-                Case.fields.EDGES: {
-                    Case.fields.MODULES: modules
-                }
-            }]
-        }
-    })
 
 
 class TestModel:
@@ -169,3 +124,34 @@ class TestModel:
         with pytest.raises(Exception) as err:
             model.pull_module_by_name('garbage')
         assert 'cannot find module with name' in str(err)
+
+    def test_pull_line_item_not_found(self):
+        model = model_factory()
+        with pytest.raises(Exception) as err:
+            model.pull_line_item('garbage')
+        assert 'cannot find line item with id' in str(err)
+
+    def test_pull_line_item_found(self):
+        model = model_factory()
+        lin = model.pull_line_item('0l0')
+        assert lin.name == 'module 0 li 0'
+
+    def test_pull_case_by_id_found(self):
+        model = model_factory()
+        case = model.pull_case_by_id('1')
+        assert case.uid == '1'
+
+    def test_pull_case_by_id_not_found(self):
+        model = model_factory()
+        with pytest.raises(Exception) as err:
+            model.pull_case_by_id('garbage')
+        assert 'cannot find case with id' in str(err)
+
+    def test_first_case(self):
+        model = model_factory()
+        fc = model.first_case
+        assert fc.uid == '1'
+
+    def test_first_case_id(self):
+        model = model_factory()
+        assert model.first_case_id == '1'

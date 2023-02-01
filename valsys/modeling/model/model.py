@@ -14,24 +14,15 @@ class Model(object):
         EDGES = 'edges'
         CASES = 'cases'
 
-    def pull_case(self, name: str) -> Case:
-        for case in self.cases:
-            if case.case == name:
-                return case
-
     def pull_module(self, module_id: str):
         """Extract a module by ID from the model.
         
         Note that the first module with the given id will be returned.
         """
         for case in self.cases:
-            for module in case.modules:
-
-                if module.uid == module_id:
-                    return module
-                for cm in module.child_modules:
-                    if cm.uid == module_id:
-                        return cm
+            m = case.pull_module_by_id(module_id)
+            if m is not None:
+                return m
         raise Exception(f'cannot find module with id {module_id}')
 
     def pull_module_by_name(self, module_name: str):
@@ -43,19 +34,16 @@ class Model(object):
         raise Exception(f'cannot find module with name {module_name}')
 
     def pull_line_item(self, line_item_id: str):
-        """Extract a line item by ID from the model.
+        """
+        Extract a line item by ID from the model.
         
         Note that the first line item with the given id will be returned.
         """
         for case in self.cases:
             for module in case.modules:
-                for line_item in module.line_items:
-                    if line_item.uid == line_item_id:
-                        return line_item
-                for cm in module.child_modules:
-                    for cline_item in cm.line_items:
-                        if cline_item.uid == line_item_id:
-                            return cline_item
+                li = module.pull_item_by_id(line_item_id)
+                if li is not None:
+                    return li
         raise Exception(f'cannot find line item with id {line_item_id}')
 
     def pull_line_item_by_name(self, module_name: str, line_item_name: str):

@@ -79,10 +79,22 @@ class Module:
         If none is found, `None` is returned."""
         #TODO: PFL-24
         # should this look at the line items of the modules' children modules too?
-        if self.line_items is not None:
-            for item in self.line_items:
-                if item.name == name:
-                    return item
+
+        for item in self.line_items:
+            if item.name == name:
+                return item
+
+        return None
+
+    def pull_item_by_id(self, line_item_id: str) -> LineItem:
+        """Extract a line item by ID from the module."""
+        for line_item in self.line_items:
+            if line_item.uid == line_item_id:
+                return line_item
+        for cm in self.child_modules:
+            for cline_item in cm.line_items:
+                if cline_item.uid == line_item_id:
+                    return cline_item
         return None
 
     @classmethod

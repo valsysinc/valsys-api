@@ -23,6 +23,12 @@ class Case:
     modules: List[Module] = field(default_factory=list)
     ticker: str = ""
 
+    class fields:
+        ID = 'id'
+        START_PERIOD = 'startPeriod'
+        EDGES = 'edges'
+        MODULES = 'modules'
+
     @property
     def first_module(self):
         return self.modules[0]
@@ -46,6 +52,15 @@ class Case:
         raise ValueError(f"cannot find module with name {name}")
         # return None
 
+    def pull_module_by_id(self, module_id):
+        for module in self.modules:
+            if module.uid == module_id:
+                return module
+            for cm in module.child_modules:
+                if cm.uid == module_id:
+                    return cm
+        return None
+
     def pull_items_from_tags(self, tags: List[str]) -> List[LineItem]:
         items = []
         for module in self.modules:
@@ -58,9 +73,10 @@ class Case:
     def from_json(cls, data):
 
         return cls(
-            uid=data["id"],
-            start_period=data["startPeriod"],
-            #case=data["case"],
+            uid=data[cls.fields.ID],
+            start_period=data[cls.fields.START_PERIOD],
             case="",
-            modules=list(map(Module.from_json, data['edges']["modules"])),
+            modules=list(
+                map(Module.from_json,
+                    data[cls.fields.EDGES][cls.fields.MODULES])),
         )

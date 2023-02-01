@@ -2,6 +2,7 @@ import pytest
 
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.model.tests.factories import line_item_factory
 
 
 class TestLineItem:
@@ -52,35 +53,16 @@ class TestLineItem:
         uid = self.valid_uid
         name = self.valid_name
         tags = ['t1', 't2']
-        facts = [{LineItem.fields.ID: 42}]
-        ij = {
-            LineItem.fields.ID: uid,
-            LineItem.fields.NAME: name,
-            LineItem.fields.TAGS: tags,
-            'edges': {
-                'facts': facts
-            }
-        }
-        li_fj = LineItem.from_json(ij)
+        nfacts = 4
+        li_fj = line_item_factory(uid=uid, name=name, nfacts=nfacts, tags=tags)
         assert li_fj.uid == uid
         assert li_fj.name == name
-        assert len(li_fj.facts) == len(facts)
+        assert len(li_fj.facts) == nfacts
         assert li_fj.tags == tags
 
     def test_facts_for_formula_edit(self):
-        uid = self.valid_uid
-        name = self.valid_name
-        tags = ['t1', 't2']
-        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
-        ij = {
-            LineItem.fields.ID: uid,
-            LineItem.fields.NAME: name,
-            LineItem.fields.TAGS: tags,
-            'edges': {
-                'facts': facts
-            }
-        }
-        li_fj = LineItem.from_json(ij)
+
+        li_fj = line_item_factory()
         ffe = li_fj.facts_for_formula_edit()
         assert len(ffe) == 2
         expected_fields = [
@@ -94,7 +76,7 @@ class TestLineItem:
     def test_replace_fact_ok(self):
         uid = self.valid_uid
         name = self.valid_name
-        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
+        facts = [{Fact.fields.UID: 42}, {Fact.fields.UID: 41}]
         ij = {
             LineItem.fields.ID: uid,
             LineItem.fields.NAME: name,
@@ -119,7 +101,7 @@ class TestLineItem:
         uid = self.valid_uid
         name = self.valid_name
 
-        facts = [{LineItem.fields.ID: 42}, {LineItem.fields.ID: 41}]
+        facts = [{Fact.fields.UID: 42}, {Fact.fields.UID: 41}]
         ij = {
             LineItem.fields.ID: uid,
             LineItem.fields.NAME: name,
@@ -139,3 +121,21 @@ class TestLineItem:
         with pytest.raises(Exception) as err:
             li_fj.replace_fact(new_fact_index, new_fact)
         assert str(new_fact_index) in str(err)
+
+    def test_pull_fact_by_identifier_found(self):
+        li_fj = line_item_factory()
+        f = li_fj.pull_fact_by_identifier('fact-1')
+        assert f.uid == '1'
+
+    def test_pull_fact_by_identifier_not_found(self):
+        li_fj = line_item_factory()
+        assert li_fj.pull_fact_by_identifier('garbage') is None
+
+    def test_pull_fact_by_id_found(self):
+        li_fj = line_item_factory()
+        f = li_fj.pull_fact_by_id('1')
+        assert f.uid == '1'
+
+    def test_pull_fact_by_id_not_found(self):
+        li_fj = line_item_factory()
+        assert li_fj.pull_fact_by_id('garbage') is None

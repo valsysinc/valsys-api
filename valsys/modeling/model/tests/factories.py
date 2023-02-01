@@ -1,6 +1,7 @@
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.module import Module
 from valsys.modeling.model.model import Model
+from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 
 
@@ -56,3 +57,20 @@ def model_factory(model_id='uid42',
             }]
         }
     })
+
+
+def line_item_factory(uid='1234', name='line item name', nfacts=2, tags=None):
+
+    facts = [{
+        Fact.fields.UID: str(f),
+        Fact.fields.IDENTIFIER: f"fact-{f}"
+    } for f in range(nfacts)]
+    ij = {
+        LineItem.fields.ID: uid,
+        LineItem.fields.NAME: name,
+        LineItem.fields.TAGS: tags or [],
+        LineItem.fields.EDGES: {
+            LineItem.fields.FACTS: facts
+        }
+    }
+    return LineItem.from_json(ij)

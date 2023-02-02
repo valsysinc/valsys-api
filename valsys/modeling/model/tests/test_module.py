@@ -1,16 +1,31 @@
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.module import Module
+from valsys.modeling.model.fact import Fact
 
 
 def module_with_no_children():
     mj = {
         Module.fields.ID: '1234',
-        'name': 'module name',
-        'moduleStart': 2018,
-        'lineItems': [{
-            Module.fields.ID: 42,
-            'name': 'Name'
-        }]
+        Module.fields.NAME: 'module name',
+        Module.fields.MODULE_START: 2018,
+        Module.fields.EDGES: {
+            Module.fields.LINE_ITEMS: [{
+                LineItem.fields.ID: 42,
+                LineItem.fields.NAME: 'Name',
+                LineItem.fields.EDGES: {
+                    LineItem.fields.FACTS: [{
+                        Fact.fields.UID: '1234',
+                        Fact.fields.PERIOD: 2019
+                    }, {
+                        Fact.fields.UID: '12345',
+                        Fact.fields.PERIOD: 2019
+                    }, {
+                        Fact.fields.UID: '12345',
+                        Fact.fields.PERIOD: 2020
+                    }]
+                }
+            }]
+        }
     }
     return Module.from_json(mj)
 
@@ -18,34 +33,38 @@ def module_with_no_children():
 def module_with_line_items_with_tags():
     mj = {
         Module.fields.ID: '1234',
-        'name': 'module name',
-        'moduleStart': 2018,
-        'edges': {
-            'lineItems': [{
-                Module.fields.ID: 42,
-                'name': 'Name',
-                'tags': ['t1', 't2']
+        Module.fields.NAME: 'module name',
+        Module.fields.MODULE_START: 2018,
+        Module.fields.EDGES: {
+            Module.fields.LINE_ITEMS: [{
+                LineItem.fields.ID: 42,
+                LineItem.fields.NAME: 'Name',
+                LineItem.fields.TAGS: ['t1', 't2']
             }, {
-                Module.fields.ID: 422,
-                'name': 'Name2',
+                LineItem.fields.ID: 422,
+                LineItem.fields.NAME: 'Name2',
             }, {
-                Module.fields.ID: 43,
-                'name': 'Name3',
-                'tags': ['t1', 't3']
+                LineItem.fields.ID: 43,
+                LineItem.fields.NAME: 'Name3',
+                LineItem.fields.TAGS: ['t1', 't3']
             }],
             Module.fields.CHILD_MODULES: [{
                 Module.fields.ID: 91,
-                'name': 'child1',
-                'moduleStart': 2019,
-                'edges': {
-                    'lineItems': [{
-                        Module.fields.ID: 421,
-                        'name': 'Name1',
-                        'tags': ['t11', 't12']
+                Module.fields.NAME: 'child1',
+                Module.fields.MODULE_START: 2019,
+                Module.fields.EDGES: {
+                    Module.fields.LINE_ITEMS: [{
+                        LineItem.fields.ID:
+                        421,
+                        LineItem.fields.NAME:
+                        'Name1',
+                        LineItem.fields.TAGS: ['t11', 't12']
                     }, {
-                        Module.fields.ID: 431,
-                        'name': 'Name2',
-                        'tags': ['t11', 't13']
+                        LineItem.fields.ID:
+                        431,
+                        LineItem.fields.NAME:
+                        'Name2',
+                        LineItem.fields.TAGS: ['t11', 't13']
                     }]
                 },
             }]
@@ -57,22 +76,25 @@ def module_with_line_items_with_tags():
 def module_with_n_children():
     mj = {
         Module.fields.ID: '1234',
-        'name': 'module name',
-        'moduleStart': 2018,
-        'edges': {
-            'lineItems': [{
-                Module.fields.ID: 42,
-                'name': 'Name'
+        Module.fields.NAME: 'module name',
+        Module.fields.MODULE_START: 2018,
+        Module.fields.EDGES: {
+            Module.fields.LINE_ITEMS: [{
+                LineItem.fields.ID: 42,
+                LineItem.fields.NAME: 'Name'
             }],
             Module.fields.CHILD_MODULES: [{
                 Module.fields.ID: 91,
-                'name': 'child1',
-                'moduleStart': 2019,
-                'edges': {
+                Module.fields.NAME: 'child1',
+                Module.fields.MODULE_START: 2019,
+                Module.fields.EDGES: {
                     Module.fields.CHILD_MODULES: [{
-                        Module.fields.ID: 91,
-                        'name': 'child2',
-                        'moduleStart': 2019
+                        Module.fields.ID:
+                        91,
+                        Module.fields.NAME:
+                        'child2',
+                        Module.fields.MODULE_START:
+                        2019
                     }]
                 }
             }]
@@ -190,3 +212,7 @@ class TestModule:
         module = module_with_line_items_with_tags()
         item = module.pull_item_by_name(tgt_name)
         assert item is None
+
+    def test_periods(self):
+        module = module_with_no_children()
+        assert module.periods == [2019, 2020]

@@ -19,6 +19,10 @@ class FakeModule:
     child_modules: List['FakeModule'] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
 
+    @property
+    def module_meta(self):
+        return {'id': self.id, 'name': self.name}
+
     def find_module(self, name):
         for m in self.child_modules:
             if m.name == name:
@@ -128,3 +132,16 @@ class TestCase:
         m2.tags = ['21', '22']
         case.modules = [m1, m2]
         assert case.pull_items_from_tags('None') == ['11', '12', '21', '22']
+
+    def test_module_meta(self):
+        case = case_factory()
+        m1 = FakeModule(name='modulename1', id=fake_uuid())
+        m2 = FakeModule(name='modulename2', id=fake_uuid())
+        case.modules = [m1, m2]
+        assert case.module_meta == [{
+            'name': m1.name,
+            'id': m1.id
+        }, {
+            'name': m2.name,
+            'id': m2.id
+        }]

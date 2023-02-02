@@ -31,7 +31,10 @@ class Case:
 
     @property
     def first_module(self):
-        return self.modules[0]
+        try:
+            return self.modules[0]
+        except IndexError:
+            raise Exception('no modules in case')
 
     @property
     def module_meta(self):
@@ -41,16 +44,12 @@ class Case:
         self.ticker = ticker
 
     def pull_module(self, name: str) -> Module:
-        if self.modules is None:
-            return None
         for module in self.modules:
             if module.name == name:
                 return module
-            target = module.find_module(name)
-            if target is not None:
+            if target := module.find_module(name):
                 return target
         raise ValueError(f"cannot find module with name {name}")
-        # return None
 
     def pull_module_by_id(self, module_id):
         for module in self.modules:

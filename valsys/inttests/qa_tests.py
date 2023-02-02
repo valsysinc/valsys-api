@@ -5,12 +5,11 @@ from valsys.inttests.utils import gen_orch_config, workflow, gen_cell_identifier
 from valsys.utils.logging import loggerIT
 from valsys.inttests.runners import runners as Runners
 from valsys.modeling.model.line_item import LineItem
+from valsys.utils.time import yesterday
 
 
 def qa_script():
 
-    starting_date = (datetime.datetime.utcnow() -
-                     datetime.timedelta(days=1)).isoformat() + "Z"
     return {
         'modelConfig': {
             'companyName': 'Pepsi',
@@ -20,7 +19,7 @@ def qa_script():
             'numHistoricalYears': 5,
             'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
             'startPeriod': 2019,
-            'startDate': starting_date,
+            'startDate': yesterday(),
         },
         'steps': [{
             'type': 'edit_formula',

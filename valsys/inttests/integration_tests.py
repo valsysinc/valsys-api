@@ -1,13 +1,11 @@
-import datetime
-
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_orch_config, workflow
+from valsys.utils.time import yesterday
 
 
 def integration_test_config():
-    sd = (datetime.datetime.utcnow() -
-          datetime.timedelta(days=1)).isoformat() + "Z"
+
     return {
         'companyName': 'Pepsi',
         'ticker': 'PEP',
@@ -16,7 +14,7 @@ def integration_test_config():
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
         'startPeriod': 2019,
-        'startDate': sd
+        'startDate': yesterday()
     }
 
 
@@ -58,4 +56,6 @@ def run_integration_tests():
                            first_module.periods[0] - 1)
     Runners.run_delete_column(model_id, first_module.uid,
                               first_module.periods[0] - 1)
+    Runners.run_reorder_module(model_id, first_module.uid, first_line_item.uid,
+                               first_line_item.order + 4)
     Runners.run_copy_model(model_id)

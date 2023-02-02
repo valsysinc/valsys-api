@@ -26,11 +26,12 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.utils import facts_list, line_items_list, check_success
+from valsys.modeling.utils import facts_list, line_items_list, check_success, module_from_resp
 from valsys.modeling.vars import Vars, Headers, Resp
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
+from valsys.utils.time import tomorrow
 
 
 class ModelingActions:
@@ -45,7 +46,7 @@ def health():
 
 def filter_user_models(tags: List[str] = None,
                        model_type: str = 'user',
-                       max_date: str = "2023-01-31T00:00:00.000Z",
+                       max_date: str = tomorrow(),
                        min_date: str = "2002-01-01T00:00:00.000Z",
                        tag_filter_type: str = '',
                        geo_filters: List[str] = None,
@@ -442,7 +443,18 @@ def remove_module(model_id: str, module_id: str):
     return rm.get('status') == Vars.SUCCESS
 
 
-def rename_module(model_id: str, module_id: str, new_module_name: str):
+def rename_module(model_id: str, module_id: str,
+                  new_module_name: str) -> Module:
+    """Rename the module.
+    
+    Args:
+        model_id: the ID of the model
+        module_id: the ID of the module to be renamed
+        new_module_name: the new name of the module.
+    
+    Returns:
+        The new renamed module object.
+    """
     client = new_client()
 
     r = client.post(
@@ -454,7 +466,32 @@ def rename_module(model_id: str, module_id: str, new_module_name: str):
         },
     )
     check_success(r, 'adding column')
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
+
+
+def reorder_module(model_id: str, module_id: str, line_item_id: str,
+                   order: int) -> Module:
+    """
+    Args:
+        model_id: the ID of the model
+        module_id: the ID of the module
+        line_item_id: the ID of the line item to be reordered
+        order: the new order of the line item in the module
+    
+    Returns:
+        The new reordered module object.
+    """
+    url = VSURL.REORDER_MODULE
+    payload = {
+        Headers.MODEL_ID: model_id,
+        Headers.MODULE_ID: module_id,
+        Headers.LINE_ITEM_ID: line_item_id,
+        Headers.ORDER: order
+    }
+    c = new_client()
+    r = c.post(url, data=payload)
+    check_success(r, 'reorder module')
+    return module_from_resp(r)
 
 
 def add_child_module(parent_module_id: str, name: str, model_id: str,
@@ -562,8 +599,7 @@ def delete_line_item(model_id: str, module_id: str,
             Headers.MODULE_ID: module_id,
         },
     )
-    module = Module.from_json(resp.get(Resp.DATA).get(Resp.MODULE))
-    return module
+    return module_from_resp(resp)
 
 
 def edit_facts(url: str, case_id: str, model_id: str,
@@ -643,7 +679,7 @@ def add_column(model_id: str, module_id: str, new_period: float) -> Module:
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'adding column')
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
 
 
 def delete_column(model_id: str, module_id: str, period: float):
@@ -656,7 +692,7 @@ def delete_column(model_id: str, module_id: str, period: float):
     client = new_client()
     r = client.post(url, data=payload)
     check_success(r, 'delete column', exception=DeleteColumnException)
-    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
+    return module_from_resp(r)
 
 
 def copy_model(model_id: str) -> Model:

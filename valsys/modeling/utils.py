@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Protocol
-
+from valsys.modeling.model.module import Module
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.vars import Vars, Resp
@@ -9,6 +9,10 @@ class Deserialiseable(Protocol):
 
     def from_json(self, d: List[Dict[str, Any]]):
         ...
+
+
+def module_from_resp(r):
+    return Module.from_json(r.get(Resp.DATA).get(Resp.MODULE))
 
 
 def from_list(m: Deserialiseable, d: List[Dict[str, Any]]):

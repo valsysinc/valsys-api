@@ -41,6 +41,12 @@ class Module:
                 return target
         return None
 
+    def find_module_by_id(self, id):
+        for cm in self.child_modules:
+            if cm.uid == id:
+                return cm
+        return None
+
     @property
     def last_line_item(self):
         l = len(self.line_items)

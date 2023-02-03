@@ -99,10 +99,11 @@ class TestCase:
 
     def test_pull_module_child_module(self):
         case = case_factory()
-        m2 = FakeModule(name='modulename2', id=fake_uuid())
-        m1 = FakeModule(name='modulename1', id=fake_uuid(), child_modules=[m2])
-        case.modules = [m1]
-        assert case.pull_module('modulename2') == m2
+        m2 = FakeModule(name='module 1 child 1', id=fake_uuid())
+        m1 = FakeModule(name='modulename1', id=fake_uuid())
+        m1.child_modules.append(m2)
+        case.modules.append(m1)
+        assert case.pull_module('module 1 child 1') == m2
 
     def test_pull_module_by_id_ok(self):
         case = case_factory()
@@ -114,7 +115,7 @@ class TestCase:
 
     def test_pull_module_by_id_child(self):
         case = case_factory()
-        m2 = FakeModule(name='modulename2', id=fake_uuid())
+        m2 = FakeModule(name='module 1 child 1', id=fake_uuid())
         m1 = FakeModule(name='modulename1', id=fake_uuid(), child_modules=[m2])
         case.modules = [m1]
         assert case.pull_module_by_id(m1.id) == m1

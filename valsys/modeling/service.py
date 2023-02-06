@@ -713,6 +713,15 @@ def copy_model(model_id: str) -> Model:
 
 
 def create_group(model_ids: List[str], group_name: str) -> Group:
+    """Create a group of models.
+    
+    Args:
+        model_ids: list of model ids going into the group
+        group_name: the name of the group
+    
+    Returns:
+        The newly created model group object.
+    """
     url = VSURL.USERS_GROUP
     payload = {Headers.NAME: group_name, Headers.MODEL_IDS: model_ids}
     client = new_client()

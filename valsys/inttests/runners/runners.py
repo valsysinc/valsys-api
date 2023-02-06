@@ -260,6 +260,7 @@ def run_copy_model(model_id: str):
     # Once fixed, this should be checked for in this test.
     # Ticket: MOD-6
     assert nm.uid != model_id
+    return nm.uid
 
 
 @runner('create group')

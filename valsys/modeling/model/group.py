@@ -20,4 +20,4 @@ class Group:
         return cls(uid=data[cls.fields.UID],
                    name=data[cls.fields.NAME],
                    user_id=data[cls.fields.USER_ID],
-                   model_ids=data[cls.fields.MODEL_IDS])
+                   model_ids=[str(mid) for mid in data[cls.fields.MODEL_IDS]])

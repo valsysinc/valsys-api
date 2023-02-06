@@ -2,6 +2,7 @@ from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.time import yesterday
+import uuid
 
 
 def integration_test_config():
@@ -58,4 +59,9 @@ def run_integration_tests():
                               first_module.periods[0] - 1)
     Runners.run_reorder_module(model_id, first_module.uid, first_line_item.uid,
                                first_line_item.order + 4)
-    Runners.run_copy_model(model_id)
+    new_id = Runners.run_copy_model(model_id)
+
+    # Create a group constructed from the initially spawned model, and its
+    # recently copied version.
+    Runners.run_create_group([model_id, new_id],
+                             f'new group={str(uuid.uuid1())}')

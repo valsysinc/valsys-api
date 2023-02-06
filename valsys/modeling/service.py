@@ -8,12 +8,12 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException, AddLineItemException, FilterModelsException,
-    NewModelGroupsException, PullModelGroupsException,
-    PullModelInformationException, RecalculateModelException,
-    RemoveModuleException, ShareModelException, SpawnModelResponseException,
-    TagLineItemException, TagModelException, UpdateModelGroupsException,
-    DeleteColumnException)
+    AddChildModuleException, AddLineItemException, NewModelGroupsException,
+    PullModelGroupsException, PullModelInformationException,
+    RecalculateModelException, RemoveModuleException, ShareModelException,
+    SpawnModelResponseException, TagLineItemException, TagModelException,
+    UpdateModelGroupsException, DeleteColumnException)
+from valsys.modeling.model.group import Group
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
@@ -710,3 +710,31 @@ def copy_model(model_id: str) -> Model:
     r = client.post(url, data=payload)
     check_success(r, 'copy model')
     return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))
+
+
+def create_group(model_ids: List[str], group_name: str) -> Group:
+    """Create a group of models.
+    
+    Args:
+        model_ids: list of model ids going into the group
+        group_name: the name of the group
+    
+    Returns:
+        The newly created model group object.
+    """
+    url = VSURL.USERS_GROUP
+    payload = {Headers.NAME: group_name, Headers.MODEL_IDS: model_ids}
+    client = new_client()
+    r = client.post(url=url, data=payload)
+    check_success(r, 'create group')
+    for group in r.get(Resp.DATA):
+        if group.get(Headers.NAME) == group_name:
+            c = 0
+            for mid in group.get(Group.fields.MODEL_IDS):
+                if mid in model_ids:
+                    c += 1
+                else:
+                    break
+            if c == len(model_ids):
+                return Group.from_json(group)
+    raise Exception('group not found in response')

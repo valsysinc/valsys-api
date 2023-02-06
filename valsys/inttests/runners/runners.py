@@ -7,6 +7,7 @@ from valsys.inttests.runners.utils import assert_equal, assert_not_none
 import valsys.modeling.service as Modeling
 
 import valsys.inttests.runners.checkers as Check
+from typing import List
 
 
 @runner('spawn model')
@@ -259,3 +260,12 @@ def run_copy_model(model_id: str):
     # Once fixed, this should be checked for in this test.
     # Ticket: MOD-6
     assert nm.uid != model_id
+    return nm.uid
+
+
+@runner('create group')
+def run_create_group(model_ids: List[str], group_name: str):
+    g = Modeling.create_group(model_ids, group_name)
+    assert g.name == group_name
+    assert g.model_ids == model_ids
+    return g

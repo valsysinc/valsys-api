@@ -268,3 +268,4 @@ def run_create_group(model_ids: List[str], group_name: str):
     g = Modeling.create_group(model_ids, group_name)
     assert g.name == group_name
     assert g.model_ids == model_ids
+    return g

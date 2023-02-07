@@ -63,5 +63,14 @@ def run_integration_tests():
 
     # Create a group constructed from the initially spawned model, and its
     # recently copied version.
-    Runners.run_create_group([model_id, new_id],
-                             f'new group={str(uuid.uuid1())}')
+    grp = Runners.run_create_group([model_id, new_id],
+                                   f'new group={str(uuid.uuid1())}')
+
+    s = Runners.run_execute_simulation(grp.uid,
+                                       grp.model_ids,
+                                       edits=[{
+                                           "formula": "$FORMULA * 1.1",
+                                           "timePeriod": "LFY+1"
+                                       }],
+                                       output_variables=["Net Revenue"],
+                                       tag="t4")

@@ -15,10 +15,15 @@ class Headers:
     ORDER = "order"
     MODULE_ID = "moduleID"
     TAGS = 'tags'
+
     NEW_PERIOD = 'newPeriod'
     ROLL_FORWARD = 'rollForward'
     UPDATE = "update"
     PAGINATION = 'pagination'
+    TAG = 'tag'
+    EDITS = 'edits'
+    GROUP_ID = 'groupId'
+    OUTPUT_VARIABLES = 'outputVariables'
 
 
 class Resp:

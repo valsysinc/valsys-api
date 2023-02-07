@@ -32,6 +32,9 @@ class VSURL:
     EDIT_FORMAT = f"{BASE_URL}/modeling/edit/format"
     EDIT_FORMULA = f"{BASE_URL}/modeling/edit/formula"
 
+    SIM_SIMULATION = f"{BASE_URL}/modeling/simulations/simulation"
+    SIM_GROUP_DATA = f"{BASE_URL}/modeling/simulations/group-data"
+
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
     SCK_ORCHESTRATOR = f"{BASE_ORCH}/orchestrator/connect/"
 

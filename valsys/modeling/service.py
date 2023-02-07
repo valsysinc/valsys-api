@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.client.exceptions import (
@@ -32,6 +32,7 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 from valsys.utils.time import tomorrow
+from valsys.modeling.model.simulation import SimulationResponse
 
 
 class ModelingActions:
@@ -738,3 +739,44 @@ def create_group(model_ids: List[str], group_name: str) -> Group:
             if c == len(model_ids):
                 return Group.from_json(group)
     raise Exception('group not found in response')
+
+
+def execute_simulation(group_id: str, model_ids: List[str],
+                       edits: List[Dict[str, str]],
+                       output_variables: List[str], tag: str):
+    """Execute a simulation for a model group.
+    
+    Args:
+        group_id: the ID of the model group
+        model_ids: the IDs of the models
+        edits: List of edits to make to the target line item
+        output_variables: List of names of the line items to output
+        tag: Tag on the target line items
+    
+    Returns:
+        The new simulation object.
+    
+    """
+    url = VSURL.SIM_SIMULATION
+
+    def validate_edits(es):
+        for e in es:
+            assert 'formula' in e
+            assert '$FORMULA' in e.get('formula')
+            assert 'timePeriod' in e
+            assert 'LFY' in e.get('timePeriod')
+        return
+
+    validate_edits(edits)
+
+    payload = {
+        Headers.EDITS: edits,
+        Headers.GROUP_ID: group_id,
+        Headers.MODEL_IDS: model_ids,
+        Headers.OUTPUT_VARIABLES: output_variables,
+        Headers.TAG: tag
+    }
+    client = new_client()
+    r = client.post(url=url, data=payload)
+    check_success(r, 'run simulation')
+    return SimulationResponse.from_json(r.get(Resp.DATA))

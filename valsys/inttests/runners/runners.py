@@ -7,7 +7,7 @@ from valsys.inttests.runners.utils import assert_equal, assert_not_none
 import valsys.modeling.service as Modeling
 
 import valsys.inttests.runners.checkers as Check
-from typing import List
+from typing import List, Dict
 
 
 @runner('spawn model')
@@ -269,3 +269,20 @@ def run_create_group(model_ids: List[str], group_name: str):
     assert g.name == group_name
     assert g.model_ids == model_ids
     return g
+
+
+@runner('execute simulation')
+def run_execute_simulation(group_id: str, model_ids: List[str],
+                           edits: List[Dict[str, str]],
+                           output_variables: List[str], tag: str):
+    s = Modeling.execute_simulation(group_id,
+                                    model_ids,
+                                    edits=edits,
+                                    output_variables=output_variables,
+                                    tag=tag)
+    simulated_model_ids = set(sim.id for sim in s.simulation.simulations)
+    assert set(model_ids) == simulated_model_ids
+    for l in s.simulation.simulations:
+        for li in l.line_items:
+            assert tag in li.tags
+            assert li.name in output_variables

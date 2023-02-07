@@ -32,7 +32,7 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 from valsys.utils.time import tomorrow
-from valsys.modeling.model.simulation import SimulationResponse
+from valsys.modeling.model.simulation import SimulationResponse, ModelSimulations
 
 
 class ModelingActions:
@@ -742,8 +742,9 @@ def create_group(model_ids: List[str], group_name: str) -> Group:
 
 
 def execute_simulation(group_id: str, model_ids: List[str],
-                       edits: List[Dict[str, str]],
-                       output_variables: List[str], tag: str):
+                       edits: List[Dict[str,
+                                        str]], output_variables: List[str],
+                       tag: str) -> SimulationResponse:
     """Execute a simulation for a model group.
     
     Args:
@@ -759,15 +760,7 @@ def execute_simulation(group_id: str, model_ids: List[str],
     """
     url = VSURL.SIM_SIMULATION
 
-    def validate_edits(es):
-        for e in es:
-            assert 'formula' in e
-            assert '$FORMULA' in e.get('formula')
-            assert 'timePeriod' in e
-            assert 'LFY' in e.get('timePeriod')
-        return
-
-    validate_edits(edits)
+    ModelSimulations.validate_edits(edits)
 
     payload = {
         Headers.EDITS: edits,

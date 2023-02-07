@@ -4,16 +4,52 @@ from valsys.modeling.model.line_item import LineItem
 
 
 @dataclass
-class GroupData:
+class GroupField:
+    field: str
+    id: str
+    identifier: str
+    value: str
+    period: float
+    deps: List[Dict[str, str]] = field(default_factory=list)
+    precs: List[Dict[str, str]] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, name, data):
+        return cls(field=name,
+                   id=data.get('id'),
+                   identifier=data.get('identifier', ''),
+                   value=data.get('value'),
+                   period=data.get('period', 0),
+                   deps=data.get('edges', {}).get('dependantCells', []),
+                   precs=data.get('edges', {}).get('precedentCells', []))
+
+
+@dataclass
+class GroupModel:
+    id: str
+    title: str
+    ticker: str
+    fields: List[GroupField] = field(default_factory=list)
 
     @classmethod
     def from_json(cls, data):
-        for model in data:
-            mid = model.get('model').get('id')
-            fields = model.get('fields')
-            print(mid)
-            for fn, fk in fields.items():
-                print(fn, fk)
+        model_info = data.get('model')
+        return cls(id=model_info.get('id'),
+                   title=model_info.get('title'),
+                   ticker=model_info.get('ticker'),
+                   fields=[
+                       GroupField.from_json(fn, fk)
+                       for fn, fk in data.get('fields').items()
+                   ])
+
+
+@dataclass
+class GroupData:
+    models: List[GroupModel] = field(default_factory=list)
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(models=[GroupModel.from_json(m) for m in data])
 
 
 @dataclass
@@ -78,8 +114,13 @@ class SimulationResponse:
     group_data: GroupData = field(default_factory=GroupData)
     simulation: Simulation = field(default_factory=Simulation)
 
+    class fields:
+        SIMULATION = 'simulation'
+        GROUP_DATA = 'groupData'
+
     @classmethod
     def from_json(cls, data):
 
-        return cls(simulation=Simulation.from_json(data.get('simulation')),
-                   group_data=GroupData.from_json(data.get('groupData')))
+        return cls(
+            simulation=Simulation.from_json(data.get(cls.fields.SIMULATION)),
+            group_data=GroupData.from_json(data.get(cls.fields.GROUP_DATA)))

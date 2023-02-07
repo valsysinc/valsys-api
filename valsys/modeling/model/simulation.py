@@ -5,7 +5,15 @@ from valsys.modeling.model.line_item import LineItem
 
 @dataclass
 class GroupData:
-    pass
+
+    @classmethod
+    def from_json(cls, data):
+        for model in data:
+            mid = model.get('model').get('id')
+            fields = model.get('fields')
+            print(mid)
+            for fn, fk in fields.items():
+                print(fn, fk)
 
 
 @dataclass
@@ -72,4 +80,6 @@ class SimulationResponse:
 
     @classmethod
     def from_json(cls, data):
-        return cls(simulation=Simulation.from_json(data.get('simulation')))
+
+        return cls(simulation=Simulation.from_json(data.get('simulation')),
+                   group_data=GroupData.from_json(data.get('groupData')))

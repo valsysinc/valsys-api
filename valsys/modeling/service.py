@@ -13,7 +13,7 @@ from valsys.modeling.exceptions import (
     RecalculateModelException, RemoveModuleException, ShareModelException,
     SpawnModelResponseException, TagLineItemException, TagModelException,
     UpdateModelGroupsException, DeleteColumnException)
-from valsys.modeling.model.group import Group
+from valsys.modeling.model.group import GroupOfModels
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
@@ -713,7 +713,7 @@ def copy_model(model_id: str) -> Model:
     return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))
 
 
-def create_group(model_ids: List[str], group_name: str) -> Group:
+def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     """Create a group of models.
     
     Args:
@@ -731,13 +731,13 @@ def create_group(model_ids: List[str], group_name: str) -> Group:
     for group in r.get(Resp.DATA):
         if group.get(Headers.NAME) == group_name:
             c = 0
-            for mid in group.get(Group.fields.MODEL_IDS):
+            for mid in group.get(GroupOfModels.fields.MODEL_IDS):
                 if mid in model_ids:
                     c += 1
                 else:
                     break
             if c == len(model_ids):
-                return Group.from_json(group)
+                return GroupOfModels.from_json(group)
     raise Exception('group not found in response')
 
 

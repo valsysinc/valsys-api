@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List, Dict, Any
 from valsys.modeling.model.line_item import LineItem
 
 
@@ -14,7 +14,7 @@ class GroupField:
     precs: List[Dict[str, str]] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls, name, data):
+    def from_json(cls, name: str, data: Dict[str, str]):
         return cls(field=name,
                    id=data.get('id'),
                    identifier=data.get('identifier', ''),
@@ -29,14 +29,16 @@ class GroupModel:
     id: str
     title: str
     ticker: str
+    company_name: str
     fields: List[GroupField] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict[str, Any]):
         model_info = data.get('model')
         return cls(id=model_info.get('id'),
                    title=model_info.get('title'),
                    ticker=model_info.get('ticker'),
+                   company_name=model_info.get('companyName'),
                    fields=[
                        GroupField.from_json(fn, fk)
                        for fn, fk in data.get('fields').items()
@@ -48,7 +50,7 @@ class GroupData:
     models: List[GroupModel] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: List[Dict[str, Any]]):
         return cls(models=[GroupModel.from_json(m) for m in data])
 
 
@@ -81,7 +83,7 @@ class ModelSimulations:
         LINE_ITEMS = 'lineItems'
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict[str, Any]):
         return cls(id=data.get(cls.fields.ID),
                    ticker=data.get(cls.fields.TICKER),
                    start_period=data.get(cls.fields.START_PERIOD),
@@ -105,7 +107,7 @@ class Simulation:
     simulations: List[ModelSimulations] = field(default_factory=list)
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: List[Dict[str, Any]]):
         return cls(simulations=[ModelSimulations.from_json(s) for s in data])
 
 
@@ -119,7 +121,7 @@ class SimulationResponse:
         GROUP_DATA = 'groupData'
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict[List[Dict[str, Any]]]):
 
         return cls(
             simulation=Simulation.from_json(data.get(cls.fields.SIMULATION)),

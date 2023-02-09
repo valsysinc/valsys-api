@@ -21,9 +21,9 @@ def integration_test_config():
 
 @workflow('integration tests')
 def run_integration_tests():
-
+    cfg = integration_test_config()
     spawned_models = Runners.run_spawn_model(
-        gen_orch_config(integration_test_config(), API_USERNAME, API_PASSWORD))
+        gen_orch_config(cfg, API_USERNAME, API_PASSWORD))
 
     model_id = spawned_models[0].model_id
 
@@ -73,4 +73,6 @@ def run_integration_tests():
                                            "timePeriod": "LFY+1"
                                        }],
                                        output_variables=["Net Revenue"],
-                                       tag="t4")
+                                       tag="t4",
+                                       cfg=cfg)
+    # find 2019 net revenue, look for sim response

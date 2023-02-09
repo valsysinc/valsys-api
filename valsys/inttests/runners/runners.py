@@ -274,15 +274,68 @@ def run_create_group(model_ids: List[str], group_name: str):
 @runner('execute simulation')
 def run_execute_simulation(group_id: str, model_ids: List[str],
                            edits: List[Dict[str, str]],
-                           output_variables: List[str], tag: str):
+                           output_variables: List[str], tag: str, cfg):
     s = Modeling.execute_simulation(group_id,
                                     model_ids,
                                     edits=edits,
                                     output_variables=output_variables,
                                     tag=tag)
+
+    edited_periods = []
+    sp = cfg['startPeriod']
+    for e in edits:
+        p = int(sp) + int(e['timePeriod'].replace('LFY', ''))
+        edited_periods.append(
+            (p, float(e['formula'].replace('$FORMULA * ', ''))))
+
     simulated_model_ids = set(sim.id for sim in s.simulation.simulations)
     assert set(model_ids) == simulated_model_ids
+    ms = []
     for l in s.simulation.simulations:
+        model = Modeling.pull_model(l.id)
+        m = {'uid': l.id, 'lis': []}
         for li in l.line_items:
+            lid = li.uid
             assert tag in li.tags
             assert li.name in output_variables
+            m['lis'].append(model.pull_line_item(lid))
+        ms.append(m)
+
+    facts = []
+
+    for f in ms:
+        for ll in f['lis']:
+            for ff in ll.facts:
+                fe = {
+                    'factId': ff.uid,
+                    'originalValue': ff.value,
+                    'editExpected': False,
+                    'edited': False
+                }
+                for p, e in edited_periods:
+                    if ff.period == p:
+                        fe['editExpected'] = True
+                        fe['expectedNewValue'] = ff.value * e
+                facts.append(fe)
+
+    for sim in s.simulation.simulations:
+        for ll in sim.line_items:
+            for f in ll.facts:
+                tidx = -1
+                for idx, ff in enumerate(facts):
+                    if ff['factId'] == f.uid:
+                        tidx = idx
+                        break
+                if tidx == -1:
+                    raise Exception('not found')
+                for p, e in edited_periods:
+                    if f.period == p:
+                        facts[tidx]['edited'] = True
+                        facts[tidx]['newValue'] = f.value
+
+    if len(edits) > 0:
+        assert len(facts) > 0
+    for f in facts:
+        if f['editExpected']:
+            assert f['edited']
+            assert f['newValue'] == f['expectedNewValue']

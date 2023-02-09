@@ -757,6 +757,8 @@ def execute_simulation(group_id: str, model_ids: List[str],
     Returns:
         The new simulation object.
     
+
+    # TODO review model_ids as a required input: shouldnt be needed.
     """
     url = VSURL.SIM_SIMULATION
 

@@ -717,8 +717,8 @@ def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     """Create a group of models.
     
     Args:
-        model_ids: list of model ids going into the group
-        group_name: the name of the group
+        model_ids: List of model ids going into the group
+        group_name: The name of the group
     
     Returns:
         The newly created model group object.

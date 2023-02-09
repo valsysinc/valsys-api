@@ -4,24 +4,44 @@ from valsys.modeling.model.line_item import LineItem
 
 
 @dataclass
+class SimpleCell:
+    id: str
+    identifier: str
+    edges: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(id=data.get('id'),
+                   identifier=data.get('identifier'),
+                   edges=data.get('edges', {}))
+
+
+@dataclass
 class GroupField:
     field: str
     id: str
     identifier: str
     value: str
     period: float
-    deps: List[Dict[str, str]] = field(default_factory=list)
-    precs: List[Dict[str, str]] = field(default_factory=list)
+    deps: List[SimpleCell] = field(default_factory=list)
+    precs: List[SimpleCell] = field(default_factory=list)
 
     @classmethod
     def from_json(cls, name: str, data: Dict[str, str]):
-        return cls(field=name,
-                   id=data.get('id'),
-                   identifier=data.get('identifier', ''),
-                   value=data.get('value'),
-                   period=data.get('period', 0),
-                   deps=data.get('edges', {}).get('dependantCells', []),
-                   precs=data.get('edges', {}).get('precedentCells', []))
+        return cls(
+            field=name,
+            id=data.get('id'),
+            identifier=data.get('identifier', ''),
+            value=data.get('value'),
+            period=data.get('period', 0),
+            deps=[
+                SimpleCell.from_json(dc)
+                for dc in data.get('edges', {}).get('dependantCells', [])
+            ],
+            precs=[
+                SimpleCell.from_json(dc)
+                for dc in data.get('edges', {}).get('precedentCells', [])
+            ])
 
 
 @dataclass
@@ -121,8 +141,7 @@ class SimulationResponse:
         GROUP_DATA = 'groupData'
 
     @classmethod
-    def from_json(cls, data: Dict[List[Dict[str, Any]]]):
-
+    def from_json(cls, data: Dict[str, List[Dict[str, Any]]]):
         return cls(
             simulation=Simulation.from_json(data.get(cls.fields.SIMULATION)),
             group_data=GroupData.from_json(data.get(cls.fields.GROUP_DATA)))

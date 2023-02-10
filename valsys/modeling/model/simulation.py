@@ -63,18 +63,26 @@ class GroupModel:
     title: str
     ticker: str
     company_name: str
-    fields: List[GroupField] = field(default_factory=list)
+    group_fields: List[GroupField] = field(default_factory=list)
+
+    class fields:
+        MODEL = 'model'
+        ID = 'id'
+        TITLE = 'title'
+        TICKER = 'ticker'
+        COMPANY_NAME = 'companyName'
+        FIELDS = 'fields'
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]):
-        model_info = data.get('model')
-        return cls(id=model_info.get('id'),
-                   title=model_info.get('title'),
-                   ticker=model_info.get('ticker'),
-                   company_name=model_info.get('companyName'),
-                   fields=[
+        model_info = data.get(cls.fields.MODEL)
+        return cls(id=model_info.get(cls.fields.ID),
+                   title=model_info.get(cls.fields.TITLE),
+                   ticker=model_info.get(cls.fields.TICKER),
+                   company_name=model_info.get(cls.fields.COMPANY_NAME),
+                   group_fields=[
                        GroupField.from_json(fn, fk)
-                       for fn, fk in data.get('fields').items()
+                       for fn, fk in data.get(cls.fields.FIELDS).items()
                    ])
 
 
@@ -150,6 +158,6 @@ class SimulationResponse:
     def group_fields(self) -> Set[str]:
         flds = set()
         for f in self.group_data:
-            for n in f.fields:
+            for n in f.group_fields:
                 flds.add(n.field)
         return flds

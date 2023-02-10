@@ -748,8 +748,8 @@ def execute_simulation(group_id: str, model_ids: List[str],
     """Execute a simulation for a model group.
     
     Args:
-        group_id: the ID of the model group
-        model_ids: the IDs of the models
+        group_id: The ID of the model group
+        model_ids: The IDs of the models
         edits: List of edits to make to the target line item
         output_variables: List of names of the line items to output
         tag: Tag on the target line items

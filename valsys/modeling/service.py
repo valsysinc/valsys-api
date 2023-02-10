@@ -71,7 +71,6 @@ def filter_user_models(tags: List[str] = None,
     Returns:
         List of matching model information objects.
     """
-    print(max_date)
     filters = ModelsFilter(
         max_date=max_date,
         min_date=min_date,

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 from valsys.modeling.model.line_item import LineItem
 
 
@@ -9,11 +9,16 @@ class SimpleCell:
     identifier: str
     edges: Dict[str, Any] = field(default_factory=dict)
 
+    class fields:
+        ID = 'id'
+        IDENTIFIER = 'identifier'
+        EDGES = 'edges'
+
     @classmethod
     def from_json(cls, data):
-        return cls(id=data.get('id'),
-                   identifier=data.get('identifier'),
-                   edges=data.get('edges', {}))
+        return cls(id=data.get(cls.fields.ID),
+                   identifier=data.get(cls.fields.IDENTIFIER),
+                   edges=data.get(cls.fields.EDGES, {}))
 
 
 @dataclass
@@ -26,22 +31,30 @@ class GroupField:
     deps: List[SimpleCell] = field(default_factory=list)
     precs: List[SimpleCell] = field(default_factory=list)
 
+    class fields:
+        ID = 'id'
+        IDENTIFIER = 'identifier'
+        VALUE = 'value'
+        PERIOD = 'period'
+        EDGES = 'edges'
+        DEP_CELLS = 'dependantCells'
+        PRE_CELLS = 'precedentCells'
+
     @classmethod
     def from_json(cls, name: str, data: Dict[str, str]):
-        return cls(
-            field=name,
-            id=data.get('id'),
-            identifier=data.get('identifier', ''),
-            value=data.get('value'),
-            period=data.get('period', 0),
-            deps=[
-                SimpleCell.from_json(dc)
-                for dc in data.get('edges', {}).get('dependantCells', [])
-            ],
-            precs=[
-                SimpleCell.from_json(dc)
-                for dc in data.get('edges', {}).get('precedentCells', [])
-            ])
+        return cls(field=name,
+                   id=data.get(cls.fields.ID),
+                   identifier=data.get(cls.fields.IDENTIFIER, ''),
+                   value=data.get(cls.fields.VALUE),
+                   period=data.get(cls.fields.PERIOD, 0),
+                   deps=[
+                       SimpleCell.from_json(dc) for dc in data.get(
+                           cls.fields.EDGES, {}).get(cls.fields.DEP_CELLS, [])
+                   ],
+                   precs=[
+                       SimpleCell.from_json(dc) for dc in data.get(
+                           cls.fields.EDGES, {}).get(cls.fields.PRE_CELLS, [])
+                   ])
 
 
 @dataclass
@@ -63,15 +76,6 @@ class GroupModel:
                        GroupField.from_json(fn, fk)
                        for fn, fk in data.get('fields').items()
                    ])
-
-
-@dataclass
-class GroupData:
-    models: List[GroupModel] = field(default_factory=list)
-
-    @classmethod
-    def from_json(cls, data: List[Dict[str, Any]]):
-        return cls(models=[GroupModel.from_json(m) for m in data])
 
 
 @dataclass
@@ -123,18 +127,9 @@ class ModelSimulations:
 
 
 @dataclass
-class Simulation:
-    simulations: List[ModelSimulations] = field(default_factory=list)
-
-    @classmethod
-    def from_json(cls, data: List[Dict[str, Any]]):
-        return cls(simulations=[ModelSimulations.from_json(s) for s in data])
-
-
-@dataclass
 class SimulationResponse:
-    group_data: GroupData = field(default_factory=GroupData)
-    simulation: Simulation = field(default_factory=Simulation)
+    group_data: List[GroupModel] = field(default_factory=list)
+    simulation: List[ModelSimulations] = field(default_factory=list)
 
     class fields:
         SIMULATION = 'simulation'
@@ -142,6 +137,19 @@ class SimulationResponse:
 
     @classmethod
     def from_json(cls, data: Dict[str, List[Dict[str, Any]]]):
-        return cls(
-            simulation=Simulation.from_json(data.get(cls.fields.SIMULATION)),
-            group_data=GroupData.from_json(data.get(cls.fields.GROUP_DATA)))
+        return cls(simulation=[
+            ModelSimulations.from_json(s)
+            for s in data.get(cls.fields.SIMULATION)
+        ],
+                   group_data=[
+                       GroupModel.from_json(g)
+                       for g in data.get(cls.fields.GROUP_DATA)
+                   ])
+
+    @property
+    def group_fields(self) -> Set[str]:
+        flds = set()
+        for f in self.group_data:
+            for n in f.fields:
+                flds.add(n.field)
+        return flds

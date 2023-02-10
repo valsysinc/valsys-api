@@ -7,9 +7,9 @@ class TestSimulationResponse:
     def test_works_ok_from_json(self):
         resp = sample_simulation_response()
         s = SimulationResponse.from_json(resp)
-        assert len(s.simulation.simulations) == 2
-        assert len(s.group_data.models) == 2
-        model_0_fields = [f.field for f in s.group_data.models[0].fields]
+        assert len(s.simulation) == 2
+        assert len(s.group_data) == 2
+        model_0_fields = [f.field for f in s.group_data[0].group_fields]
         assert set(model_0_fields) == set([
             'Change in IRR', 'Current share price (DCF)',
             'Implied premium (DCF)', 'Implied share price (DCF)',

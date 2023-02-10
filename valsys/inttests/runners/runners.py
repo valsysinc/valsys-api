@@ -274,24 +274,30 @@ def run_create_group(model_ids: List[str], group_name: str):
 @runner('execute simulation')
 def run_execute_simulation(group_id: str, model_ids: List[str],
                            edits: List[Dict[str, str]],
-                           output_variables: List[str], tag: str, cfg):
+                           output_variables: List[str], tag: str, lfy):
     s = Modeling.execute_simulation(group_id,
                                     model_ids,
                                     edits=edits,
                                     output_variables=output_variables,
                                     tag=tag)
 
+    expected_fields = set([
+        'Change in IRR', 'Current share price (DCF)',
+        'Implied share price (DCF)', 'Ticker'
+    ])
+    expected_fields.add(tag)
+    expected_fields.add(tag + ' (Simulated)')
+    assert s.group_fields == expected_fields
+
     edited_periods = []
-    sp = cfg['startPeriod']
     for e in edits:
-        p = int(sp) + int(e['timePeriod'].replace('LFY', ''))
+        p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))
         edited_periods.append(
             (p, float(e['formula'].replace('$FORMULA * ', ''))))
 
-    simulated_model_ids = set(sim.id for sim in s.simulation.simulations)
-    assert set(model_ids) == simulated_model_ids
-    ms = []
-    for l in s.simulation.simulations:
+    assert set(model_ids) == set(sim.id for sim in s.simulation)
+    simulated_models = []
+    for l in s.simulation:
         model = Modeling.pull_model(l.id)
         m = {'uid': l.id, 'lis': []}
         for li in l.line_items:
@@ -299,11 +305,11 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
             assert tag in li.tags
             assert li.name in output_variables
             m['lis'].append(model.pull_line_item(lid))
-        ms.append(m)
+        simulated_models.append(m)
 
-    facts = []
+    simulated_facts = []
 
-    for f in ms:
+    for f in simulated_models:
         for ll in f['lis']:
             for ff in ll.facts:
                 fe = {
@@ -315,14 +321,16 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
                 for p, e in edited_periods:
                     if ff.period == p:
                         fe['editExpected'] = True
+                        ## NOTE: this is where we assume that the formula is a simple
+                        # multiplication...
                         fe['expectedNewValue'] = ff.value * e
-                facts.append(fe)
+                simulated_facts.append(fe)
 
-    for sim in s.simulation.simulations:
+    for sim in s.simulation:
         for ll in sim.line_items:
             for f in ll.facts:
                 tidx = -1
-                for idx, ff in enumerate(facts):
+                for idx, ff in enumerate(simulated_facts):
                     if ff['factId'] == f.uid:
                         tidx = idx
                         break
@@ -330,12 +338,12 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
                     raise Exception('not found')
                 for p, e in edited_periods:
                     if f.period == p:
-                        facts[tidx]['edited'] = True
-                        facts[tidx]['newValue'] = f.value
+                        simulated_facts[tidx]['edited'] = True
+                        simulated_facts[tidx]['newValue'] = f.value
 
     if len(edits) > 0:
-        assert len(facts) > 0
-    for f in facts:
+        assert len(simulated_facts) > 0
+    for f in simulated_facts:
         if f['editExpected']:
             assert f['edited']
             assert f['newValue'] == f['expectedNewValue']

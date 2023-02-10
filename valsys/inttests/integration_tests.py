@@ -71,8 +71,11 @@ def run_integration_tests():
                                        edits=[{
                                            "formula": "$FORMULA * 1.1",
                                            "timePeriod": "LFY+1"
+                                       }, {
+                                           "formula": "$FORMULA * 1.2",
+                                           "timePeriod": "LFY-1"
                                        }],
                                        output_variables=["Net Revenue"],
                                        tag="t4",
-                                       cfg=cfg)
+                                       lfy=cfg['startPeriod'])
     # find 2019 net revenue, look for sim response

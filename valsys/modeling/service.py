@@ -13,7 +13,7 @@ from valsys.modeling.exceptions import (
     RecalculateModelException, RemoveModuleException, ShareModelException,
     SpawnModelResponseException, TagLineItemException, TagModelException,
     UpdateModelGroupsException, DeleteColumnException)
-from valsys.modeling.model.group import Group
+from valsys.modeling.model.group import GroupOfModels
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
@@ -32,7 +32,7 @@ from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 from valsys.utils.time import tomorrow
-from valsys.modeling.model.simulation import SimulationResponse
+from valsys.modeling.model.simulation import SimulationResponse, ModelSimulations
 
 
 class ModelingActions:
@@ -71,7 +71,6 @@ def filter_user_models(tags: List[str] = None,
     Returns:
         List of matching model information objects.
     """
-
     filters = ModelsFilter(
         max_date=max_date,
         min_date=min_date,
@@ -713,12 +712,12 @@ def copy_model(model_id: str) -> Model:
     return Model.from_json(r.get(Resp.DATA).get(Resp.MODEL))
 
 
-def create_group(model_ids: List[str], group_name: str) -> Group:
+def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     """Create a group of models.
     
     Args:
-        model_ids: list of model ids going into the group
-        group_name: the name of the group
+        model_ids: List of model ids going into the group
+        group_name: The name of the group
     
     Returns:
         The newly created model group object.
@@ -731,24 +730,25 @@ def create_group(model_ids: List[str], group_name: str) -> Group:
     for group in r.get(Resp.DATA):
         if group.get(Headers.NAME) == group_name:
             c = 0
-            for mid in group.get(Group.fields.MODEL_IDS):
+            for mid in group.get(GroupOfModels.fields.MODEL_IDS):
                 if mid in model_ids:
                     c += 1
                 else:
                     break
             if c == len(model_ids):
-                return Group.from_json(group)
+                return GroupOfModels.from_json(group)
     raise Exception('group not found in response')
 
 
 def execute_simulation(group_id: str, model_ids: List[str],
-                       edits: List[Dict[str, str]],
-                       output_variables: List[str], tag: str):
+                       edits: List[Dict[str,
+                                        str]], output_variables: List[str],
+                       tag: str) -> SimulationResponse:
     """Execute a simulation for a model group.
     
     Args:
-        group_id: the ID of the model group
-        model_ids: the IDs of the models
+        group_id: The ID of the model group
+        model_ids: The IDs of the models
         edits: List of edits to make to the target line item
         output_variables: List of names of the line items to output
         tag: Tag on the target line items
@@ -756,18 +756,12 @@ def execute_simulation(group_id: str, model_ids: List[str],
     Returns:
         The new simulation object.
     
+
+    # TODO review model_ids as a required input: shouldnt be needed.
     """
     url = VSURL.SIM_SIMULATION
 
-    def validate_edits(es):
-        for e in es:
-            assert 'formula' in e
-            assert '$FORMULA' in e.get('formula')
-            assert 'timePeriod' in e
-            assert 'LFY' in e.get('timePeriod')
-        return
-
-    validate_edits(edits)
+    ModelSimulations.validate_edits(edits)
 
     payload = {
         Headers.EDITS: edits,

@@ -3,7 +3,9 @@ from typing import List
 
 
 @dataclass
-class Group:
+class GroupOfModels:
+    """GroupOfModels holds a group of models,
+    along with the name and ID of the group."""
     name: str
     uid: str
     user_id: str

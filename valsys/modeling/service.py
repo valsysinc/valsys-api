@@ -155,7 +155,7 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     payload = {
         Headers.MODEL_ID: model_id,
         Headers.TAGS: tags,
-        Headers.UPDATE: True,
+        Headers.UPDATES: True,
         Headers.ROLL_FORWARD: True,
     }
     try:

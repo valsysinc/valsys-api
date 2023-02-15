@@ -18,7 +18,7 @@ class Headers:
 
     NEW_PERIOD = 'newPeriod'
     ROLL_FORWARD = 'rollForward'
-    UPDATE = "update"
+    UPDATES = "updates"
     PAGINATION = 'pagination'
     TAG = 'tag'
     EDITS = 'edits'

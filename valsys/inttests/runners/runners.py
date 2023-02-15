@@ -3,7 +3,7 @@ from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
 from valsys.modeling.model.line_item import LineItem
-from valsys.inttests.runners.utils import assert_equal, assert_not_none
+from valsys.inttests.runners.utils import assert_equal, assert_not_none, assert_gt, assert_true
 import valsys.modeling.service as Modeling
 
 import valsys.inttests.runners.checkers as Check
@@ -129,7 +129,13 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
 @runner('filter user models')
 def run_filter_user_models(model_id: str):
     ms = Modeling.filter_user_models()
-    Check.uid(ms, model_id)
+    assert_gt(len(ms), 0, 'number of user models')
+
+    found = False
+    for m in ms:
+        if m.uid == model_id:
+            found = True
+    assert_true(found, 'expected to find model uid in response')
 
 
 @runner('pull model data sources')

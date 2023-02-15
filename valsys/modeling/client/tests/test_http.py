@@ -2,13 +2,12 @@ from http import HTTPStatus
 from unittest import mock
 
 import pytest
-
+import json
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
 from valsys.modeling.client.http import ModelingServiceHttpClient
-
 
 MODULE_PREFIX = "valsys.modeling.client.http"
 
@@ -153,3 +152,35 @@ class TestModelingServiceHttpClient:
             },
         )
         mock_response.json.assert_called_once()
+
+    @pytest.mark.parametrize(
+        "bad_code",
+        [HTTPStatus.BAD_REQUEST, HTTPStatus.CREATED, HTTPStatus.ACCEPTED])
+    @mock.patch(f"{MODULE_PREFIX}.requests.post")
+    def test_post_with_url_raises(self, mock_post, bad_code):
+
+        fake_reply = {"data": 42}
+
+        mock_response = mock.MagicMock()
+        mock_response.status_code = bad_code
+        mock_response.json.return_value = fake_reply
+        mock_post.return_value = mock_response
+
+        token = "Tok3n"
+
+        msc = ModelingServiceHttpClient(token)
+        url = "me"
+        headers = {"you": 1}
+        data = {'data': 'info'}
+        with pytest.raises(ModelingServicePostException) as err:
+            msc.post(url, headers=headers, data=data)
+        mock_post.assert_called_with(url=url,
+                                     headers={
+                                         "you": 1,
+                                         "Content-Type": "application/json",
+                                         "Authorization": f"Bearer {token}"
+                                     },
+                                     data=json.dumps((data)))
+        assert err.value.url == url
+        assert err.value.data == fake_reply
+        assert err.value.status_code == bad_code

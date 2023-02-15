@@ -34,6 +34,7 @@ class VSURL:
 
     SIM_SIMULATION = f"{BASE_URL}/modeling/simulations/simulation"
     SIM_GROUP_DATA = f"{BASE_URL}/modeling/simulations/group-data"
+    SIM_OUTPUT_VARIABLES = f"{BASE_URL}/modeling/simulations/output-variables"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/modeling/create/"
     SCK_ORCHESTRATOR = f"{BASE_ORCH}/orchestrator/connect/"

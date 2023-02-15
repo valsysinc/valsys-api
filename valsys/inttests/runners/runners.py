@@ -347,3 +347,15 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         if f['editExpected']:
             assert f['edited']
             assert f['newValue'] == f['expectedNewValue']
+
+
+@runner('simulation output variables')
+def run_simulation_output_variables(model_ids: List[str],
+                                    output_variables: List[str]):
+    m = Modeling.simulation_output_variables(model_ids, output_variables)
+    mids = set([md.id for md in m])
+    assert set(model_ids) == mids
+    for model in m:
+        for line_item in model.line_items:
+            for ov in output_variables:
+                assert ov in line_item.tags

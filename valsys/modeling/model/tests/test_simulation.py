@@ -1,5 +1,7 @@
-from valsys.modeling.model.simulation import SimulationResponse
+from valsys.modeling.model.simulation import SimulationResponse, Edit
 from valsys.modeling.model.tests.fixtures import sample_simulation_response
+
+import pytest
 
 
 class TestSimulationResponse:
@@ -16,3 +18,43 @@ class TestSimulationResponse:
             'Perpetual growth rate (DCF)',
             'Perpetual growth rate (DCF) (Simulated)', 'Ticker'
         ])
+
+
+class TestEdit:
+
+    @pytest.mark.parametrize('edit', [{
+        'formula': '$FORMULA + 1',
+        'timePeriod': "LFY+1"
+    }, {
+        'formula': '$FORMULA * 1',
+        'timePeriod': "LFY-1"
+    }])
+    def test_validate_ok(self, edit):
+        assert Edit.validate(edit)
+
+    @pytest.mark.parametrize('edit', [{
+        '1formula': '',
+        '1timePeriod': ""
+    }, {
+        'formula': '',
+        '1timePeriod': ""
+    }, {
+        '1formula': '',
+        'timePeriod': ""
+    }])
+    def test_validate_invalid_keys(self, edit):
+        with pytest.raises(AssertionError):
+            Edit.validate(edit)
+
+    @pytest.mark.parametrize('edit', [{'formula': 'FORMULA + 1'}])
+    def test_validate_fail_formula(self, edit):
+        with pytest.raises(AssertionError):
+            Edit.validate(edit)
+
+    @pytest.mark.parametrize('edit', [{
+        'formula': '$FORMULA + 1',
+        'timePeriod': '74893'
+    }])
+    def test_validate_fail_time_period(self, edit):
+        with pytest.raises(AssertionError):
+            Edit.validate(edit)

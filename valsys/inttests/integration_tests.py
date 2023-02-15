@@ -78,4 +78,5 @@ def run_integration_tests():
                                        output_variables=["Net Revenue"],
                                        tag="t4",
                                        lfy=cfg['startPeriod'])
+    Runners.run_simulation_output_variables(grp.model_ids, ['t4'])
     # find 2019 net revenue, look for sim response

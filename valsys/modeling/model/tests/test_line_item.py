@@ -92,7 +92,8 @@ class TestLineItem:
                         formula='42',
                         period=1,
                         value=1,
-                        fmt='1')
+                        fmt='1',
+                        numeric=True)
         li_fj.replace_fact(new_fact_index, new_fact)
         assert len(li_fj.facts) == 2
         assert li_fj.facts[new_fact_index] == new_fact
@@ -117,7 +118,8 @@ class TestLineItem:
                         formula='42',
                         period=1,
                         value=1,
-                        fmt='1')
+                        fmt='1',
+                        numeric=True)
         with pytest.raises(Exception) as err:
             li_fj.replace_fact(new_fact_index, new_fact)
         assert str(new_fact_index) in str(err)

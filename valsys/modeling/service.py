@@ -145,6 +145,8 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     Note that this removes any existing tags;
     if you wanted to append tags, use the `append_tags` function.
 
+    update: turns on dynamic updates
+
     Args:
         model_id: ID of the model to add tags to
         tags: List of tags to add to the model

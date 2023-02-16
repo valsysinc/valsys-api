@@ -49,10 +49,12 @@ class ModelingServiceHttpClient:
         Takes care of the authentication headers.
         """
         headers = headers or {}
+
         resp = requests.get(
             url=url,
             headers=self._add_auth_headers(headers),
         )
+
         self.status_code = resp.status_code
         if resp.status_code == expected_status:
             return resp.json()

@@ -8,11 +8,13 @@ from .case import Case, CaseInformation
 class Model(object):
     uid: str
     cases: List[Case] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
 
     class fields:
         ID = 'id'
         EDGES = 'edges'
         CASES = 'cases'
+        TAGS = 'tags'
 
     def pull_module(self, module_id: str):
         """Extract a module by ID from the model.
@@ -67,6 +69,7 @@ class Model(object):
     @classmethod
     def from_json(cls, data):
         return cls(uid=data[cls.fields.ID],
+                   tags=data.get(cls.fields.TAGS, []),
                    cases=list(
                        map(Case.from_json,
                            data[cls.fields.EDGES][cls.fields.CASES])))
@@ -81,7 +84,7 @@ class ModelInformation:
     data_sources: str = ''
 
     class fields:
-        TAGS = 'modelTags'
+        TAGS = 'tags'
         CASES = 'cases'
         DATA_SOURCES = 'dataSources'
 
@@ -97,10 +100,8 @@ class ModelInformation:
 
     @classmethod
     def from_json(cls, uid: str, input_json: Dict[str, Any]):
-
-        tags = input_json.get(cls.fields.TAGS, '').split(',')
         return cls(uid=uid,
-                   tags=[t for t in tags if t],
+                   tags=input_json.get(cls.fields.TAGS, []),
                    cases=list(
                        map(CaseInformation.from_json,
                            input_json.get(cls.fields.CASES, []))),

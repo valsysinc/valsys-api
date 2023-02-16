@@ -9,6 +9,10 @@ class TestModelInformation:
     def valid_uid(self):
         return 'uid42'
 
+    @property
+    def valid_tags(self):
+        return ['t1', 't2']
+
     def test_init(self):
         uid = self.valid_uid
         mi = ModelInformation(uid=uid)
@@ -19,15 +23,16 @@ class TestModelInformation:
 
     def test_from_json_tags_only(self):
         uid = self.valid_uid
-        ij = {ModelInformation.fields.TAGS: 't1,t2'}
+        tags = self.valid_tags
+        ij = {ModelInformation.fields.TAGS: tags}
         mi = ModelInformation.from_json(uid=uid, input_json=ij)
-        assert mi.tags == ['t1', 't2']
+        assert mi.tags == tags
         assert len(mi.cases) == 0
         assert mi.data_sources == ''
 
     def test_from_json_tags_only_empty(self):
         uid = self.valid_uid
-        ij = {ModelInformation.fields.TAGS: ''}
+        ij = {ModelInformation.fields.TAGS: []}
         mi = ModelInformation.from_json(uid=uid, input_json=ij)
         assert mi.tags == []
 

@@ -28,10 +28,10 @@ def qa_script():
             'targetCellPeriod': '2020',
             'originalCellFormula':
             'INTERPERCENT(2019, [DCF[EBIT Margin[2019]]], 2020, 2024, [DCF Drivers[Industry average EBIT margin[2020]]])',
-            'originalCellValue': 0.1590030467086554,
+            'originalCellValue': '0.1590030467086554',
             'newCellFormula':
             'AVERAGE([DCF[EBIT Margin[2015]]]:[DCF[EBIT Margin[2019]]])',
-            'newCellValue': 0.1526595564601617,
+            'newCellValue': '0.1526595564601617',
         }, {
             'type': 'edit_line_item',
             'startingModule': 'Operating Income',

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 @dataclass
@@ -8,8 +8,9 @@ class Fact:
     identifier: str
     formula: str
     period: float
-    value: float
+    value: str
     fmt: str
+    numeric: bool
 
     class fields:
         UID = 'id'
@@ -35,12 +36,17 @@ class Fact:
             return {f: all_fields[f] for f in fields}
 
     @classmethod
-    def from_json(cls, data):
-        return cls(
-            uid=data[cls.fields.UID],
-            identifier=data.get(cls.fields.IDENTIFIER, ""),
-            formula=data.get(cls.fields.FORMULA, ""),
-            period=data.get(cls.fields.PERIOD, 0),
-            value=float(data.get(cls.fields.VALUE, 0)),
-            fmt=data.get(cls.fields.FORMAT, ""),
-        )
+    def from_json(cls, data: Dict[str, str]):
+
+        is_numeric = 'numeric' in data.get(cls.fields.FORMAT, "").lower()
+        value = data.get(cls.fields.VALUE, "")
+        if is_numeric and value != '':
+            value = float(value)
+
+        return cls(uid=data[cls.fields.UID],
+                   identifier=data.get(cls.fields.IDENTIFIER, ""),
+                   formula=data.get(cls.fields.FORMULA, ""),
+                   period=data.get(cls.fields.PERIOD, 0),
+                   value=value,
+                   fmt=data.get(cls.fields.FORMAT, ""),
+                   numeric=is_numeric)

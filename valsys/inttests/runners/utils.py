@@ -10,6 +10,7 @@ def runner(nm: str):
             try:
                 res = function(*args, **kwargs)
             except Exception as err:
+                logger.exception(err)
                 logger.error(f"failed: {nm} {err}")
                 raise
 

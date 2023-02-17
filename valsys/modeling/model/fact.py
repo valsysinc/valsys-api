@@ -37,14 +37,10 @@ class Fact:
 
     @classmethod
     def from_json(cls, data: Dict[str, str]):
-        '''
-                numeric is true in format
-                value in [""," ", "    "] => value = 0
-                float("   ") => error
-        '''
-
-        is_numeric = 'numeric' in data.get(cls.fields.FORMAT, "").lower()
+        fmt = data.get(cls.fields.FORMAT, "")
         value = data.get(cls.fields.VALUE, "").strip()
+
+        is_numeric = 'numeric' in fmt.lower()
         if is_numeric and value == '':
             value = 0
         elif is_numeric and value != '':
@@ -55,5 +51,5 @@ class Fact:
                    formula=data.get(cls.fields.FORMULA, ""),
                    period=data.get(cls.fields.PERIOD, 0),
                    value=value,
-                   fmt=data.get(cls.fields.FORMAT, ""),
+                   fmt=fmt,
                    numeric=is_numeric)

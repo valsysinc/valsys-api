@@ -27,15 +27,30 @@ class TestFact:
     ])
     def test_from_json_numeric(self, numeric_format):
         uid = '1'
-        value = '42'
+        valueIn, value = '42', 42
 
         j = {
             Fact.fields.UID: uid,
             Fact.fields.FORMAT: numeric_format,
-            Fact.fields.VALUE: value
+            Fact.fields.VALUE: valueIn
         }
         fact = Fact.from_json(j)
-        assert fact.value == float(value)
+        assert fact.value == value
+        assert fact.uid == uid
+        assert fact.numeric
+
+    @pytest.mark.parametrize("valueIn,value", [('42', 42), ('', 0), (' ', 0),
+                                               (' ' * 10, 0)])
+    def test_from_json_numeric_valid_values(self, valueIn, value):
+        uid = '1'
+
+        j = {
+            Fact.fields.UID: uid,
+            Fact.fields.FORMAT: 'numeric',
+            Fact.fields.VALUE: valueIn
+        }
+        fact = Fact.from_json(j)
+        assert fact.value == value
         assert fact.uid == uid
         assert fact.numeric
 

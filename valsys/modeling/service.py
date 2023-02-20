@@ -145,6 +145,8 @@ def tag_model(model_id: str, tags: List[str], auth_token: str = None):
     Note that this removes any existing tags;
     if you wanted to append tags, use the `append_tags` function.
 
+    update: turns on dynamic updates
+
     Args:
         model_id: ID of the model to add tags to
         tags: List of tags to add to the model
@@ -774,3 +776,28 @@ def execute_simulation(group_id: str, model_ids: List[str],
     r = client.post(url=url, data=payload)
     check_success(r, 'run simulation')
     return SimulationResponse.from_json(r.get(Resp.DATA))
+
+
+def simulation_output_variables(
+        model_ids: List[str],
+        output_variables: List[str]) -> List[ModelSimulations]:
+    """ Blah
+
+    Args:
+        model_ids: list of model IDS
+        output_variables: List of tags of the line items to be returned.
+
+    Returns:
+        List of model simulation objects, each with the line items (and facts) corresponding to the
+        output variable tags.
+    """
+    url = VSURL.SIM_OUTPUT_VARIABLES
+    payload = {
+        Headers.MODEL_IDS: model_ids,
+        Headers.OUTPUT_VARIABLES: output_variables
+    }
+    client = new_client()
+    r = client.post(url=url, data=payload)
+    check_success(r, 'simulation output variables')
+
+    return [ModelSimulations.from_json(m) for m in r.get(Resp.DATA)]

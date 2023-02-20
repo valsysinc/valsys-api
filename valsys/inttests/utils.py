@@ -44,6 +44,7 @@ def run_each_allow_fail(funcs) -> List[str]:
         try:
             func()
         except Exception as err:
+            logger.exception(err)
             fails.append(str(err))
     return fails
 

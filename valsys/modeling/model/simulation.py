@@ -91,10 +91,12 @@ class Edit:
 
     @classmethod
     def validate(cls, e: Dict[str, str]):
-        assert 'formula' in e
+        required_keys = ['formula', 'timePeriod']
+        for k in required_keys:
+            assert k in e.keys()
         assert '$FORMULA' in e.get('formula')
-        assert 'timePeriod' in e
         assert 'LFY' in e.get('timePeriod')
+        return True
 
 
 @dataclass

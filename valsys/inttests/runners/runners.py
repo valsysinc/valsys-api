@@ -3,7 +3,7 @@ from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
 from valsys.modeling.model.line_item import LineItem
-from valsys.inttests.runners.utils import assert_equal, assert_not_none
+from valsys.inttests.runners.utils import assert_equal, assert_not_none, assert_gt, assert_true
 import valsys.modeling.service as Modeling
 
 import valsys.inttests.runners.checkers as Check
@@ -129,7 +129,13 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
 @runner('filter user models')
 def run_filter_user_models(model_id: str):
     ms = Modeling.filter_user_models()
-    Check.uid(ms, model_id)
+    assert_gt(len(ms), 0, 'number of user models')
+
+    found = False
+    for m in ms:
+        if m.uid == model_id:
+            found = True
+    assert_true(found, 'expected to find model uid in response')
 
 
 @runner('pull model data sources')
@@ -347,3 +353,15 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         if f['editExpected']:
             assert f['edited']
             assert f['newValue'] == f['expectedNewValue']
+
+
+@runner('simulation output variables')
+def run_simulation_output_variables(model_ids: List[str],
+                                    output_variables: List[str]):
+    m = Modeling.simulation_output_variables(model_ids, output_variables)
+    mids = set([md.id for md in m])
+    assert set(model_ids) == mids
+    for model in m:
+        for line_item in model.line_items:
+            for ov in output_variables:
+                assert ov in line_item.tags

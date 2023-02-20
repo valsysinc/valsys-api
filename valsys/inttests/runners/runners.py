@@ -66,7 +66,7 @@ def run_edit_formula(model_id: str,
 @runner('edit format')
 def run_edit_format(model_id: str, case_id: str, fact: Fact):
     from valsys.modeling.service import edit_format
-    new_format = '{"thing":42}'
+    new_format = '{"thing":42, "valFormat":"Numeric"}'
     fact.fmt = new_format
     efs = edit_format(case_id, model_id, [ff.jsonify() for ff in [fact]])
     found = False

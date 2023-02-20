@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from valsys.config.env import get_envfiles
 from valsys.utils.utils import read_env
 
-
 BUILDS_TO_LOAD_FROM_ENV_FILES = ['local', 'test']
 
 
@@ -37,3 +36,8 @@ if BASE_ORCH is None:
 
 # BASE_SCK -> create ws://modeling:5100
 # BASE_ORCH -> /orchestrator/connect/ ->
+
+
+def log_modeling_service_info(logger):
+    logger(f'modeling service HTTP URL:{BASE_URL}')
+    logger(f'modeling service SOCK URL:{BASE_SCK}')

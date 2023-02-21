@@ -88,15 +88,19 @@ def filter_user_models(tags: List[str] = None,
     }
     client = new_client()
     try:
+        payload = filters.jsonify()
         resp = client.post(VSURL.USERS_FILTER_HISTORY,
                            headers=headers,
-                           data=filters.jsonify())
+                           data=payload)
     except ModelingServicePostException as err:
         raise err
-    return [
-        ModelDetailInformation.from_json(j)
-        for j in resp.get(Resp.DATA).get(Resp.MODELS)
-    ]
+    try:
+        return [
+            ModelDetailInformation.from_json(j)
+            for j in resp.get(Resp.DATA).get(Resp.MODELS)
+        ]
+    except TypeError:
+        return []
 
 
 def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
@@ -801,3 +805,10 @@ def simulation_output_variables(
     check_success(r, 'simulation output variables')
 
     return [ModelSimulations.from_json(m) for m in r.get(Resp.DATA)]
+
+
+def delete_models(model_ids: List[str]):
+    client = new_client()
+    url = VSURL.DELETE_MODEL
+    payload = {'modelIds': ','.join(model_ids)}
+    return client.delete(url=url, headers=payload)

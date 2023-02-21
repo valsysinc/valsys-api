@@ -33,6 +33,10 @@ def assert_true(v, desc=''):
     return assert_equal(v, True, desc)
 
 
+def assert_false(v, desc=''):
+    return assert_equal(v, False, desc)
+
+
 def assert_not_none(v, desc=''):
     try:
         assert v is not None

@@ -13,6 +13,7 @@ class VSURL:
     CASE = f"{BASE_URL}/modeling/case"
 
     COPY_MODEL = f"{BASE_URL}/modeling/edit/copy-model"
+    DELETE_MODEL = f"{BASE_URL}/modeling/cache/models"
     RECALC_MODEL = f"{BASE_URL}/modeling/edit/recalculate"
     MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/edit/model-properties"
 

@@ -809,6 +809,8 @@ def simulation_output_variables(
 
 def delete_models(model_ids: List[str]):
     client = new_client()
-    url = VSURL.DELETE_MODEL
-    payload = {'modelIds': ','.join(model_ids)}
-    return client.delete(url=url, headers=payload)
+    url = VSURL.USERS_MODELS
+    payload = {'models': model_ids}
+    resp = client.delete(url=url, data=payload)
+    check_success(resp, 'deleting models')
+    return resp

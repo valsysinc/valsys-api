@@ -47,6 +47,7 @@ class VSURL:
     USERS_GROUP = f"{BASE_URL}/users/group"
     USERS_UPDATE_GROUP = f"{BASE_URL}/users/update-group"
     USERS_FILTER_HISTORY = f"{BASE_URL}/users/filter-history"
+    USERS_FILTER_HISTORY_FIELDS = f"{BASE_URL}/users/filter-history-with-fields"
     LOGIN_USERS = f"{BASE_URL}/users/login"
     TEMPLATES = f"{BASE_URL}/users/model-templates"
 

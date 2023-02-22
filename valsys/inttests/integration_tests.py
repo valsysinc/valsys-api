@@ -23,7 +23,7 @@ def integration_test_config():
 def run_integration_tests():
     cfg = integration_test_config()
     spawned_models = Runners.run_spawn_model(
-        gen_orch_config(cfg, API_USERNAME, API_PASSWORD))
+        gen_orch_config(cfg=cfg, user=API_USERNAME, password=API_PASSWORD))
 
     model_id = spawned_models[0].model_id
 
@@ -44,7 +44,11 @@ def run_integration_tests():
     Runners.run_pull_model_information(model_id)
     Runners.run_pull_model_datasources(model_id)
     Runners.run_remove_module(model_id, new_module.uid)
-    Runners.run_filter_user_models(model_id)
+    Runners.run_filter_user_model(model_id)
+    Runners.run_multi_filters(base_config=cfg,
+                              user=API_USERNAME,
+                              password=API_PASSWORD,
+                              cgen=gen_orch_config)
     Runners.run_delete_line_item(model_id, module_id,
                                  first_module.last_line_item.uid)
     #TODO: make this test changing the name of a different module

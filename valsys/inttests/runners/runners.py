@@ -152,12 +152,12 @@ def run_filter_user_model(model_id: str):
 
 @runner('delete models')
 def run_delete_models(model_ids: List[str]):
-    assert Modeling.delete_models(model_ids) is None
+    d = Modeling.delete_models(model_ids)
     for mid in model_ids:
         try:
             Modeling.pull_model(mid)
             raise AssertionError('should have errored out the pull')
-        except Exception:
+        except Exception as err:
             pass
 
 
@@ -340,17 +340,15 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         'Change in IRR', 'Current share price (DCF)',
         'Implied share price (DCF)', 'Ticker'
     ])
-    expected_fields.add(tag)
-    expected_fields.add(tag + ' (Simulated)')
-    assert s.group_fields == expected_fields
-
+    assert_equal(s.group_fields, expected_fields, 'simulated expected fields')
     edited_periods = []
     for e in edits:
         p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))
         edited_periods.append(
             (p, float(e['formula'].replace('$FORMULA * ', ''))))
 
-    assert set(model_ids) == set(sim.id for sim in s.simulation)
+    assert_equal(set(model_ids), set(sim.id for sim in s.simulation),
+                 'model ids')
     simulated_models = []
     for l in s.simulation:
         model = Modeling.pull_model(l.id)

@@ -166,29 +166,75 @@ class ModelDetailInformation:
     model_tags: List[str]
     permissions: PermissionsModel
 
+    class fields:
+        ID = 'id'
+        CIK = 'cik'
+        TICKER = 'ticker'
+        GEOGRAPHY = 'geography'
+        INDUSTRY = 'industry'
+        COMPANY_NAME = 'companyName'
+        CURRENCY = 'currency'
+        CASE_ID = 'caseID'
+        CURR_SHARE_PRICE = 'currentSharePrice'
+        IMPL_SHARE_PRICE = 'impliedSharePrice'
+        FORE_PERIOD = 'forecastPeriod'
+        HIST_PERIOD = 'historicalPeriod'
+        HIST_START = 'historicalStart'
+        FORE_INC = 'forecastIncrement'
+        START_PERIOD = 'startPeriod'
+        CREATED_AT = 'createdAt'
+        LAST_EDIT = 'lastEdit'
+        TAGS = 'tags'
+        MODEL_TAGS = 'modelTags'
+        PERMISSIONS = 'permissions'
+
     @classmethod
     def from_json(cls, j):
-        return cls(uid=j.get('id'),
-                   cik=j.get('cik'),
-                   ticker=j.get('ticker'),
-                   geography=j.get('geography'),
-                   industry=j.get('industry'),
-                   company_name=j.get('companyName'),
-                   currency=j.get('currency'),
-                   case_id=j.get('caseID'),
-                   current_share_price=float(j.get('currentSharePrice', 0)),
-                   implied_share_price=float(j.get('impliedSharePrice', 0)),
-                   forecast_period=int(j.get('forecastPeriod')),
-                   historical_period=int(j.get('historicalPeriod')),
-                   historical_start=int(j.get('historicalStart', 0)),
-                   forecast_increment=j.get('forecastIncrement'),
-                   start_period=j.get('startPeriod'),
-                   created_at=j.get('createdAt'),
-                   last_edit=j.get('lastEdit'),
-                   tags=j.get('tags'),
-                   model_tags=j.get('modelTags'),
-                   permissions=PermissionsModel.from_json(
-                       j.get('permissions')))
+        return cls(
+            uid=j.get(cls.fields.ID),
+            cik=j.get(cls.fields.CIK),
+            ticker=j.get(cls.fields.TICKER),
+            geography=j.get(cls.fields.GEOGRAPHY),
+            industry=j.get(cls.fields.INDUSTRY),
+            company_name=j.get(cls.fields.COMPANY_NAME),
+            currency=j.get(cls.fields.CURRENCY),
+            case_id=j.get(cls.fields.CASE_ID),
+            current_share_price=float(j.get(cls.fields.CURR_SHARE_PRICE, 0)),
+            implied_share_price=float(j.get(cls.fields.IMPL_SHARE_PRICE, 0)),
+            forecast_period=int(j.get(cls.fields.FORE_PERIOD)),
+            historical_period=int(j.get(cls.fields.HIST_PERIOD)),
+            historical_start=int(j.get(cls.fields.HIST_START, 0)),
+            forecast_increment=j.get(cls.fields.FORE_INC),
+            start_period=j.get(cls.fields.START_PERIOD),
+            created_at=j.get(cls.fields.CREATED_AT),
+            last_edit=j.get(cls.fields.LAST_EDIT),
+            tags=j.get(cls.fields.TAGS),
+            model_tags=j.get(cls.fields.MODEL_TAGS),
+            permissions=PermissionsModel.from_json(
+                j.get(cls.fields.PERMISSIONS)))
+
+
+@dataclass
+class ModelDetailInformationWithFields:
+    model: ModelDetailInformation
+    fields: Dict[str, str] = field(default_factory=dict)
+
+    @property
+    def uid(self):
+        return self.model.uid
+
+    @property
+    def ticker(self):
+        return self.model.ticker
+
+    @classmethod
+    def from_json(cls, j):
+        if 'model' in j:
+            model_json = j.get('model')
+        else:
+            model_json = j
+        return cls(model=ModelDetailInformation.from_json(model_json),
+                   fields=j.get('fields', {}))
 
 
 @dataclass
@@ -206,6 +252,7 @@ class ModelsFilter:
     ind_filters: List[str] = field(default_factory=list)
     tag_filters: List[str] = field(default_factory=list)
     tag_filter_type: str = ''
+    fields: List[str] = field(default_factory=list)
 
     class ValidTypes:
         TAG_FILTER_TYPES = ['', 'and', 'or']
@@ -223,6 +270,10 @@ class ModelsFilter:
         self.filter_geography = 'geography' in filter_on
         self.filter_industry = 'industry' in filter_on
 
+    def add_fields(self, fields):
+        for f in fields:
+            self.fields.append(f)
+
     def validate(self):
         if self.tag_filter_type not in self.ValidTypes.TAG_FILTER_TYPES:
             raise FilterModelsException(
@@ -235,7 +286,7 @@ class ModelsFilter:
     def jsonify(self):
         # Incase anyone has messed about with anything: validate again;
         self.validate()
-        return {
+        j = {
             "maxDate": self.max_date,
             "minDate": self.min_date,
             "filters": {
@@ -250,4 +301,7 @@ class ModelsFilter:
             "tagFilterType": self.tag_filter_type,
             "predicate": self.predicate,
             "modelType": self.model_type,
+            'fields': self.fields
         }
+
+        return j

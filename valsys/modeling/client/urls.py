@@ -13,7 +13,7 @@ class VSURL:
     CASE = f"{BASE_URL}/modeling/case"
 
     COPY_MODEL = f"{BASE_URL}/modeling/edit/copy-model"
-    DELETE_MODEL = f"{BASE_URL}/modeling/cache/models"
+
     RECALC_MODEL = f"{BASE_URL}/modeling/edit/recalculate"
     MODELING_MODEL_PROPERTIES = f"{BASE_URL}/modeling/edit/model-properties"
 
@@ -42,6 +42,7 @@ class VSURL:
 
     USERS_SHARE_MODEL = f"{BASE_URL}/users/share-model"
     USERS_MODELS = f"{BASE_URL}/users/models"
+
     USERS_GROUPS = f"{BASE_URL}/users/groups"
     USERS_GROUP = f"{BASE_URL}/users/group"
     USERS_UPDATE_GROUP = f"{BASE_URL}/users/update-group"

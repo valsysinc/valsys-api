@@ -808,6 +808,11 @@ def simulation_output_variables(
 
 
 def delete_models(model_ids: List[str]):
+    """ Delete the specified models
+
+    Args:
+        model_ids: List of model IDs to be deleted.
+    """
     client = new_client()
     url = VSURL.USERS_MODELS
     payload = {Headers.MODELS: model_ids}

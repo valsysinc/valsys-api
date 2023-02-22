@@ -68,8 +68,8 @@ MODULE_PREFIX = "valsys.modeling.service"
 class TestFilterUserModels:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
-    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformation.from_json")
-    def test_works_ok_no_args(self, mock_ModelDetailInformation_from_json,
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
+    def test_works_ok_no_args(self, mock_ModelDetailInformationWithFields_from_json,
                               mock_new_client):
         mock_client = mock.MagicMock()
         mock_client.post.return_value = {'data': {'models': [1, 2]}}
@@ -78,7 +78,7 @@ class TestFilterUserModels:
         mock_new_client.assert_called_once()
         mock_client.post.assert_called_once()
         calls = [mock.call(1), mock.call(2)]
-        mock_ModelDetailInformation_from_json.assert_has_calls(calls)
+        mock_ModelDetailInformationWithFields_from_json.assert_has_calls(calls)
 
 
 class TestSpawnModel:

@@ -2,13 +2,19 @@ import pytest
 
 from valsys.modeling.exceptions import FilterModelsException
 from valsys.modeling.models import (
+    ModelDetailInformationWithFields,
     ModelGroup,
     ModelsFilter,
     PermissionTypes,
     Permissions,
 )
-
+from dataclasses import dataclass
 from .factories import valid_models_filter
+from unittest import mock
+
+import pytest
+
+MODULE_PREFIX = 'valsys.modeling.models'
 
 
 class TestPermissions:
@@ -156,3 +162,39 @@ class TestModelsFilter:
         assert mf_j.get('filters').get('Geography')
         assert not mf_j.get('filters').get('Industry')
         assert mf_j.get('filters').get('Name')
+
+
+@dataclass
+class ModelDetailInformation:
+    uid: str
+    ticker: str
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(uid=j.get('uid'), ticker=j.get('ticker'))
+
+
+class TestModelDetailInformationWithFields:
+
+    def test_init(self):
+        mdiwf = ModelDetailInformationWithFields(
+            model=ModelDetailInformation(uid='1234', ticker='TKR'))
+        assert mdiwf.fields == {}
+        assert mdiwf.uid == '1234'
+        assert mdiwf.ticker == 'TKR'
+
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformation")
+    def test_from_json_with_model(self, mock_ModelDetailInformation):
+        flds = {'f': 1}
+        j = {'model': 42, 'fields': flds}
+        mdiwf = ModelDetailInformationWithFields.from_json(j)
+        mock_ModelDetailInformation.from_json.assert_called_once_with(42)
+        assert mdiwf.fields == flds
+
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformation")
+    def test_from_json_without_model(self, mock_ModelDetailInformation):
+
+        j = {'info': 42}
+        mdiwf = ModelDetailInformationWithFields.from_json(j)
+        mock_ModelDetailInformation.from_json.assert_called_once_with(j)
+        assert mdiwf.fields == {}

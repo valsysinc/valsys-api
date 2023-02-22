@@ -150,6 +150,22 @@ def run_filter_user_model(model_id: str):
     assert_false(found, 'expected to not find uid in response')
 
 
+@runner('filter user model with fields')
+def run_filter_user_model_with_fields(ticker):
+
+    flds = [
+        '[Capital expenditure (DCF)[LFY+1]]',
+        '[Capital expenditure (DCF)[LFY-1]]'
+    ]
+    ms2 = Modeling.filter_user_models(fields=flds,
+                                      filter_term=ticker,
+                                      filter_on=['Ticker'])
+    assert_gt(len(ms2), 0, 'results returned')
+    print(ms2)
+    for m in ms2:
+        assert_equal(set(flds), set(m.fields.keys()), 'filtered fields')
+
+
 @runner('delete models')
 def run_delete_models(model_ids: List[str]):
     d = Modeling.delete_models(model_ids)

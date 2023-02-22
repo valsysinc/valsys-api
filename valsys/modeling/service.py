@@ -20,7 +20,7 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model, ModelInformation
 from valsys.modeling.model.module import Module
 from valsys.modeling.models import (
-    ModelDetailInformation,
+    ModelDetailInformationWithFields,
     ModelGroups,
     ModelsFilter,
     Permissions,
@@ -45,16 +45,18 @@ def health():
     return client.get(url=VSURL.HEALTH, )
 
 
-def filter_user_models(tags: List[str] = None,
-                       model_type: str = 'user',
-                       max_date: str = tomorrow(),
-                       min_date: str = "2002-01-01T00:00:00.000Z",
-                       tag_filter_type: str = '',
-                       geo_filters: List[str] = None,
-                       ind_filters: List[str] = None,
-                       filter_on: List[str] = None,
-                       filter_term: str = '',
-                       pagination=1) -> List[ModelDetailInformation]:
+def filter_user_models(
+        tags: List[str] = None,
+        model_type: str = 'user',
+        max_date: str = tomorrow(),
+        min_date: str = "2002-01-01T00:00:00.000Z",
+        tag_filter_type: str = '',
+        geo_filters: List[str] = None,
+        ind_filters: List[str] = None,
+        filter_on: List[str] = None,
+        filter_term: str = '',
+        pagination=1,
+        fields: List[str] = None) -> List[ModelDetailInformationWithFields]:
     """Search for a set of models, using the provided set of filters for the using user
 
     Args:
@@ -82,6 +84,11 @@ def filter_user_models(tags: List[str] = None,
         predicate=filter_term,
     )
     filters.set_filter_on(filter_on)
+    url = VSURL.USERS_FILTER_HISTORY
+
+    if fields is not None:
+        filters.add_fields(fields)
+        url = VSURL.USERS_FILTER_HISTORY_FIELDS
 
     headers = {
         Headers.PAGINATION: str(pagination),
@@ -89,14 +96,12 @@ def filter_user_models(tags: List[str] = None,
     client = new_client()
     try:
         payload = filters.jsonify()
-        resp = client.post(VSURL.USERS_FILTER_HISTORY,
-                           headers=headers,
-                           data=payload)
+        resp = client.post(url=url, headers=headers, data=payload)
     except ModelingServicePostException as err:
         raise err
     try:
         return [
-            ModelDetailInformation.from_json(j)
+            ModelDetailInformationWithFields.from_json(j)
             for j in resp.get(Resp.DATA).get(Resp.MODELS)
         ]
     except TypeError:

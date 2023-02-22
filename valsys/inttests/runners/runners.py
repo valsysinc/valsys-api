@@ -3,11 +3,14 @@ from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.model import Model
 from valsys.modeling.model.line_item import LineItem
-from valsys.inttests.runners.utils import assert_equal, assert_not_none, assert_gt, assert_true
+from valsys.inttests.runners.utils import assert_equal, assert_not_none, assert_gt, assert_true, assert_false
 import valsys.modeling.service as Modeling
 
 import valsys.inttests.runners.checkers as Check
 from typing import List, Dict
+from valsys.utils.time import yesterday
+from copy import deepcopy
+import uuid
 
 
 @runner('spawn model')
@@ -126,8 +129,8 @@ def run_delete_line_item(model_id: str, module_id: str, line_item_id: str):
         assert "cannot find line item with id" in str(err)
 
 
-@runner('filter user models')
-def run_filter_user_models(model_id: str):
+@runner('filter user model')
+def run_filter_user_model(model_id: str):
     ms = Modeling.filter_user_models()
     assert_gt(len(ms), 0, 'number of user models')
 
@@ -136,6 +139,52 @@ def run_filter_user_models(model_id: str):
         if m.uid == model_id:
             found = True
     assert_true(found, 'expected to find model uid in response')
+
+    # given that the target UID was just created, targeting
+    # models yesterday should give nothing.
+    ys = Modeling.filter_user_models(max_date=yesterday())
+    found = False
+    for m in ys:
+        if m.uid == model_id:
+            found = True
+    assert_false(found, 'expected to not find uid in response')
+
+
+@runner('delete models')
+def run_delete_models(model_ids: List[str]):
+    d = Modeling.delete_models(model_ids)
+    for mid in model_ids:
+        try:
+            Modeling.pull_model(mid)
+            raise AssertionError('should have errored out the pull')
+        except Exception as err:
+            pass
+
+
+@runner('multi filters')
+def run_multi_filters(base_config: Dict[str, str], user: str, password: str,
+                      cgen):
+    ntkrs = 4
+    tp = base_config.get('ticker') + "-" + str(uuid.uuid1())
+    tkrs = [tp + str(uuid.uuid1()) for _ in range(ntkrs)]
+
+    for tkr in tkrs:
+        cfg = deepcopy(base_config)
+        cfg['ticker'] = tkr
+        run_spawn_model(cgen(cfg=cfg, user=user, password=password))
+
+    ms = Modeling.filter_user_models(filter_term=tp,
+                                     filter_on=['Ticker'],
+                                     tag_filter_type='or')
+
+    assert set([m.ticker for m in ms]) == set(tkrs)
+    assert_equal(len(ms), ntkrs, 'number of models returned')
+
+    run_delete_models([m.uid for m in ms])
+    ms = Modeling.filter_user_models(filter_term=tp,
+                                     filter_on=['Ticker'],
+                                     tag_filter_type='or')
+    assert_equal(len(ms), 0, 'no models')
 
 
 @runner('pull model data sources')
@@ -291,17 +340,15 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         'Change in IRR', 'Current share price (DCF)',
         'Implied share price (DCF)', 'Ticker'
     ])
-    expected_fields.add(tag)
-    expected_fields.add(tag + ' (Simulated)')
-    assert s.group_fields == expected_fields
-
+    assert_equal(s.group_fields, expected_fields, 'simulated expected fields')
     edited_periods = []
     for e in edits:
         p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))
         edited_periods.append(
             (p, float(e['formula'].replace('$FORMULA * ', ''))))
 
-    assert set(model_ids) == set(sim.id for sim in s.simulation)
+    assert_equal(set(model_ids), set(sim.id for sim in s.simulation),
+                 'model ids')
     simulated_models = []
     for l in s.simulation:
         model = Modeling.pull_model(l.id)

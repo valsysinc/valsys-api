@@ -24,6 +24,7 @@ class Headers:
     EDITS = 'edits'
     GROUP_ID = 'groupId'
     OUTPUT_VARIABLES = 'outputVariables'
+    MODELS = 'models'
 
 
 class Resp:

@@ -39,7 +39,10 @@ def run_integration_tests():
     Runners.run_recalculate_model(model_id)
     Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
     Runners.run_edit_format(model_id, first_case_id, fact=first_fact)
-    Runners.run_tag_line_item(model_id, line_item_id=first_line_item.uid)
+    tag = 't4'
+    Runners.run_tag_line_item(model_id,
+                              line_item_id=first_line_item.uid,
+                              common_tag=tag)
     Runners.run_add_line_item(model_id, first_case, module_id)
     Runners.run_pull_model_information(model_id)
     Runners.run_pull_model_datasources(model_id)
@@ -81,7 +84,8 @@ def run_integration_tests():
                                            "timePeriod": "LFY-1"
                                        }],
                                        output_variables=["Net Revenue"],
-                                       tag="t4",
+                                       tag=tag,
                                        lfy=cfg['startPeriod'])
-    Runners.run_simulation_output_variables(grp.model_ids, ['t4'])
+    Runners.run_simulation_output_variables(grp.model_ids, [tag])
     # find 2019 net revenue, look for sim response
+    Runners.run_delete_models([model_id])

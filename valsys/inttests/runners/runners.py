@@ -81,10 +81,10 @@ def run_edit_format(model_id: str, case_id: str, fact: Fact):
 
 
 @runner('tag line item')
-def run_tag_line_item(model_id: str, line_item_id: str):
+def run_tag_line_item(model_id: str, line_item_id: str, common_tag='t4'):
     import uuid
 
-    new_tags = ['t4', str(uuid.uuid1())]
+    new_tags = [common_tag, str(uuid.uuid1())]
     tli = Modeling.tag_line_item(model_id, line_item_id, new_tags)
     assert tli.tags == new_tags
 
@@ -186,8 +186,7 @@ def run_multi_filters(base_config: Dict[str, str], user: str, password: str,
     for tkr in tkrs:
         cfg = deepcopy(base_config)
         cfg['ticker'] = tkr
-        smid = run_spawn_model(cgen(cfg=cfg, user=user, password=password))
-        print(smid)
+        run_spawn_model(cgen(cfg=cfg, user=user, password=password))
 
     ms = Modeling.filter_user_models(filter_term=tp,
                                      filter_on=['Ticker'],

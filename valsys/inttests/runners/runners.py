@@ -161,7 +161,6 @@ def run_filter_user_model_with_fields(ticker):
                                       filter_term=ticker,
                                       filter_on=['Ticker'])
     assert_gt(len(ms2), 0, 'results returned')
-    print(ms2)
     for m in ms2:
         assert_equal(set(flds), set(m.fields.keys()), 'filtered fields')
 
@@ -187,7 +186,8 @@ def run_multi_filters(base_config: Dict[str, str], user: str, password: str,
     for tkr in tkrs:
         cfg = deepcopy(base_config)
         cfg['ticker'] = tkr
-        run_spawn_model(cgen(cfg=cfg, user=user, password=password))
+        smid = run_spawn_model(cgen(cfg=cfg, user=user, password=password))
+        print(smid)
 
     ms = Modeling.filter_user_models(filter_term=tp,
                                      filter_on=['Ticker'],

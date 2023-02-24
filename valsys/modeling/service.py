@@ -55,7 +55,7 @@ def filter_user_models(
         ind_filters: List[str] = None,
         filter_on: List[str] = None,
         filter_term: str = '',
-        pagination=1,
+        pagination: int = 1,
         fields: List[str] = None) -> List[ModelDetailInformationWithFields]:
     """Search for a set of models, using the provided set of filters for the using user
 

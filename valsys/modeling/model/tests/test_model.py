@@ -1,6 +1,9 @@
-from valsys.modeling.model.model import ModelInformation, Model
-from valsys.modeling.model.tests.factories import model_factory
+from dataclasses import dataclass
+
 import pytest
+
+from valsys.modeling.model.model import Model, ModelInformation
+from valsys.modeling.model.tests.factories import model_factory
 
 
 class TestModelInformation:
@@ -44,7 +47,6 @@ class TestModelInformation:
         assert mi.data_sources == data_source
 
 
-from dataclasses import dataclass
 
 
 @dataclass

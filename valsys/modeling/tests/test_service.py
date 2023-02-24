@@ -3,10 +3,12 @@ from unittest import mock
 
 import pytest
 
+from valsys.modeling import service as Modeling
 from valsys.modeling.client.exceptions import (
     ModelingServiceGetException,
     ModelingServicePostException,
 )
+from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
     AddChildModuleException,
     AddLineItemException,
@@ -20,14 +22,12 @@ from valsys.modeling.exceptions import (
     TagModelException,
     UpdateModelGroupsException,
 )
-from valsys.modeling.vars import Headers
-
 from valsys.modeling.model.line_item import LineItem
-import valsys.modeling.service as Modeling
-from valsys.modeling.service import (SpawnedModelInfo)
-from valsys.modeling.vars import Vars
+from valsys.modeling.models import ModelGroup, ModelGroups
+from valsys.modeling.service import SpawnedModelInfo
+from valsys.modeling.vars import Headers, Vars
 from valsys.spawn.exceptions import ModelSpawnException
-from valsys.modeling.models import ModelGroups, ModelGroup
+
 from .factories import (
     valid_email,
     valid_name,
@@ -37,7 +37,7 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
-from valsys.modeling.client.urls import VSURL
+
 
 MODULE_PREFIX = "valsys.modeling.service"
 

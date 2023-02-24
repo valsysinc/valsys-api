@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Set
+from typing import Any, Dict, List, Set
+
 from valsys.modeling.model.line_item import LineItem
 
 

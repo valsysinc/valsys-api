@@ -6,6 +6,7 @@ from valsys.inttests.qa_tests import run_qa_script
 from valsys.inttests.utils import run_each_allow_fail
 from valsys.utils import loggerIT as logger
 
+
 MSG_RUNNING_TESTS = 'running integration tests'
 MSG_TESTS_FINISHED = 'tests finished'
 MSG_TESTS_PASSED = 'integration tests passed ok'

@@ -1,5 +1,6 @@
-from valsys.modeling.model.fact import Fact
 import pytest
+
+from valsys.modeling.model.fact import Fact
 
 
 class TestFact:

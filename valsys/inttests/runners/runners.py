@@ -1,16 +1,22 @@
-from valsys.inttests.runners.utils import runner
+import uuid
+from copy import deepcopy
+from typing import Dict, List
+
+from valsys.inttests.runners import checkers as Check
+from valsys.inttests.runners.utils import (
+    assert_equal,
+    assert_false,
+    assert_gt,
+    assert_not_none,
+    assert_true,
+    runner,
+)
+from valsys.modeling import service as Modeling
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
-from valsys.modeling.model.model import Model
 from valsys.modeling.model.line_item import LineItem
-from valsys.inttests.runners.utils import assert_equal, assert_not_none, assert_gt, assert_true, assert_false
-import valsys.modeling.service as Modeling
-
-import valsys.inttests.runners.checkers as Check
-from typing import List, Dict
+from valsys.modeling.model.model import Model
 from valsys.utils.time import yesterday
-from copy import deepcopy
-import uuid
 
 
 @runner('spawn model')

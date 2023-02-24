@@ -1,7 +1,7 @@
-from valsys.modeling.model.simulation import SimulationResponse, Edit
-from valsys.modeling.model.tests.fixtures import sample_simulation_response
-
 import pytest
+
+from valsys.modeling.model.simulation import Edit, SimulationResponse
+from valsys.modeling.model.tests.fixtures import sample_simulation_response
 
 
 class TestSimulationResponse:

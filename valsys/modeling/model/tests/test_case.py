@@ -1,6 +1,10 @@
-from valsys.modeling.model.case import Case
-import pytest
 import uuid
+from dataclasses import dataclass, field
+from typing import List
+
+import pytest
+
+from valsys.modeling.model.case import Case
 
 
 def case_factory(uid='1234', start_period=2019, case_name='Case name') -> Case:
@@ -8,8 +12,6 @@ def case_factory(uid='1234', start_period=2019, case_name='Case name') -> Case:
     return Case(uid=uid, start_period=start_period, case=case_name)
 
 
-from typing import List
-from dataclasses import dataclass, field
 
 
 @dataclass

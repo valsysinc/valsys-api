@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from unittest import mock
+
 import pytest
 
 from valsys.modeling.exceptions import FilterModelsException
@@ -8,11 +11,9 @@ from valsys.modeling.models import (
     PermissionTypes,
     Permissions,
 )
-from dataclasses import dataclass
-from .factories import valid_models_filter
-from unittest import mock
 
-import pytest
+from .factories import valid_models_filter
+
 
 MODULE_PREFIX = 'valsys.modeling.models'
 

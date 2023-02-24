@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.client.exceptions import (
@@ -8,17 +8,30 @@ from valsys.modeling.client.exceptions import (
 from valsys.modeling.client.service import new_client, new_socket_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.exceptions import (
-    AddChildModuleException, AddLineItemException, NewModelGroupsException,
-    PullModelGroupsException, PullModelInformationException,
-    RecalculateModelException, RemoveModuleException, ShareModelException,
-    SpawnModelResponseException, TagLineItemException, TagModelException,
-    UpdateModelGroupsException, DeleteColumnException)
-from valsys.modeling.model.group import GroupOfModels
+    AddChildModuleException,
+    AddLineItemException,
+    DeleteColumnException,
+    NewModelGroupsException,
+    PullModelGroupsException,
+    PullModelInformationException,
+    RecalculateModelException,
+    RemoveModuleException,
+    ShareModelException,
+    SpawnModelResponseException,
+    TagLineItemException,
+    TagModelException,
+    UpdateModelGroupsException,
+)
 from valsys.modeling.model.case import Case
 from valsys.modeling.model.fact import Fact
+from valsys.modeling.model.group import GroupOfModels
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model, ModelInformation
 from valsys.modeling.model.module import Module
+from valsys.modeling.model.simulation import (
+    ModelSimulations,
+    SimulationResponse,
+)
 from valsys.modeling.models import (
     ModelDetailInformationWithFields,
     ModelGroups,
@@ -26,13 +39,17 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.utils import facts_list, line_items_list, check_success, module_from_resp
-from valsys.modeling.vars import Vars, Headers, Resp
+from valsys.modeling.utils import (
+    check_success,
+    facts_list,
+    line_items_list,
+    module_from_resp,
+)
+from valsys.modeling.vars import Headers, Resp, Vars
 from valsys.seeds.models import OrchestratorConfig
 from valsys.spawn.exceptions import ModelSpawnException
 from valsys.utils import logger
 from valsys.utils.time import tomorrow
-from valsys.modeling.model.simulation import SimulationResponse, ModelSimulations
 
 
 class ModelingActions:

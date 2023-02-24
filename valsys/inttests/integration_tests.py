@@ -1,8 +1,9 @@
+import uuid
+
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.time import yesterday
-import uuid
 
 
 def integration_test_config():

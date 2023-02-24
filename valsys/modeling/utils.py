@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Protocol
-from valsys.modeling.model.module import Module
+
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.vars import Vars, Resp
+from valsys.modeling.model.module import Module
+from valsys.modeling.vars import Resp, Vars
 
 
 class Deserialiseable(Protocol):

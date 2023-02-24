@@ -1,8 +1,8 @@
 from valsys.modeling.model.case import Case
-from valsys.modeling.model.module import Module
-from valsys.modeling.model.model import Model
 from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
+from valsys.modeling.model.model import Model
+from valsys.modeling.model.module import Module
 
 
 def model_factory(model_id='uid42',

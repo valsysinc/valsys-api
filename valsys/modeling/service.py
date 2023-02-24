@@ -660,6 +660,15 @@ def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
 
 def edit_line_items(model_id: str,
                     line_items: List[LineItem]) -> List[LineItem]:
+    """Edit line items
+
+    The passed in line items will be used to update the line items.
+
+    Args:
+        model_id: the ID of the model containing the line items
+        line_items: List of `LineItem`s that will be updated.
+
+    """
     client = new_client()
     payload = {
         Headers.MODEL_ID: model_id,

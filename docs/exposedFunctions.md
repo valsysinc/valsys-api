@@ -18,7 +18,7 @@ Modeling.tag_model(...)
 Modeling.filter_user_models(...)
 ```
 in which we used a placeholder for the correct function arguments.
-## Model searching
+## Model searching/filtering
 ```python linenums="1"
 filter_user_models
 ```
@@ -69,25 +69,6 @@ delete_models(model_ids: List[str])
 ```
 :::valsys.modeling.service.delete_models
 
-## Get model groups
-```python
-pull_model_groups()
-```
-:::valsys.modeling.service.pull_model_groups
-
-## Update model groups
-```python
-update_model_groups(uid: str, name: str, model_ids: List[str])
-```
-:::valsys.modeling.service.update_model_groups
-
-## Add new model group
-```python
-new_model_groups(group_name: str, model_ids: List[str]) 
-```
-:::valsys.modeling.service.new_model_groups
-
-
 ## Get model information
 ```python linenums="1"                
 pull_model_information(model_id: str)                
@@ -122,41 +103,84 @@ recalculate_model(model_id: str)
 ```
 :::valsys.modeling.service.recalculate_model
 
-## Remove a module
-```python linenums="1"
-remove_module(model_id: str, module_id: str)
-```
-:::valsys.modeling.service.remove_module
-
-
-## Add a child module
-```python linenums="1"
-add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str) 
-```
-:::valsys.modeling.service.add_child_module
-
-
-## Add a line item
-```python linenums="1"
-add_line_item(case_id: str, model_id: str, module_id: str, name: str,
-                  order: int)                      
-```
-::: valsys.modeling.service.add_line_item
-
-
-## Tag a line item
-```python linenums="1"
-tag_line_item(model_id: str, line_item_id: str, tags: List[str])                    
-```
-:::valsys.modeling.service.tag_line_item
 ## Dynamic updates
 ```python linenums="1"
 dynamic_updates()                      
 ```
 :::valsys.modeling.service.dynamic_updates
 
-## Edit formula
+
+## Module operations
+### Add child module
+```python linenums="1"
+add_child_module(parent_module_id: str, name: str, model_id: str, case_id: str) 
+```
+:::valsys.modeling.service.add_child_module
+
+### Delete module
+```python linenums="1"
+remove_module(model_id: str, module_id: str)
+```
+:::valsys.modeling.service.remove_module
+
+### Rename module
+```python linenums="1"
+rename_module(model_id: str, module_id: str, new_module_name: str) 
+```
+:::valsys.modeling.service.rename_module
+
+
+
+## Line item operations
+### Add line item
+```python linenums="1"
+add_line_item(case_id: str, model_id: str, module_id: str, name: str, order: int)                      
+```
+::: valsys.modeling.service.add_line_item
+
+### Delete line item
+```python linenums="1"
+delete_line_item(model_id: str, module_id: str, line_item_id: str)                    
+```
+::: valsys.modeling.service.delete_line_item
+
+### Tag a line item
+```python linenums="1"
+tag_line_item(model_id: str, line_item_id: str, tags: List[str])                    
+```
+:::valsys.modeling.service.tag_line_item
+
+### Edit line items
+```python linenums="1"
+edit_line_items(model_id: str, line_items: List[LineItem])                    
+```
+:::valsys.modeling.service.edit_line_items
+
+## Fact operations
+### Edit formula
 ```python linenums="1"
 edit_formula(case_id: str, model_id: str, facts: List[Fact])                      
 ```
 :::valsys.modeling.service.edit_formula
+
+
+## Model groups
+### Get model groups
+```python
+pull_model_groups()
+```
+:::valsys.modeling.service.pull_model_groups
+
+
+### Add new model group
+```python
+new_model_groups(group_name: str, model_ids: List[str]) 
+```
+:::valsys.modeling.service.new_model_groups
+
+### Update model groups
+```python
+update_model_groups(uid: str, name: str, model_ids: List[str])
+```
+:::valsys.modeling.service.update_model_groups
+

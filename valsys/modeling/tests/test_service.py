@@ -22,36 +22,19 @@ from valsys.modeling.exceptions import (
     UpdateModelGroupsException,
 )
 from valsys.modeling.vars import Headers
-from valsys.modeling.model.fact import Fact
+
 from valsys.modeling.model.line_item import LineItem
+
 from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_child_module,
-    add_line_item,
-    append_tags,
-    dynamic_updates,
-    edit_facts,
-    edit_format,
-    edit_formula,
-    filter_user_models,
-    get_model_tags,
-    new_model_groups,
-    pull_case,
-    pull_model_datasources,
-    pull_model_groups,
-    pull_model_information,
-    recalculate_model,
-    remove_module,
-    share_model,
-    spawn_model,
-    tag_line_item,
-    tag_model,
-    update_model_groups,
-)
+    ModelingActions, SpawnedModelInfo, add_child_module, add_line_item,
+    append_tags, dynamic_updates, edit_facts, edit_format, edit_formula,
+    filter_user_models, get_model_tags, new_model_groups, pull_case,
+    pull_model_datasources, pull_model_groups, pull_model_information,
+    recalculate_model, remove_module, share_model, spawn_model, tag_line_item,
+    tag_model, update_model_groups, pull_model_groups)
 from valsys.modeling.vars import Vars
 from valsys.spawn.exceptions import ModelSpawnException
-
+from valsys.modeling.models import ModelGroups, ModelGroup
 from .factories import (
     valid_email,
     valid_name,
@@ -61,6 +44,7 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
+from valsys.modeling.client.urls import VSURL
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -69,7 +53,8 @@ class TestFilterUserModels:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
-    def test_works_ok_no_args(self, mock_ModelDetailInformationWithFields_from_json,
+    def test_works_ok_no_args(self,
+                              mock_ModelDetailInformationWithFields_from_json,
                               mock_new_client):
         mock_client = mock.MagicMock()
         mock_client.post.return_value = {'data': {'models': [1, 2]}}
@@ -946,3 +931,43 @@ class TestEditFormula:
         assert kw.get('case_id') == case_id
         assert kw.get('model_id') == model_id
         assert kw.get('facts') == facts
+
+
+class TestPullModelGroups:
+
+    @pytest.mark.parametrize('success_response', [{
+        'data': []
+    }, {
+        'data': None
+    }, {
+        'data': [{}, {}]
+    }])
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client, success_response):
+        mock_c = mock.MagicMock()
+        mock_c.get.return_value = success_response
+        mock_new_client.return_value = mock_c
+        mg = pull_model_groups()
+        mock_c.get.assert_called_once_with(url=VSURL.USERS_GROUPS)
+        assert isinstance(mg, ModelGroups)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_with_group(self, mock_new_client):
+        mock_c = mock.MagicMock()
+        success_response = {
+            'data': [{
+                ModelGroup.fields.UID: '42',
+                ModelGroup.fields.NAME: "name",
+                ModelGroup.fields.USER_ID: 'user',
+                ModelGroup.fields.MODEL_IDS: ['41', '42']
+            }]
+        }
+        mock_c.get.return_value = success_response
+        mock_new_client.return_value = mock_c
+        mg = pull_model_groups()
+        mock_c.get.assert_called_once_with(url=VSURL.USERS_GROUPS)
+        assert len(mg.groups) == 1
+        assert mg.groups[0].uid == '42'
+        assert mg.groups[0].name == 'name'
+        assert mg.groups[0].user_id == 'user'
+        assert mg.groups[0].model_ids == ['41', '42']

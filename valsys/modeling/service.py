@@ -285,7 +285,7 @@ def new_model_groups(group_name: str, model_ids: List[str]) -> ModelGroups:
     try:
         g = client.post(url=VSURL.USERS_GROUP,
                         data={
-                            'name': group_name,
+                            Headers.NAME: group_name,
                             'modelIDs': model_ids
                         })
     except ModelingServicePostException as err:

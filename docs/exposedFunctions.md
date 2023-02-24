@@ -6,8 +6,18 @@ from valsys.modeling.service import X
 ```
 For example, `from valsys.modeling.service import tag_model`.
 
-The exposed functions are listed out below
+The exposed functions are listed out below.
 
+If a number of imports are expected to be used, in order to not explode the number of imports, it may be useful to import and alias the entire modeling service via
+```python linenums="1"
+import valsys.modeling.service as Modeling
+```
+In which case functions are used via
+```python linenums="1"
+Modeling.tag_model(...)
+Modeling.filter_user_models(...)
+```
+in which we used a placeholder for the correct function arguments.
 ## Model searching
 ```python linenums="1"
 filter_user_models
@@ -52,6 +62,12 @@ from valsys.modeling.models import Permissions
 So, for example, `Permissions.VIEW` could be provided to the `share_model` function call.
 
 If you attempt to share the model with a user that dosent exist, a `ShareModelException` will be thrown.
+
+## Model deleting
+```python
+delete_models(model_ids: List[str])
+```
+:::valsys.modeling.service.delete_models
 
 ## Get model groups
 ```python

@@ -70,6 +70,7 @@ def filter_user_models(
         tags: List of tags to filter on
         tag_filter_type: How to combine the tags to search over; options are `and` and `or`.
         pagination: Page number of results
+        fields: Fields to return per model
     Returns:
         List of matching model information objects.
     """

@@ -16,42 +16,18 @@ from valsys.modeling.exceptions import (
     RecalculateModelException,
     RemoveModuleException,
     ShareModelException,
-    SpawnModelResponseException,
     TagLineItemException,
     TagModelException,
     UpdateModelGroupsException,
 )
 from valsys.modeling.vars import Headers
-from valsys.modeling.model.fact import Fact
+
 from valsys.modeling.model.line_item import LineItem
-from valsys.modeling.service import (
-    ModelingActions,
-    SpawnedModelInfo,
-    add_child_module,
-    add_line_item,
-    append_tags,
-    dynamic_updates,
-    edit_facts,
-    edit_format,
-    edit_formula,
-    filter_user_models,
-    get_model_tags,
-    new_model_groups,
-    pull_case,
-    pull_model_datasources,
-    pull_model_groups,
-    pull_model_information,
-    recalculate_model,
-    remove_module,
-    share_model,
-    spawn_model,
-    tag_line_item,
-    tag_model,
-    update_model_groups,
-)
+import valsys.modeling.service as Modeling
+from valsys.modeling.service import (SpawnedModelInfo)
 from valsys.modeling.vars import Vars
 from valsys.spawn.exceptions import ModelSpawnException
-
+from valsys.modeling.models import ModelGroups, ModelGroup
 from .factories import (
     valid_email,
     valid_name,
@@ -61,6 +37,7 @@ from .factories import (
     valid_uid,
     valid_uids,
 )
+from valsys.modeling.client.urls import VSURL
 
 MODULE_PREFIX = "valsys.modeling.service"
 
@@ -69,12 +46,13 @@ class TestFilterUserModels:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
-    def test_works_ok_no_args(self, mock_ModelDetailInformationWithFields_from_json,
+    def test_works_ok_no_args(self,
+                              mock_ModelDetailInformationWithFields_from_json,
                               mock_new_client):
         mock_client = mock.MagicMock()
         mock_client.post.return_value = {'data': {'models': [1, 2]}}
         mock_new_client.return_value = mock_client
-        filter_user_models()
+        Modeling.filter_user_models()
         mock_new_client.assert_called_once()
         mock_client.post.assert_called_once()
         calls = [mock.call(1), mock.call(2)]
@@ -98,10 +76,10 @@ class TestSpawnModel:
         mock_c.post.return_value = fake_post_ret
         mock_new_socket_client.return_value = mock_c
 
-        assert spawn_model(config) == [
+        assert Modeling.spawn_model(config) == [
             SpawnedModelInfo(model_id=fake_model_id, ticker=fake_model_ticker)
         ]
-        assert config.action == ModelingActions.SPAWN_MODELS
+        assert config.action == Modeling.ModelingActions.SPAWN_MODELS
 
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()
@@ -121,8 +99,8 @@ class TestSpawnModel:
         mock_c.post.return_value = fake_post_ret
         mock_new_socket_client.return_value = mock_c
         with pytest.raises(ModelSpawnException) as err:
-            assert spawn_model(config) == []
-            assert config.action == ModelingActions.SPAWN_MODELS
+            assert Modeling.spawn_model(config) == []
+            assert config.action == Modeling.ModelingActions.SPAWN_MODELS
 
         config.jsonify.assert_called_once()
         mock_new_socket_client.assert_called_once()
@@ -142,7 +120,7 @@ class TestSpawnModel:
         mock_c.post.return_value = fake_post_ret
         mock_new_socket_client.return_value = mock_c
         with pytest.raises(ModelSpawnException) as err:
-            spawn_model(config)
+            Modeling.spawn_model(config)
         assert "no modelID in response" in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_socket_client")
@@ -153,7 +131,7 @@ class TestSpawnModel:
         mock_c.post.side_effect = ModelingServiceGetException(data, code, url)
         mock_new_socket_client.return_value = mock_c
         with pytest.raises(ModelSpawnException) as err:
-            spawn_model(config)
+            Modeling.spawn_model(config)
         assert 'error building model' in str(err)
         assert str(data) in str(err)
         assert str(code) in str(err)
@@ -180,7 +158,7 @@ class TestPullModelInformation:
         }
         mock_new_client.return_value.get = mock_get
         mock_ModelInformation_from_json.return_value = mock_model_info
-        model_info = pull_model_information(uid)
+        model_info = Modeling.pull_model_information(uid)
         mock_new_client.assert_called_once()
         mock_get.assert_called_once()
         _, kw = mock_get.call_args
@@ -197,7 +175,7 @@ class TestPullModelInformation:
         mock_new_client.return_value = mock_c
         model_id = valid_uid(), valid_tags()
         with pytest.raises(PullModelInformationException) as err:
-            pull_model_information(model_id)
+            Modeling.pull_model_information(model_id)
         assert 'could not pull model info for model' in str(err)
 
 
@@ -212,7 +190,7 @@ class TestTagModel:
         mock_c.post.return_value = mock_post_ret
         mock_new_client.return_value = mock_c
         model_id, tags = valid_uid(), valid_tags()
-        assert tag_model(model_id, tags) == mock_post_ret
+        assert Modeling.tag_model(model_id, tags) == mock_post_ret
 
         mock_new_client.assert_called_once_with(None)
 
@@ -225,8 +203,8 @@ class TestTagModel:
         mock_c.post.return_value = mock_post_ret
         mock_new_client.return_value = mock_c
         model_id, tags, auth_token = valid_uid(), valid_tags(), 't0k3n'
-        assert tag_model(model_id, tags,
-                         auth_token=auth_token) == mock_post_ret
+        assert Modeling.tag_model(model_id, tags,
+                                  auth_token=auth_token) == mock_post_ret
 
         mock_new_client.assert_called_once_with(auth_token)
 
@@ -240,7 +218,7 @@ class TestTagModel:
         mock_new_client.return_value = mock_c
         model_id, tags = valid_uid(), valid_tags()
         with pytest.raises(TagModelException) as err:
-            tag_model(model_id, tags)
+            Modeling.tag_model(model_id, tags)
         assert 'error tagging model' in str(err)
 
 
@@ -256,7 +234,7 @@ class TestPullCase:
         mock_get.return_value = {'data': {'case': mock_cases}}
         mock_new_client.return_value.get = mock_get
         mock_Case_from_json.return_value = mock_model_info
-        model_info = pull_case(uid)
+        model_info = Modeling.pull_case(uid)
         mock_new_client.assert_called_once()
         mock_get.assert_called_once()
         _, kw = mock_get.call_args
@@ -296,7 +274,7 @@ class TestAddLineItem:
         mock_module.line_items = [fake_line_item]
         mock_from_json.return_value = mock_module
 
-        li = add_line_item(case_id, model_id, module_id, name, order)
+        li = Modeling.add_line_item(case_id, model_id, module_id, name, order)
         mock_new_client.assert_called_once()
         assert li == fake_line_item
         _, kww = mock_client.post.call_args
@@ -321,7 +299,7 @@ class TestAddLineItem:
         mock_module.line_items = [fake_line_item]
         mock_from_json.return_value = mock_module
         with pytest.raises(AddLineItemException) as err:
-            add_line_item(case_id, model_id, module_id, name, order)
+            Modeling.add_line_item(case_id, model_id, module_id, name, order)
         assert name in str(err)
 
 
@@ -337,7 +315,7 @@ class TestNewModelGroups:
         mock_new_model_groups_data = mock.MagicMock()
         mock_new_client.return_value = mock_client
         mock_client.post.return_value = mock_new_model_groups_data
-        nmg = new_model_groups(group_name, model_ids)
+        nmg = Modeling.new_model_groups(group_name, model_ids)
         mock_new_client.assert_called_once()
         mock_client.post.assert_called_once()
         _, kww = mock_client.post.call_args
@@ -357,7 +335,7 @@ class TestNewModelGroups:
         mock_new_client.return_value = mock_client
         mock_client.post.side_effect = Exception
         with pytest.raises(Exception):
-            nmg = new_model_groups(group_name, model_ids)
+            nmg = Modeling.new_model_groups(group_name, model_ids)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_raises_ModelingServicePostException(self, mock_new_client):
@@ -371,7 +349,7 @@ class TestNewModelGroups:
         mock_client.post.side_effect = ModelingServicePostException(
             err_data, err_code, err_url)
         with pytest.raises(NewModelGroupsException) as err:
-            new_model_groups(group_name, model_ids)
+            Modeling.new_model_groups(group_name, model_ids)
         assert "error adding new model groups" in str(err)
 
 
@@ -383,11 +361,12 @@ class TestDynamicUpdates:
         fake_return_data = 42
         mock_client.get.return_value = fake_return_data
         mock_new_socket_client.return_value = mock_client
-        d = dynamic_updates()
+        d = Modeling.dynamic_updates()
         mock_new_socket_client.assert_called_once()
         assert d == fake_return_data
         _, kww = mock_client.get.call_args
-        assert kww.get('data').get('action') == ModelingActions.DYNAMIC_UPDATES
+        assert kww.get('data').get(
+            'action') == Modeling.ModelingActions.DYNAMIC_UPDATES
         assert 'username' in kww.get('data')
         assert 'password' in kww.get('data')
 
@@ -402,9 +381,47 @@ class TestPullModelGroups:
 
         mock_client.get.return_value = fake_return_data
         mock_new_client.return_value = mock_client
-        pmg = pull_model_groups()
+        pmg = Modeling.pull_model_groups()
         mock_client.get.assert_called_once()
         mock_from_json.assert_called_once_with(fake_return_data.get('data'))
+
+    @pytest.mark.parametrize('success_response', [{
+        'data': []
+    }, {
+        'data': None
+    }, {
+        'data': [{}, {}]
+    }])
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_various_data_empty(self, mock_new_client,
+                                         success_response):
+        mock_c = mock.MagicMock()
+        mock_c.get.return_value = success_response
+        mock_new_client.return_value = mock_c
+        mg = Modeling.pull_model_groups()
+        mock_c.get.assert_called_once_with(url=VSURL.USERS_GROUPS)
+        assert isinstance(mg, ModelGroups)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_with_group(self, mock_new_client):
+        mock_c = mock.MagicMock()
+        success_response = {
+            'data': [{
+                ModelGroup.fields.UID: '42',
+                ModelGroup.fields.NAME: "name",
+                ModelGroup.fields.USER_ID: 'user',
+                ModelGroup.fields.MODEL_IDS: ['41', '42']
+            }]
+        }
+        mock_c.get.return_value = success_response
+        mock_new_client.return_value = mock_c
+        mg = Modeling.pull_model_groups()
+        mock_c.get.assert_called_once_with(url=VSURL.USERS_GROUPS)
+        assert len(mg.groups) == 1
+        assert mg.groups[0].uid == '42'
+        assert mg.groups[0].name == 'name'
+        assert mg.groups[0].user_id == 'user'
+        assert mg.groups[0].model_ids == ['41', '42']
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_get_raises(self, mock_new_client):
@@ -415,7 +432,7 @@ class TestPullModelGroups:
         mock_client.get.side_effect = ModelingServiceGetException(
             err_data, err_code, err_url)
         with pytest.raises(PullModelGroupsException) as err:
-            pull_model_groups()
+            Modeling.pull_model_groups()
         assert str(err_data) in str(err)
         assert str(err_code) in str(err)
         assert err_url in str(err)
@@ -432,7 +449,7 @@ class TestUpdateModelGroups:
 
         mock_client.post.return_value = fake_return_data
         mock_new_client.return_value = mock_client
-        pmg = update_model_groups(uid, name, model_ids)
+        pmg = Modeling.update_model_groups(uid, name, model_ids)
         mock_client.post.assert_called_once()
         mock_from_json.assert_called_once_with(fake_return_data.get('data'))
 
@@ -445,7 +462,7 @@ class TestUpdateModelGroups:
         mock_client.post.side_effect = ModelingServicePostException(
             err_data, err_code, err_url)
         with pytest.raises(UpdateModelGroupsException) as err:
-            update_model_groups(uid, name, model_ids)
+            Modeling.update_model_groups(uid, name, model_ids)
         assert str(err_data) in str(err)
         assert str(err_code) in str(err)
         assert err_url in str(err)
@@ -465,12 +482,11 @@ class TestTagLineItem:
         mock_client.post.return_value = fake_return_data
 
         mock_new_client.return_value = mock_client
-        tli = tag_line_item(model_id, line_item_id, tags)
+        tli = Modeling.tag_line_item(model_id, line_item_id, tags)
 
         mock_new_client.assert_called_once()
         _, kw = mock_client.post.call_args
         assert 'data' in kw
-        print(kw)
         assert kw.get('data').get('lineItemId') == line_item_id
         assert kw.get('data').get('modelID') == model_id
         assert kw.get('data').get('tags') == tags
@@ -487,7 +503,7 @@ class TestTagLineItem:
 
         mock_new_client.return_value = mock_client
         with pytest.raises(TagLineItemException) as err:
-            tag_line_item(model_id, line_item_id, tags)
+            Modeling.tag_line_item(model_id, line_item_id, tags)
         assert 'error tagging line item' in str(err)
 
 
@@ -504,7 +520,7 @@ class TestShareModel:
         mock_client.post.return_value = fake_return_data
 
         mock_new_client.return_value = mock_client
-        share_model(model_id, email, permission.permission)
+        Modeling.share_model(model_id, email, permission.permission)
 
         mock_new_client.assert_called_once()
         _, kw = mock_client.post.call_args
@@ -525,7 +541,7 @@ class TestShareModel:
 
         mock_new_client.return_value = mock_client
         with pytest.raises(ShareModelException) as err:
-            share_model(model_id, email, permission.permission)
+            Modeling.share_model(model_id, email, permission.permission)
         assert 'failed to share models' in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
@@ -538,7 +554,7 @@ class TestShareModel:
 
         mock_new_client.return_value = mock_client
         with pytest.raises(NotImplementedError) as err:
-            share_model(model_id, email, permission)
+            Modeling.share_model(model_id, email, permission)
         assert permission in str(err)
 
 
@@ -549,7 +565,7 @@ class TestPullModelDatasources:
         model_id = valid_uid()
         mock_ds = mock.MagicMock()
         mock_pull_model_information.return_value.data_sources = mock_ds
-        assert pull_model_datasources(model_id) == mock_ds
+        assert Modeling.pull_model_datasources(model_id) == mock_ds
         mock_pull_model_information.assert_called_once_with(model_id)
 
 
@@ -560,7 +576,7 @@ class TestGetModelTags:
         uid = valid_uid()
         mock_tags = mock.MagicMock()
         mock_pull_model_information.return_value.tags = mock_tags
-        assert get_model_tags(uid) == mock_tags
+        assert Modeling.get_model_tags(uid) == mock_tags
         mock_pull_model_information.assert_called_once_with(uid)
 
 
@@ -572,7 +588,7 @@ class TestAppendlTags:
         uid = valid_uid()
         tags = valid_tags(count=5)
         mock_get_model_tags.return_value = valid_tags(count=2)
-        append_tags(uid, tags)
+        Modeling.append_tags(uid, tags)
         a, _ = mock_tag_model.call_args
         mock_tag_model.assert_called_once
         call_uid, tags = a[0], a[1]
@@ -585,7 +601,7 @@ class TestAppendlTags:
         uid = valid_uid()
         tags = valid_tags(count=5)
         mock_get_model_tags.return_value = tags
-        append_tags(uid, tags)
+        Modeling.append_tags(uid, tags)
         a, _ = mock_tag_model.call_args
         mock_tag_model.assert_called_once
         call_uid, tags = a[0], a[1]
@@ -634,7 +650,7 @@ class TestRecalculateModel:
         mock_new_client.return_value = mock_c
         mock_c.post.return_value = self.success_response
         mfl = mock_facts_list.return_value
-        assert recalculate_model(model_id) == mfl
+        assert Modeling.recalculate_model(model_id) == mfl
         _, kw = mock_c.post.call_args
         assert 'url' in kw
         assert kw.get('data').get(Headers.MODEL_ID) == model_id
@@ -647,7 +663,7 @@ class TestRecalculateModel:
         mock_new_client.return_value = mock_c
         mock_c.post.return_value = self.failed_response
         with pytest.raises(RecalculateModelException) as err:
-            recalculate_model(model_id)
+            Modeling.recalculate_model(model_id)
         assert 'recalculating model' in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
@@ -657,7 +673,7 @@ class TestRecalculateModel:
         mock_new_client.return_value = mock_c
         mock_c.post.side_effect = ModelingServicePostException('d', 4, 'www')
         with pytest.raises(RecalculateModelException) as err:
-            recalculate_model(model_id)
+            Modeling.recalculate_model(model_id)
         assert 'recalculating model' in str(err)
 
 
@@ -672,7 +688,7 @@ class TestRemoveModule:
         mock_c = mock.MagicMock()
         mock_c.post.return_value = {'status': 'success'}
         mock_new_client.return_value = mock_c
-        assert remove_module(model_id, module_id)
+        assert Modeling.remove_module(model_id, module_id)
         mock_c.post.assert_called_once()
         _, kw = mock_c.post.call_args
         assert kw.get('data') == {
@@ -691,7 +707,7 @@ class TestRemoveModule:
         mock_c.post.side_effect = ModelingServicePostException(d, s, u)
         mock_new_client.return_value = mock_c
         with pytest.raises(RemoveModuleException) as err:
-            remove_module(model_id, module_id)
+            Modeling.remove_module(model_id, module_id)
         assert 'error removing module' in str(err)
 
 
@@ -718,8 +734,8 @@ class TestAddChildModule:
                 }
             }
         }
-        assert add_child_module(parent_module_id, name, model_id,
-                                case_id) == mock_new_mod
+        assert Modeling.add_child_module(parent_module_id, name, model_id,
+                                         case_id) == mock_new_mod
         mock_from_json.assert_called_once_with(module)
         _, kw = mock_c.post.call_args
         assert 'url' in kw
@@ -753,7 +769,8 @@ class TestAddChildModule:
             }
         }
         with pytest.raises(AddChildModuleException) as err:
-            add_child_module(parent_module_id, name, model_id, case_id)
+            Modeling.add_child_module(parent_module_id, name, model_id,
+                                      case_id)
         assert f' could not find module with name {name}' in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
@@ -768,7 +785,8 @@ class TestAddChildModule:
 
         mock_c.post.return_value = {'data': {}}
         with pytest.raises(AddChildModuleException) as err:
-            add_child_module(parent_module_id, name, model_id, case_id)
+            Modeling.add_child_module(parent_module_id, name, model_id,
+                                      case_id)
         assert 'Error adding child module: unexpected data structure' in str(
             err)
 
@@ -797,7 +815,7 @@ class TestAddLineItem:
                 }
             }
         }
-        rl = add_line_item(case_id, model_id, module_id, name, order)
+        rl = Modeling.add_line_item(case_id, model_id, module_id, name, order)
         assert rl.name == name
         assert rl.uid == expected_line_item_data.get('id')
 
@@ -814,7 +832,7 @@ class TestAddLineItem:
 
         mock_c.post.return_value = {'data': {}}
         with pytest.raises(AddLineItemException) as err:
-            add_line_item(case_id, model_id, module_id, name, order)
+            Modeling.add_line_item(case_id, model_id, module_id, name, order)
         assert 'error adding line item: invalid data structure' in str(err)
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")
@@ -844,7 +862,7 @@ class TestAddLineItem:
             }
         }
         with pytest.raises(AddLineItemException) as err:
-            add_line_item(case_id, model_id, module_id, name, order)
+            Modeling.add_line_item(case_id, model_id, module_id, name, order)
         assert f'error adding line item: cannot find module with name {name}' in str(
             err)
 
@@ -861,7 +879,7 @@ class TestAddLineItem:
         d, s, u = 42, 4, 'www'
         mock_c.post.side_effect = ModelingServicePostException(d, s, u)
         with pytest.raises(AddLineItemException) as err:
-            add_line_item(case_id, model_id, module_id, name, order)
+            Modeling.add_line_item(case_id, model_id, module_id, name, order)
         assert 'error adding line item' in str(err)
         assert model_id in str(err)
         assert module_id in str(err)
@@ -905,7 +923,7 @@ class TestEditFacts:
         mock_c = mock.MagicMock()
         mock_c.post.return_value = self.success_response
         mock_new_client.return_value = mock_c
-        edit_facts(url, case_id, model_id, facts)
+        Modeling.edit_facts(url, case_id, model_id, facts)
         mock_new_client.assert_called_once()
         mock_c.post.assert_called_once
         _, kw = mock_c.post.call_args
@@ -925,7 +943,7 @@ class TestEditFormat:
         case_id = valid_uid()
         model_id = valid_uid()
         facts = [1, 2, 3]
-        edit_format(case_id, model_id, facts)
+        Modeling.edit_format(case_id, model_id, facts)
         mock_edit_facts.assert_called_once()
         _, kw = mock_edit_facts.call_args
         assert kw.get('case_id') == case_id
@@ -940,7 +958,7 @@ class TestEditFormula:
         case_id = valid_uid()
         model_id = valid_uid()
         facts = [1, 2, 3]
-        edit_formula(case_id, model_id, facts)
+        Modeling.edit_formula(case_id, model_id, facts)
         mock_edit_facts.assert_called_once()
         _, kw = mock_edit_facts.call_args
         assert kw.get('case_id') == case_id

@@ -81,10 +81,10 @@ def run_edit_format(model_id: str, case_id: str, fact: Fact):
 
 
 @runner('tag line item')
-def run_tag_line_item(model_id: str, line_item_id: str):
+def run_tag_line_item(model_id: str, line_item_id: str, common_tag='t4'):
     import uuid
 
-    new_tags = ['t4', str(uuid.uuid1())]
+    new_tags = [common_tag, str(uuid.uuid1())]
     tli = Modeling.tag_line_item(model_id, line_item_id, new_tags)
     assert tli.tags == new_tags
 
@@ -161,7 +161,6 @@ def run_filter_user_model_with_fields(ticker):
                                       filter_term=ticker,
                                       filter_on=['Ticker'])
     assert_gt(len(ms2), 0, 'results returned')
-    print(ms2)
     for m in ms2:
         assert_equal(set(flds), set(m.fields.keys()), 'filtered fields')
 

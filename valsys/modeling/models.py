@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from valsys.modeling.exceptions import (
     FilterModelsException,
@@ -72,37 +72,51 @@ class ModelGroup:
     user_id: str
     model_ids: List[str] = field(default_factory=list)
 
+    class fields:
+        UID = 'uid'
+        NAME = 'name'
+        USER_ID = 'userID'
+        MODEL_IDS = 'modelIDs'
+
     def jsonify(self):
         return {
-            'uid': self.uid,
-            'name': self.name,
-            'userID': self.user_id,
-            'modelIDs': self.model_ids
+            self.fields.UID: self.uid,
+            self.fields.NAME: self.name,
+            self.fields.USER_ID: self.user_id,
+            self.fields.MODEL_IDS: self.model_ids
         }
 
     @classmethod
     def from_json(cls, ij):
-        return cls(uid=ij.get('uid'),
-                   name=ij.get('name'),
-                   user_id=ij.get('userID'),
-                   model_ids=ij.get('modelIDs'))
+        return cls(uid=ij.get(cls.fields.UID),
+                   name=ij.get(cls.fields.NAME),
+                   user_id=ij.get(cls.fields.USER_ID),
+                   model_ids=ij.get(cls.fields.MODEL_IDS))
 
 
 @dataclass
 class ModelGroups:
     groups: List[ModelGroup] = field(default_factory=list)
 
+    class fields:
+        GROUPS = 'groups'
+
     def __iter__(self):
         for g in self.groups:
             yield g
 
     def jsonify(self):
-        return {'groups': [g.jsonify() for g in self.groups]}
+        return {self.fields.GROUPS: [g.jsonify() for g in self.groups]}
+
+    def append(self, group: ModelGroup):
+        self.groups.append(group)
 
     @classmethod
-    def from_json(cls, ij):
+    def from_json(cls, ij: List[Dict[str, Any]]):
         mg = cls()
-        [mg.groups.append(ModelGroup.from_json(mj)) for mj in ij]
+        if ij is None:
+            return mg
+        [mg.append(ModelGroup.from_json(mj)) for mj in ij]
         return mg
 
 

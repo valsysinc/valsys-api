@@ -54,7 +54,7 @@ def workflow(nm: str):
     def real_decorator(function):
 
         def wrapper(*args, **kwargs):
-            logger.info(f"running workflow: {nm}")
+            logger.info(f"RUNNING WORKFLOW: {nm}")
             return function(*args, **kwargs)
 
         return wrapper

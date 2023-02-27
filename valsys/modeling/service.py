@@ -122,7 +122,7 @@ def filter_user_models(
             ModelDetailInformationWithFields.from_json(j)
             for j in resp.get(Resp.DATA).get(Resp.MODELS)
         ]
-    except TypeError:
+    except (TypeError, AttributeError):
         return []
 
 

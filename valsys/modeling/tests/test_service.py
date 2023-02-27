@@ -38,7 +38,6 @@ from .factories import (
     valid_uids,
 )
 
-
 MODULE_PREFIX = "valsys.modeling.service"
 
 
@@ -50,13 +49,76 @@ class TestFilterUserModels:
                               mock_ModelDetailInformationWithFields_from_json,
                               mock_new_client):
         mock_client = mock.MagicMock()
-        mock_client.post.return_value = {'data': {'models': [1, 2]}}
+        fake_model_returns = [1, 2]
+        mock_client.post.return_value = {
+            'data': {
+                'models': fake_model_returns
+            }
+        }
         mock_new_client.return_value = mock_client
         Modeling.filter_user_models()
         mock_new_client.assert_called_once()
         mock_client.post.assert_called_once()
-        calls = [mock.call(1), mock.call(2)]
+        calls = [mock.call(i) for i in fake_model_returns]
         mock_ModelDetailInformationWithFields_from_json.assert_has_calls(calls)
+        _, kw = mock_client.post.call_args
+        assert 'url' in kw
+        assert VSURL.USERS_FILTER_HISTORY in kw['url']
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
+    @mock.patch(f"{MODULE_PREFIX}.ModelsFilter")
+    def test_works_ok_with_fields(
+            self, mock_ModelsFilter,
+            mock_ModelDetailInformationWithFields_from_json, mock_new_client):
+        mock_client = mock.MagicMock()
+        fake_model_returns = [1, 2]
+        fields = [4, 5]
+        mock_client.post.return_value = {
+            'data': {
+                'models': fake_model_returns
+            }
+        }
+        mock_new_client.return_value = mock_client
+        Modeling.filter_user_models(fields=fields)
+        mock_ModelsFilter.return_value.add_fields.assert_called_with(fields)
+        _, kw = mock_client.post.call_args
+        assert VSURL.USERS_FILTER_HISTORY_FIELDS in kw['url']
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
+    def test_fails_to_build_returns_empty_list(
+            self, mock_ModelDetailInformationWithFields_from_json,
+            mock_new_client):
+
+        mock_ModelDetailInformationWithFields_from_json.side_effect = TypeError
+        mock_client = mock.MagicMock()
+        mock_client.post.return_value = {'data': {'models': mock.MagicMock()}}
+        mock_new_client.return_value = mock_client
+        fm = Modeling.filter_user_models()
+        assert fm == []
+        mock_new_client.assert_called_once()
+        mock_client.post.assert_called_once()
+        _, kw = mock_client.post.call_args
+        assert 'url' in kw
+        assert VSURL.USERS_FILTER_HISTORY in kw['url']
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    @mock.patch(f"{MODULE_PREFIX}.ModelDetailInformationWithFields.from_json")
+    def test_bad_resp_returns_empty_list(
+            self, mock_ModelDetailInformationWithFields_from_json,
+            mock_new_client):
+
+        mock_client = mock.MagicMock()
+        mock_client.post.return_value = {'data': None}
+        mock_new_client.return_value = mock_client
+        fm = Modeling.filter_user_models()
+        assert fm == []
+        mock_new_client.assert_called_once()
+        mock_client.post.assert_called_once()
+        _, kw = mock_client.post.call_args
+        assert 'url' in kw
+        assert VSURL.USERS_FILTER_HISTORY in kw['url']
 
 
 class TestSpawnModel:

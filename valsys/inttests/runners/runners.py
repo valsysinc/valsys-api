@@ -186,27 +186,32 @@ def run_delete_models(model_ids: List[str]):
 @runner('multi filters')
 def run_multi_filters(base_config: Dict[str, str], user: str, password: str,
                       cgen):
-    ntkrs = 4
-    tp = base_config.get('companyName') + "-" + str(uuid.uuid1())
-    tkrs = [tp + str(uuid.uuid1()) for _ in range(ntkrs)]
-
-    for tkr in tkrs:
+    ncompany_names = 4
+    company_name_base = base_config.get('companyName') + "-" + str(
+        uuid.uuid1())
+    company_names = [
+        company_name_base + str(uuid.uuid1()) for _ in range(ncompany_names)
+    ]
+    spawned_model_ids = []
+    for tkr in company_names:
         cfg = deepcopy(base_config)
         cfg['companyName'] = tkr
-        run_spawn_model(cgen(cfg=cfg, user=user, password=password))
+        spawned_model = run_spawn_model(
+            cgen(cfg=cfg, user=user, password=password))
+        spawned_model_ids.append(spawned_model[0].model_id)
 
-    ms = Modeling.filter_user_models(filter_term=tp,
-                                     filter_on=['Name'],
-                                     tag_filter_type='or')
+    results = Modeling.filter_user_models(filter_term=company_name_base,
+                                          filter_on=['Name'],
+                                          tag_filter_type='or')
 
-    assert set([m.model.company_name for m in ms]) == set(tkrs)
-    assert_equal(len(ms), ntkrs, 'number of models returned')
+    assert set([m.model.company_name for m in results]) == set(company_names)
+    assert_equal(len(results), len(company_names), 'number of models returned')
 
-    run_delete_models([m.uid for m in ms])
-    ms = Modeling.filter_user_models(filter_term=tp,
-                                     filter_on=['Name'],
-                                     tag_filter_type='or')
-    assert_equal(len(ms), 0, 'no models')
+    run_delete_models(spawned_model_ids)
+    results = Modeling.filter_user_models(filter_term=company_name_base,
+                                          filter_on=['Name'],
+                                          tag_filter_type='or')
+    assert_equal(len(results), 0, 'no models')
 
 
 @runner('pull model data sources')

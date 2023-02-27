@@ -49,7 +49,7 @@ def run_integration_tests():
     Runners.run_pull_model_datasources(model_id)
     Runners.run_remove_module(model_id, new_module.uid)
     Runners.run_filter_user_model(model_id)
-    Runners.run_filter_user_model_with_fields(cfg.get('ticker'))
+    Runners.run_filter_user_model_with_fields(model_id, cfg.get('ticker'))
     Runners.run_multi_filters(base_config=cfg,
                               user=API_USERNAME,
                               password=API_PASSWORD,

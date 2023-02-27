@@ -247,6 +247,7 @@ class ModelDetailInformationWithFields:
             model_json = j.get('model')
         else:
             model_json = j
+
         return cls(model=ModelDetailInformation.from_json(model_json),
                    fields=j.get('fields', {}))
 

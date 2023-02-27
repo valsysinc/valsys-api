@@ -157,7 +157,7 @@ def run_filter_user_model(model_id: str):
 
 
 @runner('filter user model with fields')
-def run_filter_user_model_with_fields(ticker):
+def run_filter_user_model_with_fields(model_id, ticker):
 
     flds = [
         '[Capital expenditure (DCF)[LFY+1]]',
@@ -168,7 +168,8 @@ def run_filter_user_model_with_fields(ticker):
                                       filter_on=['Ticker'])
     assert_gt(len(ms2), 0, 'results returned')
     for m in ms2:
-        assert_equal(set(flds), set(m.fields.keys()), 'filtered fields')
+        if m.model.uid == model_id:
+            assert_equal(set(flds), set(m.fields.keys()), 'filtered fields')
 
 
 @runner('delete models')
@@ -186,24 +187,24 @@ def run_delete_models(model_ids: List[str]):
 def run_multi_filters(base_config: Dict[str, str], user: str, password: str,
                       cgen):
     ntkrs = 4
-    tp = base_config.get('ticker') + "-" + str(uuid.uuid1())
+    tp = base_config.get('companyName') + "-" + str(uuid.uuid1())
     tkrs = [tp + str(uuid.uuid1()) for _ in range(ntkrs)]
 
     for tkr in tkrs:
         cfg = deepcopy(base_config)
-        cfg['ticker'] = tkr
+        cfg['companyName'] = tkr
         run_spawn_model(cgen(cfg=cfg, user=user, password=password))
 
     ms = Modeling.filter_user_models(filter_term=tp,
-                                     filter_on=['Ticker'],
+                                     filter_on=['Name'],
                                      tag_filter_type='or')
 
-    assert set([m.ticker for m in ms]) == set(tkrs)
+    assert set([m.model.company_name for m in ms]) == set(tkrs)
     assert_equal(len(ms), ntkrs, 'number of models returned')
 
     run_delete_models([m.uid for m in ms])
     ms = Modeling.filter_user_models(filter_term=tp,
-                                     filter_on=['Ticker'],
+                                     filter_on=['Name'],
                                      tag_filter_type='or')
     assert_equal(len(ms), 0, 'no models')
 

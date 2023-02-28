@@ -4,7 +4,7 @@ from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_cell_identifier, gen_orch_config, workflow
 from valsys.modeling.model.line_item import LineItem
-from valsys.utils.logging import loggerIT
+
 from valsys.utils.time import yesterday
 
 

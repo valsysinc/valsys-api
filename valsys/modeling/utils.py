@@ -20,12 +20,12 @@ def from_list(m: Deserialiseable, d: List[Dict[str, Any]]):
     return [m.from_json(j) for j in d]
 
 
-def facts_list(facts: List[Dict[str, Any]]) -> List[Fact]:
+def facts_list(facts: Deserialiseable) -> List[Fact]:
     """Builds a list of Fact objects from a list of fact jsons."""
     return from_list(Fact, facts)
 
 
-def line_items_list(line_items: List[Dict[str, Any]]) -> List[LineItem]:
+def line_items_list(line_items: Deserialiseable) -> List[LineItem]:
     """Builds a list of Line Item objects from a list of line item jsons."""
     return from_list(LineItem, line_items)
 

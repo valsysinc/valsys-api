@@ -285,7 +285,7 @@ class ModelsFilter:
         self.filter_geography = 'geography' in filter_on
         self.filter_industry = 'industry' in filter_on
 
-    def add_fields(self, fields):
+    def add_fields(self, fields: List[str]):
         for f in fields:
             self.fields.append(f)
 

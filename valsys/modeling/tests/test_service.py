@@ -41,6 +41,28 @@ from .factories import (
 MODULE_PREFIX = "valsys.modeling.service"
 
 
+class TestPullModel:
+
+    @mock.patch(f"{MODULE_PREFIX}.check_success")
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client, mock_check_success):
+        pass
+        model_id = '1234'
+        model = Modeling.pull_model(model_id)
+        mock_new_client.return_value.get.assert_called_once()
+        mock_check_success.assert_called_once()
+
+    @mock.patch(f"{MODULE_PREFIX}.check_success")
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_success_fails(self, mock_new_client, mock_check_success):
+        pass
+        model_id = '1234'
+        mock_check_success.side_effect = Exception
+        with pytest.raises(Exception):
+            Modeling.pull_model(model_id)
+        mock_new_client.return_value.get.assert_called_once()
+
+
 class TestFilterUserModels:
 
     @mock.patch(f"{MODULE_PREFIX}.new_client")

@@ -21,13 +21,13 @@ def gen_orch_config(cfg, user, password):
         num_historical_years=cfg.get('numHistoricalYears'),
         start_date=cfg.get('startDate'),
         model_configs=[
-            OrchestratorModelConfig(
-                template_id=template_id,
-                company_name=cfg.get('companyName'),
-                ticker=cfg.get('ticker'),
-                industry=cfg.get('industry'),
-                start_period=cfg.get('startPeriod'),
-            )
+            OrchestratorModelConfig(template_id=template_id,
+                                    company_name=cfg.get('companyName'),
+                                    ticker=cfg.get('ticker'),
+                                    industry=cfg.get('industry'),
+                                    start_period=cfg.get('startPeriod'),
+                                    source=cfg.get('variables', {}).get(
+                                        'INTERNAL_SOURCE', ''))
         ])
     return model_seed_config
 

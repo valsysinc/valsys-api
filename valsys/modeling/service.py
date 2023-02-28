@@ -387,6 +387,7 @@ def pull_model(model_id: str) -> Model:
         url=VSURL.PULL_MODEL,
         headers={Headers.MODEL_ID: model_id},
     )
+    check_success(resp, 'pull model')
     return Model.from_json(resp.get(Resp.DATA).get(Resp.MODEL))
 
 

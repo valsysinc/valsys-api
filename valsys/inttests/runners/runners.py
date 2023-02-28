@@ -222,7 +222,7 @@ def run_pull_model_datasources(model_id: str):
 
 @runner('pull model information')
 def run_pull_model_information(model_id: str):
-    Modeling.pull_model_information(model_id)
+    return Modeling.pull_model_information(model_id)
 
 
 @runner('add child module')
@@ -267,7 +267,7 @@ def run_remove_module(model_id: str, module_id: str):
 @runner('recalculate model')
 def run_recalculate_model(model_id: str):
     from valsys.modeling.service import recalculate_model
-    assert recalculate_model(model_id)
+    recalculate_model(model_id)
 
 
 @runner('rename module')

@@ -33,6 +33,9 @@ class ClientRecalcTest:
             model2 = self._pull_model()
             post_periods = model2.first_case.first_module.periods
             if len(post_periods) != len(init_periods):
+                # If here, then break out the while loop:
+                # something changed and we can now figure out
+                # if it changed in the expected manner.
                 break
             if ntries > maxntries:
                 break

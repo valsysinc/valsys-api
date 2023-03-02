@@ -22,7 +22,7 @@ def from_list(m: Deserialiseable, d: List[Dict[str, Any]]):
 
 def facts_list(facts: Deserialiseable) -> List[Fact]:
     """Builds a list of Fact objects from a list of fact jsons."""
-    return from_list(Fact, facts)
+    return from_list(Fact, facts or [])
 
 
 def line_items_list(line_items: Deserialiseable) -> List[LineItem]:

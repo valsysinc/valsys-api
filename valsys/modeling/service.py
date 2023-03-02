@@ -144,7 +144,8 @@ def spawn_model(config: OrchestratorConfig) -> List[SpawnedModelInfo]:
     client = new_socket_client()
     config.action = ModelingActions.SPAWN_MODELS
     try:
-        resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=config.jsonify())
+        payload = config.jsonify()
+        resp = client.post(url=VSURL.SCK_ORCHESTRATOR, data=payload)
         smi = []
         fds = []
         for m in resp.get(Resp.MODELS):
@@ -436,7 +437,7 @@ def recalculate_model(model_id: str) -> List[Fact]:
         List of Facts updated during the recalculation process.
     """
     client = new_client()
-    payload = {Headers.MODEL_ID: model_id}
+    payload = {Headers.MODEL_ID: model_id, 'update': True}
 
     try:
         resp = client.post(url=VSURL.RECALC_MODEL, data=payload)
@@ -447,7 +448,6 @@ def recalculate_model(model_id: str) -> List[Fact]:
     check_success(resp,
                   'recalculating model',
                   exception=RecalculateModelException)
-
     return facts_list(resp.get(Resp.DATA).get(Resp.FACTS))
 
 

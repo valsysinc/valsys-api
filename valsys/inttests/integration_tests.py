@@ -1,5 +1,5 @@
 import uuid
-
+from typing import List
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_orch_config, workflow
@@ -90,3 +90,22 @@ def run_integration_tests():
     Runners.run_simulation_output_variables(grp.model_ids, [tag])
     # find 2019 net revenue, look for sim response
     Runners.run_delete_models([model_id])
+
+
+def run_spawn(ticker='INFO'):
+    cfg = {
+        'companyName': '',
+        'ticker': 'PEP',
+        'templateName': 'dcf-standard',
+        'numForecastYears': 3,
+        'numHistoricalYears': 2,
+        'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
+        'startPeriod': 2019,
+        'startDate': yesterday()
+    }
+    cfg['ticker'] = ticker
+    spawned_models = Runners.run_spawn_model(
+        gen_orch_config(cfg=cfg, user=API_USERNAME, password=API_PASSWORD))
+
+    model_id = spawned_models[0].model_id
+    print(model_id, ticker)

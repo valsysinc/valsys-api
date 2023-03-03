@@ -265,9 +265,11 @@ def run_remove_module(model_id: str, module_id: str):
 
 
 @runner('recalculate model')
-def run_recalculate_model(model_id: str):
+def run_recalculate_model(model_id: str, expect_facts=True):
     from valsys.modeling.service import recalculate_model
-    recalculate_model(model_id)
+    rm = recalculate_model(model_id)
+    if expect_facts:
+        assert rm
 
 
 @runner('rename module')

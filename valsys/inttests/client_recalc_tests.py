@@ -20,7 +20,7 @@ class ClientRecalcTest:
         # Spawn the model and obtain the modelID
         self.model_id = Runners.run_spawn_single_model(model_seed_config)
         self.init_model = self._pull_model()
-        Runners.run_recalculate_model(self.model_id)
+        Runners.run_recalculate_model(self.model_id, expect_facts=False)
 
     @workflow('client recalc assertions')
     def post_assertions(self):

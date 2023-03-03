@@ -32,6 +32,12 @@ Finally, you will need to log into the valsys system; this allows authentication
 make login
 ```
 
+## Environment variable
+Normal useage of the library requires setting of an environment variable; to do so, copy and execute the following into a terminal:
+```bash
+export VALSYS_API_BUILD=local
+```
+
 
 ## Docserver
 The documentation can be viewed locally by executing

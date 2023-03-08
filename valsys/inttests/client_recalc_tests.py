@@ -55,12 +55,12 @@ class ClientRecalcTest:
     def _model_config(self):
         return {
             'companyName': 'Starbucks',
-            'ticker': 'SBUX',
+            'ticker': 'SBUX US',
             'templateName': 'cpp-template',
             'numForecastYears': 5,
             'numHistoricalYears': 3,
             'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
-            'startPeriod': 2018,
+            'startPeriod': 2020,
             'startDate': yesterday(),
             "variables": {
                 "INTERNAL_SOURCE": "SBUX_US|respawn|ddi|amohammad"

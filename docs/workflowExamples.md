@@ -28,7 +28,7 @@ seed_config = {
 spawned_models = spawn_from_config(seed_config)
 
 # Extract a list of modelID/tickers from the spawned model data
-models = [{'modelID': p.model_id, 'ticker': p.ticker} for p in spawned_models]
+models = [{'modelID': m.model_id, 'ticker': m.ticker} for m in spawned_models]
 ```
 
 If the `templateName` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 
@@ -60,7 +60,7 @@ The API allows a model to be shared to another user. This is done by referencing
 ### With a single user
 ```python linenums="1"
 # Import the share_model function from the modeling service
-from valsys.modeling.service import share_model
+import valsys.modeling.service as Modeling
 
 # Import the permissions types 
 from valsys.modeling.models import PermissionTypes
@@ -75,13 +75,13 @@ email_to_share_to = "jack.fuller@valsys.io"
 permission = PermissionTypes.VIEW
 
 # Share the model
-share_model(model_uid, email_to_share_to, permission=permission)
+Modeling.share_model(model_uid, email_to_share_to, permission=permission)
 ```
 A model can only be shared with a given user once. Violating this will result in a `ShareModelException`.
 ### With multiple user and different permissions
 ```python linenums="1"
 # Import the share_model function from the modeling service
-from valsys.modeling.service import share_model
+import valsys.modeling.service as Modeling
 
 # Import the permissions types 
 from valsys.modeling.models import PermissionTypes
@@ -98,7 +98,7 @@ users = [
 
 # Share the model
 for email, permission in users:
-    share_model(model_uid, email, permission=permission)
+    Modeling.share_model(model_uid, email, permission=permission)
 ```
 
 ## Obtain module information for a model
@@ -108,12 +108,12 @@ It will be common to need module information: for example, moduleIDs.
 This workflow shows how to obtain the module meta data for a model. Crucially, this shows the module hierarchy, as well as the module IDs and names.
 
 ```python linenums="1"
-from valsys.modeling.service import pull_model_information, pull_case
+import valsys.modeling.service as Modeling
 
 model_uid = "0xe50deb"
 
-first_case_info = pull_model_information(model_uid).first
-case = pull_case(first_case_info.uid)
+first_case_info = Modeling.pull_model_information(model_uid).first
+case = Modeling.pull_case(first_case_info.uid)
 module_info = case.module_meta
 ```
 will result in `module_info` being something like
@@ -182,7 +182,7 @@ Note that the nested structure highlights the modules parent-child relationship.
 Adding a child module requires knowledge of the parent modules `uid`.
 ```python linenums="1"
 # Import the add_child_module function from the modeling service
-from valsys.modeling.service import add_child_module, pull_model_information
+import valsys.modeling.service as Modeling
 
 # Define the model id
 model_id = '0xe50deb'
@@ -194,10 +194,10 @@ parent_module_id = '0xe51235'
 new_module_name = 'new module'
 
 # Go get the case uid for the model
-case_id = pull_model_information(model_id).first.uid
+case_id = Modeling.pull_model_information(model_id).first.uid
 
 # Use the above data to add a child module
-new_module = add_child_module(
+new_module = Modeling.add_child_module(
     parent_module_id = parent_module_id, 
     name = new_module_name, 
     model_id = model_id, 
@@ -208,7 +208,7 @@ new_module = add_child_module(
 This workflow allows a line item to be added to an existing module; it requires knowledge of the `modelID`, and `moduleID`. One must provide the `name` of the new line item, and the `order` of the line item in the module.
 ```python linenums="1"
 # Import the add_line_item function from the modeling service
-from valsys.modeling.service import add_line_item, pull_model_information
+import valsys.modeling.service as Modeling
 
 # Define the modelID
 model_id = '0xe50deb'
@@ -223,10 +223,10 @@ line_item_name = 'new line item'
 line_item_order = 10
 
 # Get the caseID from the modelID
-case_id = pull_model_information(model_id).first.uid
+case_id = Modeling.pull_model_information(model_id).first.uid
 
 # Add the new line item, which returns a new line line object.
-new_line_item = add_line_item(
+new_line_item = Modeling.add_line_item(
     model_id = model_id, 
     case_id = case_id, 
     module_id = module_id, 

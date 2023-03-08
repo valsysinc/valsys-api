@@ -4,8 +4,9 @@ from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
 from valsys.inttests.utils import gen_cell_identifier, gen_orch_config, workflow
 from valsys.modeling.model.line_item import LineItem
-from valsys.utils.logging import loggerIT
+
 from valsys.utils.time import yesterday
+from valsys.inttests.client_recalc_tests import ClientRecalcTest
 
 
 def qa_script():
@@ -219,7 +220,7 @@ def run_qa_rename_line_item(model_id: str, config):
 
 @workflow('qa tests')
 def run_qa_script():
-
+    client_recalc_test = ClientRecalcTest()
     qa_flow = qa_script()
 
     # Import the class for the model seed configuration data
@@ -237,8 +238,13 @@ def run_qa_script():
         'edit_formula': run_qa_edit_formula,
         'edit_line_item': run_qa_add_line_item,
         'add_module': run_qa_add_module,
-        'rename_line_item': run_qa_rename_line_item
+        'rename_line_item': run_qa_rename_line_item,
     }
+
+    client_recalc_test.setup()
 
     for step_config in qa_flow['steps']:
         steps[step_config.get('type')](model.uid, step_config)
+
+    client_recalc_test.post_assertions()
+    client_recalc_test.cleanup()

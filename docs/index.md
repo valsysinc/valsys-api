@@ -30,7 +30,7 @@ To do anything, put the following into the command line
 export VALSYS_API_BUILD=local
 ```
 
-These can be set in two ways: first via `login` process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).
+More environment variables are required; these can be set in two ways: first via `login` process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).
 ### Login
 Once the library has been installed, the first task is to login. From a python script (e.g., in the repl, or a jupyter notebook), execute
 ```python linenums="1"
@@ -39,12 +39,7 @@ login()
 ```
 It is useful to put the above into a local script called `login.py` or something of that nature.
 
-Alternatively, you could execute the following on a command line
-```
-python main.py --login
-```
-
-Either way, you will be prompted to enter the following information:
+You will be prompted to enter the following information:
 
 * **Valsys host**: the base part of the valsys url (if unsure, contact valsys support)
 * **Valsys protocol**: whether using `http` or `https`. 

@@ -32,15 +32,6 @@ run_spawn_models(config)
 
 
 
-### Run via command line
-The valsys library can be used from source via a command line interface (CLI).
-
-This works by providing (via command line arguments) the path to a configuration file to the `main.py` python entry point:
-```
-python main.py --spawn assets/example_input.json
-```
-
-
 
 ## Example input configuration
 This provides a valid example of a configuration file which can be passed to the spawner CLI.

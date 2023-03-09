@@ -56,7 +56,7 @@ class ClientRecalcTest:
         return {
             'companyName': 'Starbucks',
             'ticker': 'SBUX US',
-            'templateName': 'cpp-template',
+            'templateId': '29376a9e-a640-4b5f-a839-c355c894b740',
             'numForecastYears': 5,
             'numHistoricalYears': 3,
             'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',

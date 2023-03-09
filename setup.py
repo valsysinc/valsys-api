@@ -1,5 +1,5 @@
 """Setup for distribution"""
-
+from valsys import VERSION
 from distutils.core import setup
 from setuptools import find_packages
 
@@ -10,22 +10,11 @@ def read_requirements():
     return required
 
 
-def read_config():
-    with open("CONFIG") as v:
-        ls = v.read().splitlines()
-        lds = {}
-        for l in ls:
-            k, v = l.split('=')
-            lds[k] = v
-    return lds
-
-
-cfg = read_config()
 rqs = read_requirements()
 setup(
     name='valsys',
     packages=find_packages(),
-    version=cfg['VERSION'],
+    version=VERSION,
     license='MIT',
     description='Valsys python library',
     author='Jonathan Pearson',

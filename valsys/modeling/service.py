@@ -629,6 +629,7 @@ def delete_line_item(model_id: str, module_id: str,
             Headers.MODULE_ID: module_id,
         },
     )
+    check_success(resp, 'delete line item')
     return module_from_resp(resp)
 
 

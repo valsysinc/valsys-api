@@ -5,7 +5,6 @@ import pytest
 from valsys.seeds.exceptions import TemplateNotFoundException
 from valsys.seeds.loader import SeedsLoader
 
-
 MODULE_PREFIX = "valsys.seeds.loader"
 
 
@@ -84,3 +83,8 @@ class TestSeedsLoader:
         with pytest.raises(TemplateNotFoundException) as err:
             SeedsLoader.template_id_by_name(template_name)
         assert template_name in str(err)
+
+    def test_template_id_none(self):
+        with pytest.raises(TemplateNotFoundException) as err:
+            SeedsLoader.template_id_by_name(template_name=None)
+        assert 'no template name given' in str(err)

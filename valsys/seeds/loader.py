@@ -28,6 +28,9 @@ class SeedsLoader:
 
         Raises a ValueError if the template cannot be found."""
 
+        if template_name is None:
+            raise TemplateNotFoundException("no template name given")
+
         for template in load_templates():
             if template.get("template_name") == template_name:
                 return template.get("uid")

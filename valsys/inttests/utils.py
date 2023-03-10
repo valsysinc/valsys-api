@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from valsys.seeds.loader import SeedsLoader
 from valsys.seeds.models import OrchestratorConfig, OrchestratorModelConfig
@@ -9,9 +9,16 @@ def gen_cell_identifier(config):
     return f"[{config['startingModule']}[{config['targetLineItem']}[{config['targetCellPeriod']}]]]"
 
 
-def gen_orch_config(cfg, user, password):
+def gen_orch_config(cfg: Dict[str, str], user: str, password: str):
+    """Generate an orchestrator config.
 
-    template_id = SeedsLoader.template_id_by_name(cfg.get('templateName'))
+    If the `templateId` is given, use that, else use the `templateName`.
+
+    """
+
+    template_id = cfg.get('templateId', None)
+    if template_id is None:
+        template_id = SeedsLoader.template_id_by_name(cfg.get('templateName'))
 
     # Define the model seed configuration data
     model_seed_config = OrchestratorConfig(

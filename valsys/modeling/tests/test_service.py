@@ -331,6 +331,9 @@ class TestPullCase:
 class FakeLineItem:
     name: str = ''
 
+    def jsonify(self):
+        return {'name': self.name}
+
 
 class TestAddLineItem:
 
@@ -1131,7 +1134,8 @@ class TestDeleteLineItem:
     @mock.patch(f"{MODULE_PREFIX}.module_from_resp")
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client, mock_module_from_resp):
-        model_id, module_id, line_item_id = valid_uid(), valid_uid(), valid_uid()
+        model_id, module_id, line_item_id = valid_uid(), valid_uid(
+        ), valid_uid()
         mock_c = mock.MagicMock()
         resp = self.success_response()
         mock_c.post.return_value = resp
@@ -1140,3 +1144,21 @@ class TestDeleteLineItem:
         m = Modeling.delete_line_item(model_id, module_id, line_item_id)
         mock_module_from_resp.assert_called_once_with(resp)
         assert m == mock_module_from_resp.return_value
+
+
+class TestEditLineItems:
+
+    def success_response(self, resp_data=None):
+        return {'status': Vars.SUCCESS, "data": {'lineItems': resp_data or []}}
+
+    @mock.patch(f"{MODULE_PREFIX}.line_items_list")
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client, mock_line_items_list):
+        model_id, line_items = valid_uid(), [FakeLineItem(name='Line item')]
+        mock_c = mock.MagicMock()
+        resp = self.success_response()
+        mock_c.post.return_value = resp
+        mock_new_client.return_value = mock_c
+        lil = Modeling.edit_line_items(model_id, line_items)
+        assert lil == mock_line_items_list.return_value
+        mock_line_items_list.assert_called_once_with(resp.get('data').get('lineItems'))

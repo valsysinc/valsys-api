@@ -1131,7 +1131,7 @@ class TestDeleteLineItem:
     @mock.patch(f"{MODULE_PREFIX}.module_from_resp")
     @mock.patch(f"{MODULE_PREFIX}.new_client")
     def test_works_ok(self, mock_new_client, mock_module_from_resp):
-        model_id, module_id, line_item_id = '1', '2', '3'
+        model_id, module_id, line_item_id = valid_uid(), valid_uid(), valid_uid()
         mock_c = mock.MagicMock()
         resp = self.success_response()
         mock_c.post.return_value = resp

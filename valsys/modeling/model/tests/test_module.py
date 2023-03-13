@@ -128,7 +128,7 @@ class TestModule:
             Module.fields.NAME: 'module name',
             Module.fields.MODULE_START: 2018,
             Module.fields.EDGES: {
-                Module.fields.CHILD_MODULES: [{
+                Module.fields.LINE_ITEMS: [{
                     Module.fields.ID: 42,
                     'name': 'Name'
                 }],

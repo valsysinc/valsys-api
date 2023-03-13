@@ -1161,4 +1161,24 @@ class TestEditLineItems:
         mock_new_client.return_value = mock_c
         lil = Modeling.edit_line_items(model_id, line_items)
         assert lil == mock_line_items_list.return_value
-        mock_line_items_list.assert_called_once_with(resp.get('data').get('lineItems'))
+        mock_line_items_list.assert_called_once_with(
+            resp.get('data').get('lineItems'))
+
+
+class TestReorderModule:
+
+    def success_response(self):
+        return {'status': Vars.SUCCESS}
+
+    @mock.patch(f"{MODULE_PREFIX}.module_from_resp")
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client, mock_module_from_resp):
+        model_id, module_id, line_item_id, order = valid_uid(), valid_uid(
+        ), valid_uid(), 1
+        mock_c = mock.MagicMock()
+        resp = self.success_response()
+        mock_c.post.return_value = resp
+        mock_new_client.return_value = mock_c
+        rm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
+        assert rm == mock_module_from_resp.return_value
+        mock_module_from_resp.assert_called_once_with(resp)

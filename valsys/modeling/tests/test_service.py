@@ -1121,3 +1121,22 @@ class TestCreateGroup:
         with pytest.raises(Exception) as err:
             Modeling.create_group(model_ids, group_name)
         assert f'group not found in response; name = {group_name}' in str(err)
+
+
+class TestDeleteLineItem:
+
+    def success_response(self, resp_data=None):
+        return {'status': Vars.SUCCESS, "data": resp_data or []}
+
+    @mock.patch(f"{MODULE_PREFIX}.module_from_resp")
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok(self, mock_new_client, mock_module_from_resp):
+        model_id, module_id, line_item_id = valid_uid(), valid_uid(), valid_uid()
+        mock_c = mock.MagicMock()
+        resp = self.success_response()
+        mock_c.post.return_value = resp
+        mock_new_client.return_value = mock_c
+
+        m = Modeling.delete_line_item(model_id, module_id, line_item_id)
+        mock_module_from_resp.assert_called_once_with(resp)
+        assert m == mock_module_from_resp.return_value

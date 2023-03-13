@@ -126,23 +126,23 @@ class TestModule:
         mj = {
             Module.fields.ID: '1234',
             Module.fields.NAME: 'module name',
-            'moduleStart': 2018,
-            'edges': {
-                'lineItems': [{
+            Module.fields.MODULE_START: 2018,
+            Module.fields.EDGES: {
+                Module.fields.CHILD_MODULES: [{
                     Module.fields.ID: 42,
                     'name': 'Name'
                 }],
                 Module.fields.CHILD_MODULES: [{
                     Module.fields.ID: 91,
-                    'name': 'child1',
-                    'moduleStart': 2019
+                    Module.fields.NAME: 'child1',
+                    Module.fields.MODULE_START: 2019
                 }]
             }
         }
         module = Module.from_json(mj)
         assert module.uid == mj.get(Module.fields.ID)
         assert module.name == mj.get('name')
-        assert module.module_start == mj.get('moduleStart')
+        assert module.module_start == mj.get(Module.fields.MODULE_START)
         assert len(module.line_items) == 1
         assert len(module.child_modules) == 1
 
@@ -151,7 +151,7 @@ class TestModule:
         mj = {
             Module.fields.ID: '1234',
             Module.fields.NAME: 'module name',
-            'moduleStart': 2018,
+            Module.fields.MODULE_START: 2018,
             'edges': {
                 Module.fields.LINE_ITEMS: [{
                     LineItem.fields.ID: 42,
@@ -162,7 +162,7 @@ class TestModule:
         module = Module.from_json(mj)
         assert module.uid == mj.get(Module.fields.ID)
         assert module.name == mj.get('name')
-        assert module.module_start == mj.get('moduleStart')
+        assert module.module_start == mj.get(Module.fields.MODULE_START)
         assert len(module.line_items) == 1
         assert len(module.child_modules) == 0
 

@@ -767,16 +767,16 @@ def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     r = client.post(url=url, data=payload)
     check_success(r, 'create group')
     for group in r.get(Resp.DATA):
-        if group.get(Headers.NAME) == group_name:
-            c = 0
-            for mid in group.get(GroupOfModels.fields.MODEL_IDS):
-                if mid in model_ids:
-                    c += 1
-                else:
-                    break
-            if c == len(model_ids):
-                return GroupOfModels.from_json(group)
-    raise Exception('group not found in response')
+        if group.get(Headers.NAME) != group_name:
+            continue
+        c = 0
+        for mid in group.get(GroupOfModels.fields.MODEL_IDS):
+            if mid not in model_ids:
+                break
+            c += 1
+        if c == len(model_ids):
+            return GroupOfModels.from_json(group)
+    raise Exception(f'group not found in response; name = {group_name}')
 
 
 def execute_simulation(group_id: str, model_ids: List[str],

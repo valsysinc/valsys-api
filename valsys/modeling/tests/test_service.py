@@ -27,7 +27,7 @@ from valsys.modeling.models import ModelGroup, ModelGroups
 from valsys.modeling.service import SpawnedModelInfo
 from valsys.modeling.vars import Headers, Vars
 from valsys.spawn.exceptions import ModelSpawnException
-
+from valsys.modeling.model.group import GroupOfModels
 from .factories import (
     valid_email,
     valid_name,
@@ -1048,3 +1048,76 @@ class TestEditFormula:
         assert kw.get('case_id') == case_id
         assert kw.get('model_id') == model_id
         assert kw.get('facts') == facts
+
+
+class TestCreateGroup:
+
+    def success_response(self, resp_data=None):
+        return {'status': Vars.SUCCESS, "data": resp_data or []}
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_empty_data(self, mock_new_client):
+        model_ids = ['1', '2']
+        group_name = 'Group'
+        mock_c = mock.MagicMock()
+        mock_c.post.return_value = self.success_response()
+        mock_new_client.return_value = mock_c
+        with pytest.raises(Exception) as err:
+            Modeling.create_group(model_ids, group_name)
+        assert f'group not found in response; name = {group_name}' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_name_not_found(self, mock_new_client):
+        model_ids = ['1', '2']
+        group_name = 'Group'
+        mock_c = mock.MagicMock()
+        mock_c.post.return_value = self.success_response(
+            resp_data=[{
+                'name': 'garbage'
+            }])
+        mock_new_client.return_value = mock_c
+        with pytest.raises(Exception) as err:
+            Modeling.create_group(model_ids, group_name)
+        assert f'group not found in response; name = {group_name}' in str(err)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_ok_name_found(self, mock_new_client):
+        model_ids = ['1', '2']
+        group_name = 'Group'
+        grp = {
+            'name': group_name,
+            'modelIDs': model_ids,
+            'uid': '42',
+            'userID': 'test'
+        }
+        resp_data = [{'name': 'garbage1'}, grp, {'name': 'garbage2'}]
+        mock_c = mock.MagicMock()
+
+        mock_c.post.return_value = self.success_response(resp_data=resp_data)
+        mock_new_client.return_value = mock_c
+
+        r = Modeling.create_group(model_ids, group_name)
+        assert r == GroupOfModels.from_json(grp)
+
+    @mock.patch(f"{MODULE_PREFIX}.new_client")
+    def test_works_id_mismatch(self, mock_new_client):
+        model_ids = ['1', '2']
+        group_name = 'Group'
+
+        resp_data = [{
+            'name': 'garbage1'
+        }, {
+            'name': group_name,
+            'modelIDs': ['42'],
+            'uid': '42',
+            'userID': 'test'
+        }, {
+            'name': 'garbage2'
+        }]
+        mock_c = mock.MagicMock()
+
+        mock_c.post.return_value = self.success_response(resp_data=resp_data)
+        mock_new_client.return_value = mock_c
+        with pytest.raises(Exception) as err:
+            Modeling.create_group(model_ids, group_name)
+        assert f'group not found in response; name = {group_name}' in str(err)

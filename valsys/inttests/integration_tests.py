@@ -89,7 +89,10 @@ def run_integration_tests():
                                        lfy=cfg['startPeriod'])
     Runners.run_simulation_output_variables(grp.model_ids, [tag])
     # find 2019 net revenue, look for sim response
-    Runners.run_delete_models([model_id])
+    Runners.run_delete_model_group(grp.uid)
+    # TODO: test that deleting a nonsense group ID causes an err;
+    # for this to work, need to wait for updated users service.
+    Runners.run_delete_models([model_id, new_id])
 
 
 def run_spawn(ticker='INFO'):

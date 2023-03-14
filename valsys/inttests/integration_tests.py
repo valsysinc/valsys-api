@@ -75,24 +75,31 @@ def run_integration_tests():
     grp = Runners.run_create_group([model_id, new_id],
                                    f'new group={str(uuid.uuid1())}')
 
-    s = Runners.run_execute_simulation(grp.uid,
-                                       grp.model_ids,
-                                       edits=[{
-                                           "formula": "$FORMULA * 1.1",
-                                           "timePeriod": "LFY+1"
-                                       }, {
-                                           "formula": "$FORMULA * 1.2",
-                                           "timePeriod": "LFY-1"
-                                       }],
-                                       output_variables=["Net Revenue"],
-                                       tag=tag,
-                                       lfy=cfg['startPeriod'])
+    Runners.run_execute_simulation(grp.uid,
+                                   grp.model_ids,
+                                   edits=[{
+                                       "formula": "$FORMULA * 1.1",
+                                       "timePeriod": "LFY+1"
+                                   }, {
+                                       "formula": "$FORMULA * 1.2",
+                                       "timePeriod": "LFY-1"
+                                   }],
+                                   output_variables=["Net Revenue"],
+                                   tag=tag,
+                                   lfy=cfg['startPeriod'])
     Runners.run_simulation_output_variables(grp.model_ids, [tag])
     # find 2019 net revenue, look for sim response
+    # Delete the recently created model group
     Runners.run_delete_model_group(grp.uid)
+
     # TODO: test that deleting a nonsense group ID causes an err;
     # for this to work, need to wait for updated users service.
+
+    # Delete the models created for testing purposes.
     Runners.run_delete_models([model_id, new_id])
+
+    #TODO: deleting a group based on a deleted model should probably fail...
+    Runners.run_delete_model_group(grp.uid)
 
 
 def run_spawn(ticker='INFO'):

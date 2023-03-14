@@ -780,6 +780,25 @@ def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     raise Exception(f'group not found in response; name = {group_name}')
 
 
+def delete_group(group_id: str):
+    """delete the specified group.
+    
+    Args:
+        group_id: The ID of the group to be deleted.
+
+    Returns:
+        True if the group has been deleted sucessfully, and an
+        exception is raised if not.
+        
+    """
+    client = new_client()
+    url = VSURL.USERS_GROUP
+    headers = {Headers.GROUP_ID: group_id}
+    r = client.delete(url=url, headers=headers)
+    check_success(r, 'delete model group')
+    return True
+
+
 def execute_simulation(group_id: str, model_ids: List[str],
                        edits: List[Dict[str,
                                         str]], output_variables: List[str],

@@ -362,6 +362,14 @@ def run_create_group(model_ids: List[str], group_name: str):
     return g
 
 
+@runner('delete group')
+def run_delete_model_group(group_id: str):
+    Modeling.delete_group(group_id)
+    existing_groups = Modeling.pull_model_groups()
+    for g in existing_groups:
+        assert g.uid != group_id
+
+
 @runner('execute simulation')
 def run_execute_simulation(group_id: str, model_ids: List[str],
                            edits: List[Dict[str, str]],

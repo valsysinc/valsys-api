@@ -283,8 +283,8 @@ def run_rename_module(model_id: str, module_id: str, new_name: str):
 def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
                        order: int):
     nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
-
     Check.order(nm, line_item_id, order)
+
     # Check that can reorder to its own position
     nm = Modeling.reorder_module(model_id, module_id, line_item_id, order)
     Check.order(nm, line_item_id, order)
@@ -294,14 +294,14 @@ def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
         nm = Modeling.reorder_module(model_id, module_id, line_item_id, -1)
         Check.order(nm, line_item_id, -1)
     except Exception as err:
-        assert 'invalid order' in str(err) 
+        assert 'invalid order' in str(err)
 
     # Check cannot reorder to an overly positive position
     try:
         nm = Modeling.reorder_module(model_id, module_id, line_item_id, 10000)
         Check.order(nm, line_item_id, 10000)
     except Exception as err:
-        assert 'invalid order' in str(err) 
+        assert 'invalid order' in str(err)
 
 
 @runner('rename line item')

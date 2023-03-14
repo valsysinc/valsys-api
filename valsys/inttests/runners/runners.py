@@ -294,14 +294,14 @@ def run_reorder_module(model_id: str, module_id: str, line_item_id: str,
         nm = Modeling.reorder_module(model_id, module_id, line_item_id, -1)
         Check.order(nm, line_item_id, -1)
     except Exception as err:
-        assert 'invalid order' in str(err) 
+        assert 'invalid order' in str(err)
 
     # Check cannot reorder to an overly positive position
     try:
         nm = Modeling.reorder_module(model_id, module_id, line_item_id, 10000)
         Check.order(nm, line_item_id, 10000)
     except Exception as err:
-        assert 'invalid order' in str(err) 
+        assert 'invalid order' in str(err)
 
 
 @runner('rename line item')
@@ -360,6 +360,14 @@ def run_create_group(model_ids: List[str], group_name: str):
     assert g.name == group_name
     assert g.model_ids == model_ids
     return g
+
+
+@runner('delete group')
+def run_delete_model_group(group_id: str):
+    Modeling.delete_group(group_id)
+    existing_groups = Modeling.pull_model_groups()
+    for g in existing_groups:
+        assert g.uid != group_id
 
 
 @runner('execute simulation')

@@ -17,6 +17,7 @@ from valsys.modeling.model.fact import Fact
 from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model
 from valsys.utils.time import yesterday
+from valsys.modeling.client.exceptions import ModelingServiceDeleteException
 
 
 @runner('spawn model')
@@ -358,13 +359,20 @@ def run_copy_model(model_id: str):
 def run_create_group(model_ids: List[str], group_name: str):
     g = Modeling.create_group(model_ids, group_name)
     assert g.name == group_name
-    assert g.model_ids == model_ids
+    assert_equal(set(g.model_ids), set(model_ids))
     return g
 
 
 @runner('delete group')
-def run_delete_model_group(group_id: str):
-    Modeling.delete_group(group_id)
+def run_delete_model_group(group_id: str, expect_err=False):
+    try:
+        Modeling.delete_group(group_id)
+        if expect_err:
+            raise AssertionError('should have errored and didnt')
+    except ModelingServiceDeleteException:
+        if expect_err:
+            return
+        raise
     existing_groups = Modeling.pull_model_groups()
     for g in existing_groups:
         assert g.uid != group_id

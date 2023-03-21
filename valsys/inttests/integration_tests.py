@@ -68,6 +68,7 @@ def run_integration_tests():
                               first_module.periods[0] - 1)
     Runners.run_reorder_module(model_id, first_module.uid, first_line_item.uid,
                                first_line_item.order + 4)
+    Runners.run_recalculate_model(model_id)
     new_id = Runners.run_copy_model(model_id)
 
     # Create a group constructed from the initially spawned model, and its
@@ -98,24 +99,29 @@ def run_integration_tests():
     # Delete the models created for testing purposes.
     Runners.run_delete_models([model_id, new_id])
 
-    #TODO: deleting a group based on a deleted model should probably fail...
-    Runners.run_delete_model_group(grp.uid)
+    # Deleting a group based on a deleted model should error
+    Runners.run_delete_model_group(grp.uid, expect_err=True)
 
 
-def run_spawn(ticker='INFO'):
-    cfg = {
-        'companyName': '',
-        'ticker': 'PEP',
-        'templateName': 'dcf-standard',
-        'numForecastYears': 3,
-        'numHistoricalYears': 2,
-        'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
-        'startPeriod': 2019,
-        'startDate': yesterday()
-    }
-    cfg['ticker'] = ticker
+@workflow('spawn simple model')
+def run_spawn():
+
+    cfg = integration_test_config()
     spawned_models = Runners.run_spawn_model(
         gen_orch_config(cfg=cfg, user=API_USERNAME, password=API_PASSWORD))
 
     model_id = spawned_models[0].model_id
-    print(model_id, ticker)
+
+    model = Runners.run_pull_model(model_id)
+    first_case_id = model.first_case_id
+    first_case = model.pull_case_by_id(first_case_id)
+    first_module = model.first_case.first_module
+    module_id = first_module.uid
+    first_line_item = first_module.line_items[0]
+    first_fact = first_line_item.facts[0]
+    new_module = Runners.run_add_child_module(model_id, first_case_id,
+                                              module_id)
+    #Runners.run_recalculate_model(model_id)
+    Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
+    Runners.run_recalculate_model(model_id)
+    print(model_id, cfg.get('ticker'))

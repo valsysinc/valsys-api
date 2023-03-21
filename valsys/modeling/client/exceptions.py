@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 
 class ModelingServiceClientException(Exception):
+
     def __init__(self, data: str, status_code: HTTPStatus, url: str) -> None:
         self.url = url
         self.status_code = status_code
@@ -24,4 +25,8 @@ class ModelingServiceGetException(ModelingServiceClientException):
 
 
 class ModelingServicePostException(ModelingServiceClientException):
+    pass
+
+
+class ModelingServiceDeleteException(ModelingServiceClientException):
     pass

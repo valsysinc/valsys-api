@@ -7,10 +7,9 @@ import requests
 
 from valsys.config.config import HOST
 
-from .exceptions import (
-    ModelingServiceGetException,
-    ModelingServicePostException,
-)
+from .exceptions import (ModelingServiceGetException,
+                         ModelingServicePostException,
+                         ModelingServiceDeleteException)
 
 
 @dataclass
@@ -106,7 +105,7 @@ class ModelingServiceHttpClient:
 
         if resp.status_code == expected_status:
             return resp.json()
-        self.raise_err(ModelingServicePostException, resp, url)
+        self.raise_err(ModelingServiceDeleteException, resp, url)
 
     def raise_err(self, ex: Exception, resp, url: str):
         try:

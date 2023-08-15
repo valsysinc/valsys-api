@@ -1,3 +1,4 @@
+from typing import Container, Union, Iterable, Any
 from valsys.utils import loggerIT as logger
 
 
@@ -20,6 +21,13 @@ def runner(nm: str):
 
     return real_decorator
 
+def assert_contains(mstr:Union[Container, Iterable][Any], tsts:Union[Container, Iterable][Any], desc=''):
+    for t in tsts:
+        try:
+            assert t in mstr
+        except AssertionError:
+            logger.warning(f'{desc}: expected {t} to be in {mstr}')
+            raise
 
 def assert_equal(v1, v2, desc=''):
     try:

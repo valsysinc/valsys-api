@@ -1,4 +1,4 @@
-from typing import Container, Union, Iterable, Any
+from typing import List, Any
 from valsys.utils import loggerIT as logger
 
 
@@ -21,7 +21,7 @@ def runner(nm: str):
 
     return real_decorator
 
-def assert_contains(mstr:Union[Container, Iterable][Any], tsts:Union[Container, Iterable][Any], desc=''):
+def assert_contains(mstr:List[Any], tsts:List[Any], desc=''):
     for t in tsts:
         try:
             assert t in mstr

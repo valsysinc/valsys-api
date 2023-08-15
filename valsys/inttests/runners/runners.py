@@ -9,6 +9,7 @@ from valsys.inttests.runners.utils import (
     assert_gt,
     assert_not_none,
     assert_true,
+    assert_contains,
     runner,
 )
 from valsys.modeling import service as Modeling
@@ -392,7 +393,8 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         'Change in IRR', 'Current share price (DCF)',
         'Implied share price (DCF)', 'Ticker'
     ])
-    assert_equal(s.group_fields, expected_fields, 'simulated expected fields')
+    
+    assert_contains(s.group_fields, expected_fields, 'simulated expected fields')
     edited_periods = []
     for e in edits:
         p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))

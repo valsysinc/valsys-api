@@ -39,6 +39,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
+from valsys.modeling.model.vsl import VSLQueryResponse
 from valsys.modeling.utils import (
     check_success,
     facts_list,
@@ -872,3 +873,13 @@ def delete_models(model_ids: List[str]):
     resp = client.delete(url=url, data=payload)
     check_success(resp, 'deleting models')
     return resp
+
+def execute_vsl_query(query:str)->VSLQueryResponse:
+    client = new_client()
+    url = VSURL.VSL_QUERY
+    payload = {
+        "query":query,
+    }
+    resp = client.post(url, data=payload)
+    check_success(resp, 'VSL query')
+    return VSLQueryResponse.from_json(resp.get(Resp.DATA))

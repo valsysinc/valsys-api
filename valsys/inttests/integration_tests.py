@@ -2,6 +2,7 @@ import uuid
 from typing import List
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.runners import runners as Runners
+from valsys.inttests.runners import vsl as VSL
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.time import yesterday
 
@@ -92,6 +93,9 @@ def run_integration_tests():
     # find 2019 net revenue, look for sim response
     # Delete the recently created model group
     Runners.run_delete_model_group(grp.uid)
+
+
+    VSL.run_vsl_simple_filter(model_id)
 
     # TODO: test that deleting a nonsense group ID causes an err;
     # for this to work, need to wait for updated users service.

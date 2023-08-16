@@ -2,6 +2,8 @@
 from dataclasses import dataclass, field
 from typing import Dict, Any, List
 
+DEFAULT_SORT_DIRECTION = 'asc'
+
 
 @dataclass
 class VSLData:

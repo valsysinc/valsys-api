@@ -12,3 +12,6 @@ Run code coverage
 ```
 make coverage
 ```
+
+# Local setup
+installing python 3.8.16 via pyenv works

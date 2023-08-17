@@ -1,4 +1,4 @@
-from valsys.inttests.runners import runners as Runners
+from valsys.inttests.runners import modeling as Runners
 from valsys.inttests.runners.utils import assert_equal, assert_gt
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.inttests.utils import gen_orch_config, workflow

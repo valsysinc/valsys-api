@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 from valsys.config.config import API_PASSWORD, API_USERNAME
-from valsys.inttests.runners import runners as Runners
+from valsys.inttests.runners import modeling as Runners
 from valsys.inttests.runners import vsl as VSL
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.time import yesterday
@@ -57,7 +57,7 @@ def run_integration_tests():
                               cgen=gen_orch_config)
     Runners.run_delete_line_item(model_id, module_id,
                                  first_module.last_line_item.uid)
-    #TODO: make this test changing the name of a different module
+    # TODO: make this test changing the name of a different module
     # to a modules name that currently exists.
     Runners.run_rename_module(model_id, module_id, 'new name!')
 
@@ -94,7 +94,6 @@ def run_integration_tests():
     # Delete the recently created model group
     Runners.run_delete_model_group(grp.uid)
 
-
     VSL.run_vsl_simple_filter(model_id)
 
     # TODO: test that deleting a nonsense group ID causes an err;
@@ -125,7 +124,7 @@ def run_spawn():
     first_fact = first_line_item.facts[0]
     new_module = Runners.run_add_child_module(model_id, first_case_id,
                                               module_id)
-    #Runners.run_recalculate_model(model_id)
+    # Runners.run_recalculate_model(model_id)
     Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
     Runners.run_recalculate_model(model_id)
     print(model_id, cfg.get('ticker'))

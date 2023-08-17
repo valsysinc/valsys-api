@@ -7,6 +7,21 @@ from valsys.inttests.runners.utils import (
 )
 from valsys.modeling import vsl as vsl
 from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION
+from valsys.modeling.client.exceptions import ModelingServicePostException
+
+
+@runner('garbage query')
+def run_garbage(model_id: str):
+    column_label = "Some column for revenue"
+    query = f'''
+    Filter(modelID=\"{model_id}\").
+    Columns(label=\"{column_label}\", tag=[Total Revenue (Revenue)[LFY]]).
+    Table()'''
+    try:
+        vsl.execute_vsl_query(query)
+    except ModelingServicePostException as err:
+        return
+    raise AssertionError("expected to get an error and didnt")
 
 
 @runner('simple filter')
@@ -93,9 +108,9 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
 
     query = '''
-    var modelIds = '''+model_ids_str+''';
+    var mids = '''+model_ids_str+''';
     
-    Filter(modelID=modelIds).
+    Filter(modelID=mids).
     Column(label="Revenue", field="ticker").
     Column(label="labelModelID", field="modelID").
     Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / 1.1*[Total Revenue (Revenue)[LFY-1]])).

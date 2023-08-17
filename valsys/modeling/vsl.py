@@ -16,4 +16,5 @@ def execute_vsl_query(query: str) -> VSLQueryResponse:
     }
     resp = client.post(url, data=payload)
     check_success(resp, 'VSL query')
+    print(resp)
     return VSLQueryResponse.from_json(resp.get(Resp.DATA))

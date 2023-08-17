@@ -393,8 +393,9 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         'Change in IRR', 'Current share price (DCF)',
         'Implied share price (DCF)', 'Ticker'
     ])
-    
-    assert_contains(s.group_fields, expected_fields, 'simulated expected fields')
+
+    assert_contains(s.group_fields, expected_fields,
+                    'simulated expected fields')
     edited_periods = []
     for e in edits:
         p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))
@@ -428,7 +429,7 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
                 for p, e in edited_periods:
                     if ff.period == p:
                         fe['editExpected'] = True
-                        ## NOTE: this is where we assume that the formula is a simple
+                        # NOTE: this is where we assume that the formula is a simple
                         # multiplication...
                         fe['expectedNewValue'] = ff.value * e
                 simulated_facts.append(fe)
@@ -466,3 +467,8 @@ def run_simulation_output_variables(model_ids: List[str],
         for line_item in model.line_items:
             for ov in output_variables:
                 assert ov in line_item.tags
+
+
+@runner('set facts tracked')
+def run_set_facts_tracked():
+    pass

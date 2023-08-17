@@ -102,12 +102,7 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        VSL.run_garbage(model_id)
-        VSL.run_simple_filter(model_id)
-        VSL.run_multi_column([model_id, new_id])
-        VSL.run_multi_column_func([model_id, new_id])
-        VSL.run_multi_column_var_model_ids([model_id, new_id])
-        VSL.run_multi_column_func2([model_id, new_id])
+        VSL.run_vsl(model_id, new_id)
     except Exception:
         cleanup.run()
         raise

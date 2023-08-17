@@ -10,6 +10,16 @@ from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION
 from valsys.modeling.client.exceptions import ModelingServicePostException
 
 
+def run_vsl(model_id_1: str, model_id_2: str):
+    '''This func will run the various VSL-type tests.'''
+    run_garbage(model_id_1)
+    run_simple_filter(model_id_1)
+    run_multi_column([model_id_1, model_id_2])
+    run_multi_column_func([model_id_1, model_id_2])
+    run_multi_column_var_model_ids([model_id_1, model_id_2])
+    run_multi_column_func2([model_id_1, model_id_2])
+
+
 @runner('garbage query')
 def run_garbage(model_id: str):
     column_label = "Some column for revenue"

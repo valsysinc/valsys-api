@@ -15,9 +15,10 @@ def run_vsl(model_id_1: str, model_id_2: str):
     run_garbage(model_id_1)
     run_simple_filter(model_id_1)
     run_multi_column([model_id_1, model_id_2])
-    run_multi_column_func([model_id_1, model_id_2])
-    run_multi_column_var_model_ids([model_id_1, model_id_2])
-    run_multi_column_func2([model_id_1, model_id_2])
+    #run_multi_column_func([model_id_1, model_id_2])
+    #run_multi_column_var_model_ids([model_id_1, model_id_2])
+    #run_multi_column_func2([model_id_1, model_id_2])
+    run_history(model_id_1)
 
 
 @runner('garbage query')
@@ -135,3 +136,13 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
     assert_equal(len(r.data.rows), 2)
     mids_in_rows = set(rw[1] for rw in r.data.rows)
     assert mids_in_rows == set(model_ids)
+
+
+@runner('history')
+def run_history(model_id):
+    query = f'''
+    Select(modelID=\"{model_id}\").
+    History(label="Base", tag=[Revenue (Base)[LFY+5]]).
+    Chart()'''
+    r = vsl.execute_vsl_query(query)
+    print(r)

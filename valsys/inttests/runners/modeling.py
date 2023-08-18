@@ -470,5 +470,6 @@ def run_simulation_output_variables(model_ids: List[str],
 
 
 @runner('set facts tracked')
-def run_set_facts_tracked():
-    pass
+def run_set_facts_tracked(model_ids: List[str], tags: List[str]):
+    ft = Modeling.track_line_item(model_ids, tags)
+    print(ft)

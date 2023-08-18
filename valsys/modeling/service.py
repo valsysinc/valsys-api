@@ -876,6 +876,13 @@ def delete_models(model_ids: List[str]):
 
 
 def track_line_item(model_ids: List[str], tags: List[str]):
+    """ Tracks the line items in the modelIds whose tags
+    are provided.
+
+    Args:
+        model_ids: List of IDs of the parent models to be tracked.
+        tags: List of the line item tags to be tracked.
+    """
     client = new_client()
     url = VSURL.VERSIONING_FACTS_TRACKED
     payload = {

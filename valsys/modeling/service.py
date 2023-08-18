@@ -873,3 +873,15 @@ def delete_models(model_ids: List[str]):
     resp = client.delete(url=url, data=payload)
     check_success(resp, 'deleting models')
     return resp
+
+
+def track_line_item(model_ids: List[str], tags: List[str]):
+    client = new_client()
+    url = VSURL.VERSIONING_FACTS_TRACKED
+    payload = {
+        Headers.MODEL_IDS: model_ids,
+        Headers.TAGS: tags
+    }
+    resp = client.post(url=url, data=payload)
+    check_success(resp, 'track line item')
+    return resp

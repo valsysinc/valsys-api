@@ -11,9 +11,10 @@ from valsys.inttests.runners.cleanup import TestsCleanUp
 def integration_test_config():
 
     return {
-        'companyName': 'Pepsi',
-        'ticker': 'PEP',
-        'templateName': 'dcf-standard',
+        'companyName': 'Apple',
+        'ticker': 'AAP',
+        # 'templateName': 'dcf-standard',
+        'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
         'numForecastYears': 3,
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',

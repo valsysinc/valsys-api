@@ -11,6 +11,7 @@ class LineItem:
     facts: List[Fact] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
     order: int = 1
+    facts_tracked: bool = False
 
     class fields:
         ID = 'id'
@@ -19,11 +20,12 @@ class LineItem:
         EDGES = 'edges'
         FACTS = 'facts'
         ORDER = 'order'
+        FACTS_TRACKED = 'factsTracked'
 
     def pull_fact_by_identifier(self, fact_identifier: str) -> Fact:
         """Extract a fact from the line item, by matching its
         identifier with the target.
-        
+
         A fact identifier is a string usually of the form
         [MODULE[LINEITEM[YEAR]]].
         """
@@ -66,6 +68,7 @@ class LineItem:
                    name=data[cls.fields.NAME],
                    tags=data.get(cls.fields.TAGS, []),
                    order=data.get(cls.fields.ORDER, ''),
+                   facts_tracked=data.get(cls.fields.FACTS_TRACKED, False),
                    facts=list(
                        map(
                            Fact.from_json,
@@ -78,6 +81,7 @@ class LineItem:
             self.fields.NAME: self.name,
             self.fields.ORDER: self.order,
             self.fields.TAGS: self.tags,
+            self.fields.FACTS_TRACKED: self.facts_tracked,
             self.fields.EDGES: {
                 self.fields.FACTS: [f.jsonify() for f in self.facts]
             }

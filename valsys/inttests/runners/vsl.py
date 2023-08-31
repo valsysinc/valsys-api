@@ -1,3 +1,5 @@
+import time
+
 from dataclasses import dataclass
 from typing import List
 from valsys.inttests.runners.utils import (
@@ -11,6 +13,8 @@ from valsys.inttests.runners.utils import (
 from valsys.modeling import vsl as vsl
 from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION, WidgetTypes
 from valsys.modeling.client.exceptions import ModelingServicePostException
+from valsys.inttests.runners import modeling as Runners
+from valsys.modeling.model.model import Model
 
 
 @dataclass
@@ -21,7 +25,47 @@ class VSLRunProps:
     nedits: int
 
 
-def run_vsl(props: VSLRunProps):  # model_id_1: str, model_id_2: str):
+def pluck_tags(model: Model):
+    for c in model.cases:
+        for m in c.modules:
+            for l in m.line_items:
+                if l.tags != []:
+                    for f in l.facts:
+                        if f.value != '':
+                            return c.uid, l
+    raise Exception('cannot find line item with tags')
+
+
+def setup_and_run_vsl(model_id_1, model_id_2):
+    model = Runners.run_pull_model(model_id_1)
+
+    caseid, line_item_with_tags = pluck_tags(model)
+
+    Runners.run_set_facts_tracked([model_id_1], line_item_with_tags.tags)
+    model_id_2 = Runners.run_copy_model(model_id_1)
+    time.sleep(10)
+    model_repulled = Runners.run_pull_model(model_id_1)
+    lip = model_repulled.pull_line_item(line_item_with_tags.uid)
+    time.sleep(10)
+    Runners.run_edit_formula(
+        model_id_1, caseid, fact=lip.facts[0], new_formula="42")
+    time.sleep(10)
+    Runners.run_edit_formula(
+        model_id_1, caseid, fact=lip.facts[0], new_formula="84")
+    time.sleep(10)
+    Runners.run_edit_formula(
+        model_id_1, caseid, fact=lip.facts[0], new_formula="168")
+    time.sleep(10)
+
+    run_vsl(VSLRunProps(
+        model_id_1=model_id_1,
+        model_id_2=model_id_2,
+        tag=lip.tags[0],
+        nedits=3
+    ))
+
+
+def run_vsl(props: VSLRunProps):
     '''This func will run the various VSL-type tests.'''
     run_garbage(props.model_id_1)
     run_simple_filter(props.model_id_1, tag=props.tag)

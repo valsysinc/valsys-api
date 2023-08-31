@@ -36,31 +36,40 @@ def pluck_tags(model: Model):
     raise Exception('cannot find line item with tags')
 
 
-def setup_and_run_vsl(model_id_1, model_id_2):
+def setup_and_run_vsl(model_id_1: str, model_id_2: str):
+    '''
+    setup_and_run_vsl will setup the nessecary models and edits
+    for testing the VSL, and then will execute the VSL tests.
+    '''
     model = Runners.run_pull_model(model_id_1)
 
     caseid, line_item_with_tags = pluck_tags(model)
 
     Runners.run_set_facts_tracked([model_id_1], line_item_with_tags.tags)
-    model_id_2 = Runners.run_copy_model(model_id_1)
+    # these sleeps are put in so that the cache and versioning system
+    # can finish before the next call is made. they are async.
     time.sleep(10)
+
     model_repulled = Runners.run_pull_model(model_id_1)
-    lip = model_repulled.pull_line_item(line_item_with_tags.uid)
+    line_item = model_repulled.pull_line_item(line_item_with_tags.uid)
     time.sleep(10)
+
     Runners.run_edit_formula(
-        model_id_1, caseid, fact=lip.facts[0], new_formula="42")
+        model_id_1, caseid, fact=line_item.facts[0], new_formula="42")
     time.sleep(10)
+
     Runners.run_edit_formula(
-        model_id_1, caseid, fact=lip.facts[0], new_formula="84")
+        model_id_1, caseid, fact=line_item.facts[0], new_formula="84")
     time.sleep(10)
+
     Runners.run_edit_formula(
-        model_id_1, caseid, fact=lip.facts[0], new_formula="168")
+        model_id_1, caseid, fact=line_item.facts[0], new_formula="168")
     time.sleep(10)
 
     run_vsl(VSLRunProps(
         model_id_1=model_id_1,
         model_id_2=model_id_2,
-        tag=lip.tags[0],
+        tag=line_item.tags[0],
         nedits=3
     ))
 

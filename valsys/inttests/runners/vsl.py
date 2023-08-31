@@ -26,6 +26,10 @@ class VSLRunProps:
 
 
 def pluck_tags(model: Model):
+    '''
+    pluck_tags will pull out the first line item in the model
+    that has tags and non-empty values.
+    '''
     for c in model.cases:
         for m in c.modules:
             for l in m.line_items:

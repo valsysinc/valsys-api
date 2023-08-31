@@ -107,3 +107,41 @@ class VSLQueryResponse:
         else:
             raise NotImplementedError(f"unknown widget type {r.widget_type}")
         return r
+
+
+@dataclass
+class VSLSelector:
+    label: str
+    stype: str
+    options: List[str] = field(default_factory=list)
+    dependant_selectors: List[str] = field(default_factory=list)
+
+    class fields:
+        LABEL = 'label'
+        OPTIONS = 'options'
+        STYPE = 'type'
+        DEPENDENT_SELECTORS = 'dependant_selectors'
+
+    @classmethod
+    def from_json(cls, j):
+        return cls(
+            label=j.get(cls.fields.LABEL),
+            options=[str(s) for s in j.get(cls.fields.OPTIONS)],
+            stype=j.get(cls.fields.STYPE),
+            dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS)
+        )
+
+
+@dataclass
+class VSLSelectorsResponse:
+    selectors: List[VSLSelector] = field(default_factory=list)
+
+    class fields:
+        SELECTORS = 'selectors'
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]):
+        return cls(
+            selectors=[VSLSelector.from_json(s)
+                       for s in data.get(cls.fields.SELECTORS)]
+        )

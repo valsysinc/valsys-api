@@ -234,3 +234,42 @@ def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
     assert_gt(len(r.data.labels), 0, 'number of data labels')
     assert_equal(len(r.data.data_sets), 2, 'number of data sets')
     assert_true(r.data.opts['time'], 'time is an option')
+
+
+@runner('simple selector')
+def run_simple_selector():
+    query = f'''
+    var analyst = Selector(label="Analyst", source="models", field="created_by");
+
+    ReturnSelectors(analyst)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+    assert_equal(len(r.selectors), 1, 'number of selectors')
+    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
+    assert_equal(len(r.selectors[0].dependant_selectors),
+                 0, 'number of dependent selectors')
+
+
+@runner('multi selector')
+def run_multi_selector():
+    query = f'''
+    var title = Selector(label="Title", source="models", field="title");
+    var ticker = Selector(label="Ticker", source="models", field="ticker", given=title);
+    var analyst = Selector(label="Analyst", source="models", field="created_by", given=ticker);
+
+    ReturnSelectors(title, ticker, analyst)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+    print(r)
+
+    assert set(["Title", "Ticker", "Analyst"]) == set(
+        [s.label for s in r.selectors])
+
+    assert_equal(len(r.selectors), 3, 'number of selectors')
+    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
+    assert_equal(len(r.selectors[0].dependant_selectors),
+                 2, 'number of dependent selectors')
+    assert_equal(len(r.selectors[1].dependant_selectors),
+                 1, 'number of dependent selectors')
+    assert_equal(len(r.selectors[2].dependant_selectors),
+                 0, 'number of dependent selectors')

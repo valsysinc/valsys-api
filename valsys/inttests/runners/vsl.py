@@ -1,24 +1,37 @@
+from dataclasses import dataclass
 from typing import List
 from valsys.inttests.runners.utils import (
     assert_equal,
+    assert_true,
+    assert_gt,
     assert_contains,
     runner,
     modelids_to_csv
 )
 from valsys.modeling import vsl as vsl
-from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION
+from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION, WidgetTypes
 from valsys.modeling.client.exceptions import ModelingServicePostException
 
 
-def run_vsl(model_id_1: str, model_id_2: str):
+@dataclass
+class VSLRunProps:
+    model_id_1: str
+    model_id_2: str
+    tag: str
+    nedits: int
+
+
+def run_vsl(props: VSLRunProps):  # model_id_1: str, model_id_2: str):
     '''This func will run the various VSL-type tests.'''
-    run_garbage(model_id_1)
-    run_simple_filter(model_id_1)
-    run_multi_column([model_id_1, model_id_2])
+    run_garbage(props.model_id_1)
+    run_simple_filter(props.model_id_1, tag=props.tag)
+    run_multi_column([props.model_id_1, props.model_id_2], tag=props.tag)
     #run_multi_column_func([model_id_1, model_id_2])
     #run_multi_column_var_model_ids([model_id_1, model_id_2])
     #run_multi_column_func2([model_id_1, model_id_2])
-    run_history(model_id_1)
+    run_history(props.model_id_1, tag=props.tag, nedits=props.nedits)
+    run_history_multiple_traces(
+        props.model_id_1, tag=props.tag, nedits=props.nedits)
 
 
 @runner('garbage query')
@@ -36,14 +49,14 @@ def run_garbage(model_id: str):
 
 
 @runner('simple filter')
-def run_simple_filter(model_id: str):
+def run_simple_filter(model_id: str, tag='Total Revenue (Revenue)'):
     column_label = "Some column for revenue"
     query = f'''
     Filter(modelID=\"{model_id}\").
-    Column(label=\"{column_label}\", tag=[Total Revenue (Revenue)[LFY]]).
+    Column(label=\"{column_label}\", tag=[{tag}[LFY]]).
     Table()'''
     r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, 'TABLE')
+    assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_contains(r.data.columns, [column_label])
     assert_equal(r.data.sortBy, column_label)
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
@@ -52,18 +65,19 @@ def run_simple_filter(model_id: str):
 
 
 @runner('multi column filter')
-def run_multi_column(model_ids: List[str]):
+def run_multi_column(model_ids: List[str], tag='Total Revenue (Revenue)'):
 
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
 
-    query = '''Filter(modelID='''+model_ids_str+''').
+    query = f'''
+    Filter(modelID={model_ids_str}).
     Column(label="Revenue", field="ticker").
     Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / 1.1*[Total Revenue (Revenue)[LFY-1]])).
+    Column(label="Expression label", expression=([{tag}[LFY]] / 1.1*[{tag}[LFY-1]])).
     Table()
     '''
     r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, 'TABLE')
+    assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_equal(r.data.sortBy, 'Revenue')
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
     assert_equal(len(r.data.columns), 3)
@@ -88,7 +102,7 @@ def run_multi_column_func(model_ids: List[str]):
     '''
 
     r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, 'TABLE')
+    assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_equal(r.data.sortBy, 'Revenue')
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
     assert_equal(len(r.data.columns), 3)
@@ -109,7 +123,7 @@ def run_multi_column_func2(model_ids: List[str]):
     Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / multiplyBy2([Total Revenue (Revenue)[LFY-1]]))).
     Table()
     '''
-    print(query)
+
     r = vsl.execute_vsl_query(query)
     print(r)
 
@@ -127,9 +141,9 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
     Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / 1.1*[Total Revenue (Revenue)[LFY-1]])).
     Table()
     '''
-    print(query)
+
     r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, 'TABLE')
+    assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_equal(r.data.sortBy, 'Revenue')
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
     assert_equal(len(r.data.columns), 3)
@@ -139,10 +153,27 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
 
 
 @runner('history')
-def run_history(model_id):
+def run_history(model_id, tag='Revenue (Base)', nedits=0):
     query = f'''
-    Select(modelID=\"{model_id}\").
-    History(label="Base", tag=[Revenue (Base)[LFY+5]]).
-    Chart()'''
+    Filter(modelID=\"{model_id}\").
+    History(label="Base", tag=[{tag}[LFY-1]]).
+    LineChart()'''
     r = vsl.execute_vsl_query(query)
-    print(r)
+    assert_equal(r.widget_type, WidgetTypes.LINE_CHART)
+    assert_gt(len(r.data.labels), 0, 'number of data labels')
+    assert_equal(len(r.data.data_sets), 1, 'number of data sets')
+    assert_true(r.data.opts['time'], 'time is an option')
+
+
+@runner('history multiple traces')
+def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
+    query = f'''
+    Filter(modelID=\"{model_id}\").
+    History(label="Base1", tag=[{tag}[LFY-1]]).
+    History(label="Base2", tag=[{tag}[LFY-1]]).
+    LineChart()'''
+    r = vsl.execute_vsl_query(query)
+    assert_equal(r.widget_type, WidgetTypes.LINE_CHART)
+    assert_gt(len(r.data.labels), 0, 'number of data labels')
+    assert_equal(len(r.data.data_sets), 2, 'number of data sets')
+    assert_true(r.data.opts['time'], 'time is an option')

@@ -103,15 +103,21 @@ def setup_and_run_vsl(model_id_1: str, model_id_2: str):
 
 def run_vsl(props: VSLRunProps):
     '''This func will run the various VSL-type tests.'''
-    run_garbage(props.model_id_1)
+    '''run_garbage(props.model_id_1)
     run_simple_filter(props.model_id_1, tag=props.tag)
     run_multi_column([props.model_id_1, props.model_id_2], tag=props.tag)
-    #run_multi_column_func([model_id_1, model_id_2])
+    run_multi_column_func([props.model_id_1, props.model_id_2], tag=props.tag)
     #run_multi_column_var_model_ids([model_id_1, model_id_2])
-    #run_multi_column_func2([model_id_1, model_id_2])
+    run_multi_column_func2([props.model_id_1, props.model_id_2], tag=props.tag)
     run_history(props.model_id_1, tag=props.tag, nedits=props.nedits)
     run_history_multiple_traces(
-        props.model_id_1, tag=props.tag, nedits=props.nedits)
+        props.model_id_1, tag=props.tag, nedits=props.nedits)'''
+    run_simple_selector()
+    run_chaining_selectors()
+    run_dashboard_selector()
+    run_dashboard_widget_selector()
+    run_filter_to_line_chart()
+    run_filter_to_bar_chart()
 
 
 @runner('garbage query')
@@ -167,7 +173,7 @@ def run_multi_column(model_ids: List[str], tag='Total Revenue (Revenue)'):
 
 
 @runner('multi column filter with func')
-def run_multi_column_func(model_ids: List[str]):
+def run_multi_column_func(model_ids: List[str], tag='Total Revenue (Revenue)'):
 
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
 
@@ -177,7 +183,7 @@ def run_multi_column_func(model_ids: List[str]):
     Filter(modelID='''+model_ids_str+''').
     Column(label="Revenue", field="ticker").
     Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / doubleIt([Total Revenue (Revenue)[LFY-1]]))).
+    Column(label="Expression label", expression=([''' + tag + '''[LFY]] / doubleIt([''' + tag + '''[LFY-1]]))).
     Table()
     '''
 
@@ -190,7 +196,7 @@ def run_multi_column_func(model_ids: List[str]):
 
 
 @runner('multi column filter with func with number')
-def run_multi_column_func2(model_ids: List[str]):
+def run_multi_column_func2(model_ids: List[str], tag='Total Revenue (Revenue)'):
 
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
 
@@ -200,12 +206,17 @@ def run_multi_column_func2(model_ids: List[str]):
     Filter(modelID='''+model_ids_str+''').
     Column(label="Revenue", field="ticker").
     Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / multiplyBy2([Total Revenue (Revenue)[LFY-1]]))).
+    Column(label="Expression label", expression=([''' + tag + '''[LFY]] / multiplyBy2([''' + tag + '''[LFY-1]]))).
     Table()
     '''
 
     r = vsl.execute_vsl_query(query)
-    print(r)
+    assert_equal(r.widget_type, WidgetTypes.TABLE)
+    assert_equal(r.data.sortBy, 'Revenue')
+    assert_equal(len(r.data.columns), 3)
+    assert_equal(len(r.data.rows), 2)
+    expected_columns = set(['Revenue', 'labelModelID', 'Expression label'])
+    assert_equal(expected_columns, set(r.data.columns))
 
 
 @runner('multi column filter with var modelids')
@@ -232,8 +243,71 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
     assert mids_in_rows == set(model_ids)
 
 
-@runner('history')
-def run_history(model_id, tag='Revenue (Base)', nedits=0):
+@runner('simple single selector')
+def run_simple_selector():
+    query = f'''
+    var analyst = Selector(label="Analyst", source="models", field="created_by");
+
+    ReturnSelectors(analyst)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+    assert_equal(len(r.selectors), 1, 'number of selectors')
+    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
+    assert_equal(len(r.selectors[0].dependant_selectors),
+                 0, 'number of dependent selectors')
+
+
+@runner('chaining selectors')
+def run_chaining_selectors():
+    query = f'''
+    var title = Selector(label="Title", source="models", field="title");
+    var ticker = Selector(label="Ticker", source="models", field="ticker", given=title);
+    var analyst = Selector(label="Analyst", source="models", field="created_by", given=ticker);
+
+    ReturnSelectors(title, ticker, analyst)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+
+    assert set(["Title", "Ticker", "Analyst"]) == set(
+        [s.label for s in r.selectors])
+
+    assert_equal(len(r.selectors), 3, 'number of selectors')
+    assert_equal(r.selectors[0].stype, WidgetTypes.WIDGET, 'selector type')
+    assert_equal(len(r.selectors[0].dependant_selectors),
+                 2, 'number of dependent selectors')
+    assert_equal(len(r.selectors[1].dependant_selectors),
+                 1, 'number of dependent selectors')
+    assert_equal(len(r.selectors[2].dependant_selectors),
+                 0, 'number of dependent selectors')
+
+
+@runner('dashboard selector')
+def run_dashboard_selector():
+    query = '''
+    var ticker = Selector(label="Ticker", source="models", field="ticker", dashboardSelector=TRUE, widgetSelector=FALSE)
+    ReturnSelectors(ticker)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+    assert_equal(len(r.selectors), 1)
+    assert_equal(r.selectors[0].stype, WidgetTypes.DASHBOARD, 'selector type')
+
+
+@runner('dashboard and widget selector')
+def run_dashboard_widget_selector():
+    query = '''
+    var ticker = Selector(label="Ticker", source="models", field="ticker", dashboardSelector=TRUE, widgetSelector=TRUE)
+    ReturnSelectors(ticker)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+
+    assert set([WidgetTypes.DASHBOARD, WidgetTypes.WIDGET]) == set(
+        [s.stype for s in r.selectors])
+
+    assert_equal(len(r.selectors), 2)
+
+
+@runner('history to line chart')
+def run_history_to_line_chart(model_id, tag='Revenue (Base)', nedits=0):
     query = f'''
     Filter(modelID=\"{model_id}\").
     History(label="Base", tag=[{tag}[LFY-1]]).
@@ -259,40 +333,36 @@ def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
     assert_true(r.data.opts['time'], 'time is an option')
 
 
-@runner('simple selector')
-def run_simple_selector():
-    query = f'''
-    var analyst = Selector(label="Analyst", source="models", field="created_by");
+@runner('filter to line chart')
+def run_filter_to_line_chart():
+    queries = ['''
+    Filter().
+	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	LineChart()
+    ''',
+               '''
+    Filter().
+	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	LineChart(start="LFY", end="LFY+2")
+    ''']
+    for query in queries:
+        print(query)
+        r = vsl.execute_vsl_query(query)
+        assert_equal(r.widget_type, WidgetTypes.LINE_CHART, 'widget type')
 
-    ReturnSelectors(analyst)
-    '''
-    r = vsl.execute_vsl_query_selectors(query)
-    assert_equal(len(r.selectors), 1, 'number of selectors')
-    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
-    assert_equal(len(r.selectors[0].dependant_selectors),
-                 0, 'number of dependent selectors')
 
-
-@runner('multi selector')
-def run_multi_selector():
-    query = f'''
-    var title = Selector(label="Title", source="models", field="title");
-    var ticker = Selector(label="Ticker", source="models", field="ticker", given=title);
-    var analyst = Selector(label="Analyst", source="models", field="created_by", given=ticker);
-
-    ReturnSelectors(title, ticker, analyst)
-    '''
-    r = vsl.execute_vsl_query_selectors(query)
-    print(r)
-
-    assert set(["Title", "Ticker", "Analyst"]) == set(
-        [s.label for s in r.selectors])
-
-    assert_equal(len(r.selectors), 3, 'number of selectors')
-    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
-    assert_equal(len(r.selectors[0].dependant_selectors),
-                 2, 'number of dependent selectors')
-    assert_equal(len(r.selectors[1].dependant_selectors),
-                 1, 'number of dependent selectors')
-    assert_equal(len(r.selectors[2].dependant_selectors),
-                 0, 'number of dependent selectors')
+@runner('filter to bar chart')
+def run_filter_to_bar_chart():
+    queries = ['''
+    Filter().
+	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	BarChart()
+    ''',
+               '''
+    Filter().
+	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	BarChart(start="LFY", end="LFY+2")
+    ''']
+    for query in queries:
+        r = vsl.execute_vsl_query(query)
+        assert_equal(r.widget_type, WidgetTypes.BAR_CHART, 'widget type')

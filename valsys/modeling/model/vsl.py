@@ -7,7 +7,10 @@ DEFAULT_SORT_DIRECTION = 'asc'
 
 class WidgetTypes:
     LINE_CHART = 'LINE_CHART'
+    BAR_CHART = 'BAR_CHART'
     TABLE = 'TABLE'
+    DASHBOARD = 'DASHBOARD'
+    WIDGET = 'WIDGET'
 
 
 @dataclass
@@ -104,7 +107,10 @@ class VSLQueryResponse:
             r.data = VSLTableData.from_json(data.get(cls.fields.DATA))
         elif r.widget_type == WidgetTypes.LINE_CHART:
             r.data = VSLChartData.from_json(data.get(cls.fields.DATA))
+        elif r.widget_type == WidgetTypes.BAR_CHART:
+            r.data = VSLChartData.from_json(data.get(cls.fields.DATA))
         else:
+            print(data)
             raise NotImplementedError(f"unknown widget type {r.widget_type}")
         return r
 

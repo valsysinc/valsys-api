@@ -23,7 +23,7 @@ class Point:
         FORMAT = 'format'
 
     @classmethod
-    def from_json(cls, j):
+    def from_json(cls, j: Dict[str, Any]):
         return cls(
             value=j.get(cls.fields.VALUE),
             format=j.get(cls.fields.FORMAT)
@@ -40,7 +40,7 @@ class VSLDataSet:
         DATA = 'data'
 
     @classmethod
-    def from_json(cls, j):
+    def from_json(cls, j: Dict[str, Any]):
         return cls(
             label=j.get(cls.fields.LABEL),
             data=[Point.from_json(p) for p in j.get(cls.fields.DATA)]
@@ -61,7 +61,7 @@ class VSLTableData:
         COLUMNS = 'columns'
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict[str, Any]):
         return cls(
             sortBy=data.get(cls.fields.SORT_BY),
             sortDirection=data.get(cls.fields.SORT_DIRECTION),
@@ -82,7 +82,7 @@ class VSLChartData:
         OPTS = 'opts'
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict[str, Any]):
         return cls(
             labels=data.get(cls.fields.LABELS),
             data_sets=[VSLDataSet.from_json(d)
@@ -129,7 +129,7 @@ class VSLSelector:
         DEPENDENT_SELECTORS = 'dependant_selectors'
 
     @classmethod
-    def from_json(cls, j):
+    def from_json(cls, j: Dict[str, Any]):
         return cls(
             label=j.get(cls.fields.LABEL),
             options=[str(s) for s in j.get(cls.fields.OPTIONS)],

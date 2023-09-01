@@ -116,8 +116,8 @@ def run_vsl(props: VSLRunProps):
     run_chaining_selectors()
     run_dashboard_selector()
     run_dashboard_widget_selector()
-    run_filter_to_line_chart()
-    run_filter_to_bar_chart()
+    # run_filter_to_line_chart()
+    run_filter_to_bar_chart(props.model_id_1, tag=props.tag)
 
 
 @runner('garbage query')
@@ -352,17 +352,18 @@ def run_filter_to_line_chart():
 
 
 @runner('filter to bar chart')
-def run_filter_to_bar_chart():
-    queries = ['''
-    Filter().
-	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+def run_filter_to_bar_chart(model_id, tag):
+    queries = [f'''
+    Filter(modelID=\"{model_id}\").
+	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart()
     ''',
-               '''
-    Filter().
-	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+               f'''
+    Filter(modelID=\"{model_id}\").
+	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart(start="LFY", end="LFY+2")
     ''']
     for query in queries:
+        print(query)
         r = vsl.execute_vsl_query(query)
         assert_equal(r.widget_type, WidgetTypes.BAR_CHART, 'widget type')

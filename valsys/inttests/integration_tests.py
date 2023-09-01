@@ -13,9 +13,9 @@ def integration_test_config():
     return {
         'companyName': 'Apple',
         # 'ticker': 'PEP',
-        # 'templateName': 'dcf-standard',
-        'ticker': 'AAP',
-        'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
+        'templateName': 'AE Template V1',
+        'ticker': 'AAP US',
+        # 'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
         'numForecastYears': 3,
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
@@ -41,10 +41,10 @@ def run_integration_tests():
         module_id = first_module.uid
         first_line_item = first_module.line_items[0]
         first_fact = first_line_item.facts[0]
-        print(first_line_item.tags)
+
         new_module = Runners.run_add_child_module(model_id, first_case_id,
                                                   module_id)
-        Runners.run_set_facts_tracked([model_id], first_line_item.tags)
+        #Runners.run_set_facts_tracked([model_id], first_line_item.tags)
         Runners.run_recalculate_model(model_id)
         Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
         Runners.run_edit_format(model_id, first_case_id, fact=first_fact)

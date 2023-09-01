@@ -14,7 +14,7 @@ class WidgetTypes:
 
 
 @dataclass
-class Point:
+class DataPoint:
     value: str
     format: str
 
@@ -33,7 +33,7 @@ class Point:
 @dataclass
 class VSLDataSet:
     label: str
-    data: List[Point] = field(default_factory=list)
+    data: List[DataPoint] = field(default_factory=list)
 
     class fields:
         LABEL = 'label'
@@ -43,7 +43,7 @@ class VSLDataSet:
     def from_json(cls, j: Dict[str, Any]):
         return cls(
             label=j.get(cls.fields.LABEL),
-            data=[Point.from_json(p) for p in j.get(cls.fields.DATA)]
+            data=[DataPoint.from_json(p) for p in j.get(cls.fields.DATA)]
         )
 
 
@@ -92,6 +92,29 @@ class VSLChartData:
 
 
 @dataclass
+class VSLSelector:
+    label: str
+    stype: str
+    options: List[str] = field(default_factory=list)
+    dependant_selectors: List[str] = field(default_factory=list)
+
+    class fields:
+        LABEL = 'label'
+        OPTIONS = 'options'
+        STYPE = 'type'
+        DEPENDENT_SELECTORS = 'dependant_selectors'
+
+    @classmethod
+    def from_json(cls, j: Dict[str, Any]):
+        return cls(
+            label=j.get(cls.fields.LABEL),
+            options=[str(s) for s in j.get(cls.fields.OPTIONS)],
+            stype=j.get(cls.fields.STYPE),
+            dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS)
+        )
+
+
+@dataclass
 class VSLQueryResponse:
     widget_type: str
     data: Union[VSLTableData, VSLChartData] = None
@@ -113,29 +136,6 @@ class VSLQueryResponse:
             print(data)
             raise NotImplementedError(f"unknown widget type {r.widget_type}")
         return r
-
-
-@dataclass
-class VSLSelector:
-    label: str
-    stype: str
-    options: List[str] = field(default_factory=list)
-    dependant_selectors: List[str] = field(default_factory=list)
-
-    class fields:
-        LABEL = 'label'
-        OPTIONS = 'options'
-        STYPE = 'type'
-        DEPENDENT_SELECTORS = 'dependant_selectors'
-
-    @classmethod
-    def from_json(cls, j: Dict[str, Any]):
-        return cls(
-            label=j.get(cls.fields.LABEL),
-            options=[str(s) for s in j.get(cls.fields.OPTIONS)],
-            stype=j.get(cls.fields.STYPE),
-            dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS)
-        )
 
 
 @dataclass

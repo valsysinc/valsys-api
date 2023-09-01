@@ -40,6 +40,37 @@ def pluck_tags(model: Model):
     raise Exception('cannot find line item with tags')
 
 
+def wait_validate_formula_edited(model_id_1, line_item_id, fact_id, new_formula):
+    attempt_number = 0
+    while True:
+        attempt_number += 1
+        mp1 = Runners.run_pull_model(model_id_1)
+        li = mp1.pull_line_item(line_item_id)
+        f = li.pull_fact_by_id(fact_id)
+        if f.formula == new_formula:
+            break
+        if attempt_number > 10:
+            raise Exception(
+                f'formula tracked not chnaged after {attempt_number} attempts')
+        time.sleep(1)
+    return
+
+
+def wait_check_facts_tracked(model_id, line_item_id):
+    attempt_number = 0
+    while True:
+        attempt_number += 1
+        mp1 = Runners.run_pull_model(model_id)
+        li = mp1.pull_line_item(line_item_id)
+        if li.facts_tracked:
+            break
+        if attempt_number > 10:
+            raise Exception(
+                f'facts tracked not chnaged after {attempt_number} attempts')
+        time.sleep(1)
+    return
+
+
 def setup_and_run_vsl(model_id_1: str, model_id_2: str):
     '''
     setup_and_run_vsl will setup the nessecary models and edits
@@ -47,34 +78,26 @@ def setup_and_run_vsl(model_id_1: str, model_id_2: str):
     '''
     model = Runners.run_pull_model(model_id_1)
 
-    caseid, line_item_with_tags = pluck_tags(model)
+    caseid, line_item = pluck_tags(model)
 
-    Runners.run_set_facts_tracked([model_id_1], line_item_with_tags.tags)
+    Runners.run_set_facts_tracked([model_id_1], line_item.tags)
     # these sleeps are put in so that the cache and versioning system
     # can finish before the next call is made. they are async.
-    time.sleep(10)
+    wait_check_facts_tracked(model_id_1, line_item.uid)
 
-    model_repulled = Runners.run_pull_model(model_id_1)
-    line_item = model_repulled.pull_line_item(line_item_with_tags.uid)
-    time.sleep(10)
+    formulae_edits = ['42', '84', '168']
 
-    Runners.run_edit_formula(
-        model_id_1, caseid, fact=line_item.facts[0], new_formula="42")
-    time.sleep(10)
-
-    Runners.run_edit_formula(
-        model_id_1, caseid, fact=line_item.facts[0], new_formula="84")
-    time.sleep(10)
-
-    Runners.run_edit_formula(
-        model_id_1, caseid, fact=line_item.facts[0], new_formula="168")
-    time.sleep(10)
+    for fe in formulae_edits:
+        Runners.run_edit_formula(
+            model_id_1, caseid, fact=line_item.facts[0], new_formula=fe)
+        wait_validate_formula_edited(model_id_1, line_item.uid,
+                                     line_item.facts[0].uid,  fe)
 
     run_vsl(VSLRunProps(
         model_id_1=model_id_1,
         model_id_2=model_id_2,
         tag=line_item.tags[0],
-        nedits=3
+        nedits=len(formulae_edits)
     ))
 
 

@@ -40,11 +40,11 @@ def pluck_tags(model: Model):
     raise Exception('cannot find line item with tags')
 
 
-def wait_validate_formula_edited(model_id_1, line_item_id, fact_id, new_formula):
+def wait_validate_formula_edited(model_id: str, line_item_id: str, fact_id: str, new_formula: str):
     attempt_number = 0
     while True:
         attempt_number += 1
-        mp1 = Runners.run_pull_model(model_id_1)
+        mp1 = Runners.run_pull_model(model_id)
         li = mp1.pull_line_item(line_item_id)
         f = li.pull_fact_by_id(fact_id)
         if f.formula == new_formula:
@@ -56,7 +56,7 @@ def wait_validate_formula_edited(model_id_1, line_item_id, fact_id, new_formula)
     return
 
 
-def wait_check_facts_tracked(model_id, line_item_id):
+def wait_check_facts_tracked(model_id: str, line_item_id: str):
     attempt_number = 0
     while True:
         attempt_number += 1

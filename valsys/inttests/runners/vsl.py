@@ -116,7 +116,7 @@ def run_vsl(props: VSLRunProps):
     run_chaining_selectors()
     run_dashboard_selector()
     run_dashboard_widget_selector()
-    # run_filter_to_line_chart()
+    run_filter_to_line_chart()
     run_filter_to_bar_chart(props.model_id_1, tag=props.tag)
 
 
@@ -346,7 +346,6 @@ def run_filter_to_line_chart():
 	LineChart(start="LFY", end="LFY+2")
     ''']
     for query in queries:
-        print(query)
         r = vsl.execute_vsl_query(query)
         assert_equal(r.widget_type, WidgetTypes.LINE_CHART, 'widget type')
 
@@ -364,6 +363,5 @@ def run_filter_to_bar_chart(model_id, tag):
 	BarChart(start="LFY", end="LFY+2")
     ''']
     for query in queries:
-        print(query)
         r = vsl.execute_vsl_query(query)
         assert_equal(r.widget_type, WidgetTypes.BAR_CHART, 'widget type')

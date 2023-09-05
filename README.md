@@ -52,4 +52,13 @@ Invoke via
 ```
 python main.py --inttests <VALSYS_API_SOCKET> <VALSYS_API_SERVER> <VALSYS_API_USER> <VALSYS_API_PASSWORD>
 ```
-The ordering of these parameters is important.
+The ordering of these parameters is important. 
+
+When running the `modeling` service locally, the python library test suite is invoked via
+```
+python main.py --inttests ws://localhost:5800 ws://localhost:5100 http://localhost:5200 <USER> <PASSWORD> integration
+```
+To point the python library test suite at the hosted dev `modeling`  service
+```
+python main.py --inttests wss://dev-api.valsys.io:5800 wss://dev-api.valsys.io:5100 https://dev-api.valsys.io <USER> <PASSWORD> integration
+```

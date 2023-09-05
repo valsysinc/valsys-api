@@ -103,35 +103,37 @@ def setup_and_run_vsl(model_id_1: str, model_id_2: str):
 
 def run_vsl(props: VSLRunProps):
     '''This func will run the various VSL-type tests.'''
-    '''run_garbage(props.model_id_1)
+    run_garbage(props.model_id_1)
     run_simple_filter(props.model_id_1, tag=props.tag)
     run_multi_column([props.model_id_1, props.model_id_2], tag=props.tag)
-    run_multi_column_func([props.model_id_1, props.model_id_2], tag=props.tag)
-    #run_multi_column_var_model_ids([model_id_1, model_id_2])
-    run_multi_column_func2([props.model_id_1, props.model_id_2], tag=props.tag)
-    run_history(props.model_id_1, tag=props.tag, nedits=props.nedits)
+
+    run_multi_column_var_model_ids(
+        [props.model_id_1, props.model_id_2], tag=props.tag)
+    run_multi_column_with_funcs(
+        [props.model_id_1, props.model_id_2], tag=props.tag)
+    #run_history(props.model_id_1, tag=props.tag, nedits=props.nedits)
     run_history_multiple_traces(
-        props.model_id_1, tag=props.tag, nedits=props.nedits)'''
+        props.model_id_1, tag=props.tag, nedits=props.nedits)
     run_simple_selector()
     run_chaining_selectors()
     run_dashboard_selector()
     run_dashboard_widget_selector()
-    run_filter_to_line_chart()
-    run_filter_to_bar_chart(props.model_id_1, tag=props.tag)
+    run_filter_to_charts(props.model_id_1, tag=props.tag)
 
 
-@runner('garbage query')
+@runner('garbage queries that should fail')
 def run_garbage(model_id: str):
     column_label = "Some column for revenue"
-    query = f'''
+    queries = ['''filter().Table()''', f'''
     Filter(modelID=\"{model_id}\").
     Columns(label=\"{column_label}\", tag=[Total Revenue (Revenue)[LFY]]).
-    Table()'''
-    try:
-        vsl.execute_vsl_query(query)
-    except ModelingServicePostException as err:
-        return
-    raise AssertionError("expected to get an error and didnt")
+    Table()''']
+    for query in queries:
+        try:
+            vsl.execute_vsl_query(query)
+        except ModelingServicePostException:
+            continue
+        raise AssertionError(f"expected error for query {query}")
 
 
 @runner('simple filter')
@@ -172,55 +174,33 @@ def run_multi_column(model_ids: List[str], tag='Total Revenue (Revenue)'):
     assert mids_in_rows == set(model_ids)
 
 
-@runner('multi column filter with func')
-def run_multi_column_func(model_ids: List[str], tag='Total Revenue (Revenue)'):
+@runner('multi column filter with funcs')
+def run_multi_column_with_funcs(model_ids: List[str], tag='Total Revenue (Revenue)'):
 
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
+    func_names = ['doubleIt', 'multiplyBy2']
+    for func_name in func_names:
+        query = f'''
+        var { func_name } = func(x) {{ x * 2 }};
 
-    query = '''
-    var doubleIt = func(x) { x * 2 };
+        Filter(modelID={model_ids_str}).
+        Column(label="Revenue", field="ticker").
+        Column(label="labelModelID", field="modelID").
+        Column(label="Expression label", expression=([{tag}[LFY]] / { func_name }([{tag}[LFY-1]]))).
+        Table()
+        '''
 
-    Filter(modelID='''+model_ids_str+''').
-    Column(label="Revenue", field="ticker").
-    Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([''' + tag + '''[LFY]] / doubleIt([''' + tag + '''[LFY-1]]))).
-    Table()
-    '''
-
-    r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, WidgetTypes.TABLE)
-    assert_equal(r.data.sortBy, 'Revenue')
-    assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
-    assert_equal(len(r.data.columns), 3)
-    assert_equal(len(r.data.rows), 2)
-
-
-@runner('multi column filter with func with number')
-def run_multi_column_func2(model_ids: List[str], tag='Total Revenue (Revenue)'):
-
-    model_ids_str = modelids_to_csv(model_ids, "[", "]")
-
-    query = '''
-    var multiplyBy2 = func(x) { x * 2 };
-
-    Filter(modelID='''+model_ids_str+''').
-    Column(label="Revenue", field="ticker").
-    Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([''' + tag + '''[LFY]] / multiplyBy2([''' + tag + '''[LFY-1]]))).
-    Table()
-    '''
-
-    r = vsl.execute_vsl_query(query)
-    assert_equal(r.widget_type, WidgetTypes.TABLE)
-    assert_equal(r.data.sortBy, 'Revenue')
-    assert_equal(len(r.data.columns), 3)
-    assert_equal(len(r.data.rows), 2)
-    expected_columns = set(['Revenue', 'labelModelID', 'Expression label'])
-    assert_equal(expected_columns, set(r.data.columns))
+        r = vsl.execute_vsl_query(query)
+        assert_equal(r.widget_type, WidgetTypes.TABLE)
+        assert_equal(r.data.sortBy, 'Revenue')
+        assert_equal(len(r.data.columns), 3)
+        assert_equal(len(r.data.rows), 2)
+        assert_equal(
+            set(['Revenue', 'labelModelID', 'Expression label']), set(r.data.columns))
 
 
 @runner('multi column filter with var modelids')
-def run_multi_column_var_model_ids(model_ids: List[str]):
+def run_multi_column_var_model_ids(model_ids: List[str], tag):
     model_ids_str = modelids_to_csv(model_ids, "[", "]")
 
     query = '''
@@ -229,11 +209,12 @@ def run_multi_column_var_model_ids(model_ids: List[str]):
     Filter(modelID=mids).
     Column(label="Revenue", field="ticker").
     Column(label="labelModelID", field="modelID").
-    Column(label="Expression label", expression=([Total Revenue (Revenue)[LFY]] / 1.1*[Total Revenue (Revenue)[LFY-1]])).
+    Column(label="Expression label", expression=([''' + tag + '''[LFY]] / 1.1*[''' + tag + '''[LFY-1]])).
     Table()
     '''
-
+    print(query)
     r = vsl.execute_vsl_query(query)
+    print(r)
     assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_equal(r.data.sortBy, 'Revenue')
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
@@ -333,35 +314,35 @@ def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
     assert_true(r.data.opts['time'], 'time is an option')
 
 
-@runner('filter to line chart')
-def run_filter_to_line_chart():
-    queries = ['''
+@runner('filter to charts')
+def run_filter_to_charts(model_id, tag):
+    queries = [
+        ('''
     Filter().
-	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	LineChart()
-    ''',
-               '''
+    ''', WidgetTypes.LINE_CHART),
+        ('''
     Filter().
-	Series(modelFieldLabel="ticker", lineItem="Depreciation depletion and amortization (DCF)").
+	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	LineChart(start="LFY", end="LFY+2")
-    ''']
-    for query in queries:
-        r = vsl.execute_vsl_query(query)
-        assert_equal(r.widget_type, WidgetTypes.LINE_CHART, 'widget type')
-
-
-@runner('filter to bar chart')
-def run_filter_to_bar_chart(model_id, tag):
-    queries = [f'''
+    ''', WidgetTypes.LINE_CHART),
+        (f'''
     Filter(modelID=\"{model_id}\").
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart()
-    ''',
-               f'''
+    ''', WidgetTypes.BAR_CHART),
+        (f'''
+    Filter().
+	Series(modelFieldLabel="ticker", lineItem="{tag}").
+	BarChart()
+    ''', WidgetTypes.BAR_CHART),
+        (f'''
     Filter(modelID=\"{model_id}\").
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart(start="LFY", end="LFY+2")
-    ''']
-    for query in queries:
+    ''', WidgetTypes.BAR_CHART)
+    ]
+    for query, expected_type in queries:
         r = vsl.execute_vsl_query(query)
-        assert_equal(r.widget_type, WidgetTypes.BAR_CHART, 'widget type')
+        assert_equal(r.widget_type, expected_type, 'widget type')

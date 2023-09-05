@@ -106,7 +106,7 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        VSL.setup_and_run_vsl(model_id, new_id)
+        VSL.run_vsl_tests(model_id, new_id)
     except Exception:
         cleanup.run()
         raise

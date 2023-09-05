@@ -1,8 +1,5 @@
 from valsys.modeling.model.vsl import VSLQueryResponse, VSLSelectorsResponse
-from valsys.modeling.utils import (
-    check_success,
-
-)
+from valsys.modeling.utils import check_success
 from valsys.modeling.client.service import new_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.vars import Resp, Headers

@@ -1,4 +1,4 @@
-import time
+
 
 from dataclasses import dataclass
 from typing import List
@@ -14,7 +14,9 @@ from valsys.modeling import vsl as vsl
 from valsys.modeling.model.vsl import DEFAULT_SORT_DIRECTION, WidgetTypes
 from valsys.modeling.client.exceptions import ModelingServicePostException
 from valsys.inttests.runners import modeling as Runners
-from valsys.modeling.model.model import Model
+
+
+from valsys.inttests.runners.vsl_utils import pluck_tags, wait_check_facts_tracked, wait_check_formula_edited
 
 
 @dataclass
@@ -25,84 +27,33 @@ class VSLRunProps:
     nedits: int
 
 
-def pluck_tags(model: Model):
-    '''
-    pluck_tags will pull out the first line item in the model
-    that has tags and non-empty values.
-    '''
-    for c in model.cases:
-        for m in c.modules:
-            for l in m.line_items:
-                if l.tags != []:
-                    for f in l.facts:
-                        if f.value != '':
-                            return c.uid, l
-    raise Exception('cannot find line item with tags')
-
-
-def wait_validate_formula_edited(model_id: str, line_item_id: str, fact_id: str, new_formula: str):
-    attempt_number = 0
-    while True:
-        attempt_number += 1
-        mp1 = Runners.run_pull_model(model_id)
-        li = mp1.pull_line_item(line_item_id)
-        f = li.pull_fact_by_id(fact_id)
-        if f.formula == new_formula:
-            break
-        if attempt_number > 10:
-            raise Exception(
-                f'formula tracked not chnaged after {attempt_number} attempts')
-        time.sleep(1)
-    return
-
-
-def wait_check_facts_tracked(model_id: str, line_item_id: str):
-    attempt_number = 0
-    while True:
-        attempt_number += 1
-        mp1 = Runners.run_pull_model(model_id)
-        li = mp1.pull_line_item(line_item_id)
-        if li.facts_tracked:
-            break
-        if attempt_number > 10:
-            raise Exception(
-                f'facts tracked not chnaged after {attempt_number} attempts')
-        time.sleep(1)
-    return
-
-
-def setup_and_run_vsl(model_id_1: str, model_id_2: str):
+def run_vsl_tests(model_id_1: str, model_id_2: str):
     '''
     setup_and_run_vsl will setup the nessecary models and edits
     for testing the VSL, and then will execute the VSL tests.
     '''
     model = Runners.run_pull_model(model_id_1)
-
-    caseid, line_item = pluck_tags(model)
-
+    case_id, line_item = pluck_tags(model)
+    fact_to_edit = line_item.facts[0]
     Runners.run_set_facts_tracked([model_id_1], line_item.tags)
-    # these sleeps are put in so that the cache and versioning system
-    # can finish before the next call is made. they are async.
     wait_check_facts_tracked(model_id_1, line_item.uid)
 
     formulae_edits = ['42', '84', '168']
 
-    for fe in formulae_edits:
+    for formula_edit in formulae_edits:
         Runners.run_edit_formula(
-            model_id_1, caseid, fact=line_item.facts[0], new_formula=fe)
-        wait_validate_formula_edited(model_id_1, line_item.uid,
-                                     line_item.facts[0].uid,  fe)
+            model_id_1, case_id, fact=fact_to_edit, new_formula=formula_edit)
+        wait_check_formula_edited(model_id_1, line_item.uid,
+                                  fact_to_edit.uid, formula_edit)
 
-    run_vsl(VSLRunProps(
+    props = VSLRunProps(
         model_id_1=model_id_1,
         model_id_2=model_id_2,
         tag=line_item.tags[0],
         nedits=len(formulae_edits)
-    ))
+    )
 
-
-def run_vsl(props: VSLRunProps):
-    '''This func will run the various VSL-type tests.'''
+    # Now run the various VSL-type tests.
     run_garbage(props.model_id_1)
     run_simple_filter(props.model_id_1, tag=props.tag)
     run_multi_column([props.model_id_1, props.model_id_2], tag=props.tag)
@@ -118,7 +69,8 @@ def run_vsl(props: VSLRunProps):
     run_chaining_selectors()
     run_dashboard_selector()
     run_dashboard_widget_selector()
-    run_filter_to_charts(props.model_id_1, tag=props.tag)
+    run_filter_to_line_charts(props.tag)
+    run_filter_to_bar_charts(props.model_id_1, tag=props.tag)
 
 
 @runner('garbage queries that should fail')
@@ -314,35 +266,44 @@ def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
     assert_true(r.data.opts['time'], 'time is an option')
 
 
-@runner('filter to charts')
-def run_filter_to_charts(model_id, tag):
+@runner('filter to line charts')
+def run_filter_to_line_charts(tag):
     queries = [
-        ('''
+        f'''
     Filter().
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	LineChart()
-    ''', WidgetTypes.LINE_CHART),
-        ('''
+    ''',
+        f'''
     Filter().
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	LineChart(start="LFY", end="LFY+2")
-    ''', WidgetTypes.LINE_CHART),
-        (f'''
+    '''
+    ]
+    for query in queries:
+        r = vsl.execute_vsl_query(query)
+        assert_equal(r.widget_type, WidgetTypes.LINE_CHART, 'widget type')
+
+
+@runner('filter to bar charts')
+def run_filter_to_bar_charts(model_id: str, tag: str):
+    queries = [
+        f'''
     Filter(modelID=\"{model_id}\").
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart()
-    ''', WidgetTypes.BAR_CHART),
-        (f'''
+    ''',
+        f'''
     Filter().
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart()
-    ''', WidgetTypes.BAR_CHART),
-        (f'''
+    ''',
+        f'''
     Filter(modelID=\"{model_id}\").
 	Series(modelFieldLabel="ticker", lineItem="{tag}").
 	BarChart(start="LFY", end="LFY+2")
-    ''', WidgetTypes.BAR_CHART)
+    '''
     ]
-    for query, expected_type in queries:
+    for query in queries:
         r = vsl.execute_vsl_query(query)
-        assert_equal(r.widget_type, expected_type, 'widget type')
+        assert_equal(r.widget_type,  WidgetTypes.BAR_CHART, 'widget type')

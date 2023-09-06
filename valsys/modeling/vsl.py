@@ -6,6 +6,14 @@ from valsys.modeling.vars import Resp, Headers
 
 
 def execute_vsl_query(query: str) -> VSLQueryResponse:
+    """ Execute a VSL query
+
+        Args:
+            query: the VSL query string to be executed
+
+        Returns:
+            The `VSLQueryResponse` object response
+    """
     client = new_client()
     url = VSURL.VSL_QUERY
     payload = {
@@ -17,6 +25,14 @@ def execute_vsl_query(query: str) -> VSLQueryResponse:
 
 
 def execute_vsl_query_selectors(query: str) -> VSLSelectorsResponse:
+    """ Execute a VSL query
+
+        Args:
+            query: the VSL query string to be executed
+
+        Returns:
+            The `VSLSelectorsResponse` object response
+    """
     client = new_client()
     url = VSURL.VSL_QUERY
     payload = {

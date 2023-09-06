@@ -39,7 +39,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.model.vsl import VSLQueryResponse
+
 from valsys.modeling.utils import (
     check_success,
     facts_list,

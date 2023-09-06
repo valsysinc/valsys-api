@@ -6,7 +6,7 @@ Purpose: library to build and interact with Valsys models via the API. See our [
 
 ## Installation
 ### **Recommended**: installation via `pip`
-For this, we recommend that you are in a virtual environment (see [getting started](https://valsysinc.github.io/valsys-api/) for ideas on how to do this); there is a requirement that you have python `>=3.6` installed. Assuming that you are in a virtual environment, the library can be installed via
+For this, we recommend that you are in a virtual environment (see [getting started](https://valsysinc.github.io/valsys-api/) for ideas on how to do this); there is a requirement that you have python `3.8.16` installed. Assuming that you are in a virtual environment, the library can be installed via
 ```
 pip install git+https://github.com/valsysinc/valsys-api
 ```

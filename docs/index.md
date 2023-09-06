@@ -1,21 +1,8 @@
 # Getting started
 ## Create a python virtual environment
-We recommended that you install the `valsys` library into a python virtual (local) environment, rather than into the global python environment. This requires you to have a system-wide installation of `python` (below we assume that your version of `python` is version `3.6` or later.). Other environment management systems are available.
+We recommended that you install the `valsys` library into a python virtual (local) environment, rather than into the global python environment. Below we assume that your version of `python` is version `3.8.16`. 
 
-To create a python virtual environment in the current directory, execute
-```
-python -m venv .venv
-```
-The activation of the virtual environment is slightly different on windows and mac:
-
-* If on windows, use
-```
-.venv\Scripts\activate.ps1
-```
-* If on linux/mac, use
-```
-source .venv/bin/activate
-```
+`pyenv` or `virtualenv` work well; other environment management systems are available.
 ## Installing the `valsys` package
 Now that you have an active virtual environment, install the `valsys` python package into your environment via
 ```python
@@ -39,9 +26,11 @@ login()
 ```
 It is useful to put the above into a local script called `login.py` or something of that nature.
 
+This will only need to be executed when you change your password (nothing bad will happen if you keep running - it will just wear thin).
+
 You will be prompted to enter the following information:
 
-* **Valsys host**: the base part of the valsys url (if unsure, contact valsys support)
+* **Valsys host**: the base part of the Valsys url (if unsure, contact valsys support)
 * **Valsys protocol**: whether using `http` or `https`. 
 * **Valsys username**: this is the username used to login to the valsys system 
 * **Valsys password**: this is the password used to login to the valsys system

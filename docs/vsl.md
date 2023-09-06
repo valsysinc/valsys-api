@@ -1,6 +1,6 @@
 # VSL functions
 
-Various VSL functions have been exposed
+Various VSL functions have been exposed; they can be accessed via the following aliased import
 
 ```python linenums="1"
 import valsys.modeling.vsl as VSL

@@ -5,39 +5,31 @@ This is a collection of examples of how to use the Valsys library..
 ## Spawn a model
 This workflow allows a model to be spawned from a template.
 
-In the below example, we show how to spawn a `PEP` model and obtain its model `uid`. 
+```python
+from valsys.config.config import API_PASSWORD, API_USERNAME
+from valsys.modeling import service as Modeling
+from valsys.inttests.utils import gen_orch_config
+from valsys.utils.time import yesterday
 
-
-```python linenums="1"
-# Import the spawn_model function from the spawn service
-from valsys.spawn.service import spawn_from_config
-
-
-# Define the model seed configuration data
-seed_config = {
-    'templateName': 'dcf-standard',
+cfg = {
+    'companyName': 'AAP',
+    'templateName': 'AE Template V1',
+    'ticker': 'AAP US',
     'numForecastYears': 3,
     'numHistoricalYears': 2,
-    'tickers': [{
-        'ticker': 'PEP'
-    }, {
-        'ticker': 'BYND'
-    }]
+    'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
+    'startPeriod': 2019,
+    'startDate': yesterday()
 }
 
-spawned_models = spawn_from_config(seed_config)
-
-# Extract a list of modelID/tickers from the spawned model data
-models = [{'modelID': m.model_id, 'ticker': m.ticker} for m in spawned_models]
+spawned_models = Modeling.spawn_model(
+    gen_orch_config(
+        cfg=cfg,
+        user=API_USERNAME,
+        password=API_PASSWORD))
+print(spawned_models)
+print(Modeling.pull_model(spawned_models[0].model_id))
 ```
-
-If the `templateName` is incorrectly entered (e.g., typo, or something that doesnt exist), a `TemplateNotFoundException` is thrown explaining 
-```
-TemplateNotFoundException: template not found for template_name: dcf-standard2
-```
-
-Below is a screenshot from a jupyter notebook of exactly this process, the output, and a printout of the `models` built information.
-> ![](images/spawn.png "Model spawning")
 
 ## Append tags to an existing model
 Tags can be added or appended to existing models; this assumes knowledge of the models `uid`.

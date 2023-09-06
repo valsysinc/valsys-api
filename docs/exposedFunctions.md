@@ -187,4 +187,3 @@ new_model_groups(group_name: str, model_ids: List[str])
 update_model_groups(uid: str, name: str, model_ids: List[str])
 ```
 :::valsys.modeling.service.update_model_groups
-

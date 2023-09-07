@@ -68,6 +68,17 @@ class Case:
                 items += target_items
         return items
 
+    def jsonify(self):
+        return{
+            self.fields.ID: self.uid,
+            self.fields.START_PERIOD: self.start_period,
+            self.fields.EDGES: {
+                self.fields.MODULES: [
+                    m.jsonify() for m in self.modules
+                ]
+            }
+        }
+
     @classmethod
     def from_json(cls, data):
 

@@ -18,7 +18,7 @@ class Model(object):
 
     def pull_module(self, module_id: str):
         """Extract a module by ID from the model.
-        
+
         Note that the first module with the given id will be returned.
         """
         for case in self.cases:
@@ -38,7 +38,7 @@ class Model(object):
     def pull_line_item(self, line_item_id: str):
         """
         Extract a line item by ID from the model.
-        
+
         Note that the first line item with the given id will be returned.
         """
         for case in self.cases:
@@ -65,6 +65,17 @@ class Model(object):
     @property
     def first_case_id(self):
         return self.first_case.uid
+
+    def jsonify(self):
+        return{
+            self.fields.ID: self.uid,
+            self.fields.TAGS: self.tags,
+            self.fields.EDGES: {
+                self.fields.CASES: [
+                    c.jsonify() for c in self.cases
+                ]
+            }
+        }
 
     @classmethod
     def from_json(cls, data):

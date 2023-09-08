@@ -15,3 +15,6 @@ make coverage
 
 # Local setup
 installing python 3.8.16 via pyenv works
+
+# Documentation server
+- need to have the github repo named `origin`. Then `make docdeploy`

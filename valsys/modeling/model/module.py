@@ -30,7 +30,7 @@ class Module:
 
     def find_module(self, name: str) -> "Module":
         """Returns a child module by name.
-        
+
         If no matching module is found, `None` is returned.
         """
         for child_module in self.child_modules:
@@ -81,7 +81,7 @@ class Module:
     def pull_item_by_name(self, name: str) -> LineItem:
         """Extract and return the line item with
         the provided name.
-        
+
         If none is found, `None` is returned."""
         #TODO: PFL-24
         # should this look at the line items of the modules' children modules too?
@@ -102,6 +102,18 @@ class Module:
                 if cline_item.uid == line_item_id:
                     return cline_item
         return None
+
+    def jsonify(self):
+        return{
+            self.fields.ID: self.uid,
+            self.fields.NAME: self.name,
+            self.fields.MODULE_START: self.module_start,
+            self.fields.EDGES: {
+                self.fields.LINE_ITEMS: [l.jsonify() for l in self.line_items],
+                self.fields.CHILD_MODULES: [l.jsonify()
+                                            for l in self.child_modules]
+            }
+        }
 
     @classmethod
     def from_json(cls, data):

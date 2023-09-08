@@ -39,7 +39,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
-from valsys.modeling.model.vsl import VSLQueryResponse
+
 from valsys.modeling.utils import (
     check_success,
     facts_list,
@@ -872,4 +872,23 @@ def delete_models(model_ids: List[str]):
     payload = {Headers.MODELS: model_ids}
     resp = client.delete(url=url, data=payload)
     check_success(resp, 'deleting models')
+    return resp
+
+
+def track_line_item(model_ids: List[str], tags: List[str]):
+    """ Tracks the line items in the modelIds whose tags
+    are provided.
+
+    Args:
+        model_ids: List of IDs of the parent models to be tracked.
+        tags: List of the line item tags to be tracked.
+    """
+    client = new_client()
+    url = VSURL.VERSIONING_FACTS_TRACKED
+    payload = {
+        Headers.MODEL_IDS: model_ids,
+        Headers.TAGS: tags
+    }
+    resp = client.post(url=url, data=payload)
+    check_success(resp, 'track line item')
     return resp

@@ -55,8 +55,10 @@ class ClientRecalcTest:
     def _model_config(self):
         return {
             'companyName': 'Starbucks',
-            'ticker': 'SBUX US',
-            'templateId': '29376a9e-a640-4b5f-a839-c355c894b740',
+            'ticker': 'AAP US',
+            # 'templateId': '29376a9e-a640-4b5f-a839-c355c894b740',
+            'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
+
             'numForecastYears': 5,
             'numHistoricalYears': 3,
             'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',

@@ -12,9 +12,10 @@ def integration_test_config():
 
     return {
         'companyName': 'Apple',
-        'ticker': 'AAP',
-        # 'templateName': 'dcf-standard',
-        'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
+        # 'ticker': 'PEP',
+        'templateName': 'AE Template V1',
+        'ticker': 'AAP US',
+        # 'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
         'numForecastYears': 3,
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
@@ -40,8 +41,10 @@ def run_integration_tests():
         module_id = first_module.uid
         first_line_item = first_module.line_items[0]
         first_fact = first_line_item.facts[0]
+
         new_module = Runners.run_add_child_module(model_id, first_case_id,
                                                   module_id)
+        #Runners.run_set_facts_tracked([model_id], first_line_item.tags)
         Runners.run_recalculate_model(model_id)
         Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
         Runners.run_edit_format(model_id, first_case_id, fact=first_fact)
@@ -103,13 +106,12 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        VSL.run_vsl(model_id, new_id)
+        VSL.run_vsl_tests(model_id, new_id)
     except Exception:
         cleanup.run()
         raise
 
     # Delete the models created for testing purposes.
-    #Runners.run_delete_models([model_id, new_id])
     cleanup.run()
 
 

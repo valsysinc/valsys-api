@@ -2,6 +2,7 @@ from valsys.config.config import BASE_ORCH, BASE_SCK, BASE_URL
 
 MODELING = "modeling"
 
+
 class VSURL:
     """Class holding Valsys URLS."""
 
@@ -38,6 +39,8 @@ class VSURL:
     SIM_GROUP_DATA = f"{BASE_URL}/{MODELING}/simulations/group-data"
     SIM_OUTPUT_VARIABLES = f"{BASE_URL}/{MODELING}/simulations/output-variables"
 
+    VERSIONING_FACTS_TRACKED = f"{BASE_URL}/{MODELING}/versioning/tracked-items"
+
     VSL_QUERY = f"{BASE_URL}/{MODELING}/dsl/query"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/{MODELING}/create/"
@@ -53,8 +56,6 @@ class VSURL:
     USERS_FILTER_HISTORY_FIELDS = f"{BASE_URL}/users/filter-history-with-fields"
     LOGIN_USERS = f"{BASE_URL}/users/login"
     TEMPLATES = f"{BASE_URL}/users/model-templates"
-
-    
 
     @classmethod
     def login(cls, base):

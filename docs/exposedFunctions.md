@@ -18,20 +18,17 @@ Modeling.tag_model(...)
 Modeling.filter_user_models(...)
 ```
 in which we used a placeholder for the correct function arguments.
-## Model searching/filtering
-```python linenums="1"
-filter_user_models
-```
-::: valsys.modeling.service.filter_user_models
 
-## Model pulling
+## Model operations
+
+### Model pulling
 ```python linenums="1"
 pull_model(model_id)
 ```
 ::: valsys.modeling.service.pull_model
 
 
-## Model tagging
+### Model tagging
 
 ```python linenums="1"
 tag_model(model_id: str, tags: List[str])
@@ -41,7 +38,7 @@ tag_model(model_id: str, tags: List[str])
 
 
 
-## Model sharing
+### Model sharing
 ```python linenums="1"
 share_model(model_id: str, email: str, permission: str)
 ```
@@ -63,13 +60,20 @@ So, for example, `Permissions.VIEW` could be provided to the `share_model` funct
 
 If you attempt to share the model with a user that dosent exist, a `ShareModelException` will be thrown.
 
-## Model deleting
+### Model deleting
 ```python
 delete_models(model_ids: List[str])
 ```
 :::valsys.modeling.service.delete_models
 
-## Get model information
+### Model searching/filtering
+```python linenums="1"
+filter_user_models
+```
+::: valsys.modeling.service.filter_user_models
+
+
+### Get model information
 ```python linenums="1"                
 pull_model_information(model_id: str)                
 ```
@@ -91,19 +95,19 @@ class CaseInformation:
 
 
 
-## Get model case
+### Get model case
 ```python linenums="1"
 pull_case(case_id: str)
 ```
 :::valsys.modeling.service.pull_case
 
-## Recalculate model
+### Recalculate model
 ```python linenums="1"
 recalculate_model(model_id: str)
 ```
 :::valsys.modeling.service.recalculate_model
 
-## Dynamic updates
+### Dynamic updates
 ```python linenums="1"
 dynamic_updates()                      
 ```
@@ -183,4 +187,3 @@ new_model_groups(group_name: str, model_ids: List[str])
 update_model_groups(uid: str, name: str, model_ids: List[str])
 ```
 :::valsys.modeling.service.update_model_groups
-

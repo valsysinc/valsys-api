@@ -76,7 +76,7 @@ class ModelingServiceHttpClient:
 
         resp = requests.post(url=url,
                              headers=self._add_auth_headers(headers),
-                             data=json.dumps(data))
+                             data=json.dumps(data), timeout=480)
 
         self.status_code = resp.status_code
         if resp.status_code == expected_status:

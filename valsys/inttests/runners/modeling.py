@@ -469,3 +469,8 @@ def run_simulation_output_variables(model_ids: List[str],
         for line_item in model.line_items:
             for ov in output_variables:
                 assert ov in line_item.tags
+
+
+@runner('set facts tracked')
+def run_set_facts_tracked(model_ids: List[str], tags: List[str]):
+    Modeling.track_line_item(model_ids, tags)

@@ -19,15 +19,17 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model
 from valsys.utils.time import yesterday
 from valsys.modeling.client.exceptions import ModelingServiceDeleteException
+from valsys.seeds.models import OrchestratorModelConfig
 
 
 @runner('spawn model')
-def run_spawn_model(model_config):
+def run_spawn_model(model_config: OrchestratorModelConfig):
     """
     SPAWN A MODEL
     """
     # Spawn the model and obtain the new modelID
     spawned_model_id = Modeling.spawn_model(model_config)
+    print(model_config)
     assert isinstance(spawned_model_id, list)
     return spawned_model_id
 

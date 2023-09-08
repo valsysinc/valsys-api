@@ -24,6 +24,7 @@ class ModelingServiceHttpClient:
 
     auth_token: str = ""
     status_code: int = 0
+    timeout: int = 480
 
     def _add_auth_headers(self, hdrs=None):
         hdrs = hdrs or {}
@@ -76,7 +77,7 @@ class ModelingServiceHttpClient:
 
         resp = requests.post(url=url,
                              headers=self._add_auth_headers(headers),
-                             data=json.dumps(data), timeout=480)
+                             data=json.dumps(data), timeout=self.timeout)
 
         self.status_code = resp.status_code
         if resp.status_code == expected_status:

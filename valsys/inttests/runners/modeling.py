@@ -19,15 +19,17 @@ from valsys.modeling.model.line_item import LineItem
 from valsys.modeling.model.model import Model
 from valsys.utils.time import yesterday
 from valsys.modeling.client.exceptions import ModelingServiceDeleteException
+from valsys.seeds.models import OrchestratorModelConfig
 
 
 @runner('spawn model')
-def run_spawn_model(model_config):
+def run_spawn_model(model_config: OrchestratorModelConfig):
     """
     SPAWN A MODEL
     """
     # Spawn the model and obtain the new modelID
     spawned_model_id = Modeling.spawn_model(model_config)
+    print(model_config)
     assert isinstance(spawned_model_id, list)
     return spawned_model_id
 
@@ -393,8 +395,9 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
         'Change in IRR', 'Current share price (DCF)',
         'Implied share price (DCF)', 'Ticker'
     ])
-    
-    assert_contains(s.group_fields, expected_fields, 'simulated expected fields')
+
+    assert_contains(s.group_fields, expected_fields,
+                    'simulated expected fields')
     edited_periods = []
     for e in edits:
         p = int(lfy) + int(e['timePeriod'].replace('LFY', ''))
@@ -428,7 +431,7 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
                 for p, e in edited_periods:
                     if ff.period == p:
                         fe['editExpected'] = True
-                        ## NOTE: this is where we assume that the formula is a simple
+                        # NOTE: this is where we assume that the formula is a simple
                         # multiplication...
                         fe['expectedNewValue'] = ff.value * e
                 simulated_facts.append(fe)

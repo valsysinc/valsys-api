@@ -24,7 +24,7 @@ def authenticate2(username: str, password: str, url) -> str:
         raise NotImplementedError(f"cannot connect to url {url}")
     if response.status_code != HTTPStatus.OK:
         raise ValueError(
-            f"cannot send auth request; code={response.status_code}")
+            f"cannot send auth request; {url} {username} {password} code={response.status_code}")
 
     auth_response = json.loads(response.text.encode("utf8"))
     if auth_response.get("status") != Status.SUCCESS:

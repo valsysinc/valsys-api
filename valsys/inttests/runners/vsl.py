@@ -65,12 +65,14 @@ def run_vsl_tests(model_id_1: str, model_id_2: str):
     #run_history(props.model_id_1, tag=props.tag, nedits=props.nedits)
     run_history_multiple_traces(
         props.model_id_1, tag=props.tag, nedits=props.nedits)
+    run_using_histories(props.tag)
     run_simple_selector()
     run_chaining_selectors()
     run_dashboard_selector()
     run_dashboard_widget_selector()
     run_filter_to_line_charts(props.tag)
     run_filter_to_bar_charts(props.model_id_1, tag=props.tag)
+    run_selector_with_line_item_tags()
 
 
 @runner('garbage queries that should fail')
@@ -164,9 +166,9 @@ def run_multi_column_var_model_ids(model_ids: List[str], tag):
     Column(label="Expression label", expression=([''' + tag + '''[LFY]] / 1.1*[''' + tag + '''[LFY-1]])).
     Table()
     '''
-    print(query)
+
     r = vsl.execute_vsl_query(query)
-    print(r)
+
     assert_equal(r.widget_type, WidgetTypes.TABLE)
     assert_equal(r.data.sortBy, 'Revenue')
     assert_equal(r.data.sortDirection, DEFAULT_SORT_DIRECTION)
@@ -185,7 +187,7 @@ def run_simple_selector():
     '''
     r = vsl.execute_vsl_query_selectors(query)
     assert_equal(len(r.selectors), 1, 'number of selectors')
-    assert_equal(r.selectors[0].stype, 'WIDGET', 'selector type')
+    assert_equal(r.selectors[0].stype, WidgetTypes.WIDGET, 'selector type')
     assert_equal(len(r.selectors[0].dependant_selectors),
                  0, 'number of dependent selectors')
 
@@ -266,6 +268,17 @@ def run_history_multiple_traces(model_id, tag='Revenue (Base)', nedits=0):
     assert_true(r.data.opts['time'], 'time is an option')
 
 
+@runner('using histories')
+def run_using_histories(tag):
+    query = f'''
+    Filter().
+	Histories(modelFieldLabel="ticker", tag=[{tag}[LFY]], stepped="middle").
+	LineChart()
+    '''
+    r = vsl.execute_vsl_query(query)
+    assert_equal(r.widget_type, WidgetTypes.LINE_CHART)
+
+
 @runner('filter to line charts')
 def run_filter_to_line_charts(tag):
     queries = [
@@ -307,3 +320,15 @@ def run_filter_to_bar_charts(model_id: str, tag: str):
     for query in queries:
         r = vsl.execute_vsl_query(query)
         assert_equal(r.widget_type,  WidgetTypes.BAR_CHART, 'widget type')
+
+
+@runner('run_selector_with_line_item_tags')
+def run_selector_with_line_item_tags():
+    query = f'''
+    var lineItem = Selector(label="Tag", source="line_items", field="tag")
+
+    ReturnSelectors(lineItem)
+    '''
+    r = vsl.execute_vsl_query_selectors(query)
+    assert_equal(len(r.selectors), 1, 'number of selectors')
+    assert_equal(r.selectors[0].stype, WidgetTypes.WIDGET, 'selector type')

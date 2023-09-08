@@ -182,7 +182,7 @@ class TestModelingServiceHttpClient:
                                          "Content-Type": "application/json",
                                          "Authorization": f"Bearer {token}"
                                      },
-                                     data=json.dumps((data)))
+                                     data=json.dumps((data)), timeout=480)
         assert err.value.url == url
         assert err.value.data == fake_reply
         assert err.value.status_code == bad_code

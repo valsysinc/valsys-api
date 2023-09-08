@@ -1,7 +1,7 @@
 from typing import List
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
-from valsys.inttests.runners import runners as Runners
+from valsys.inttests.runners import modeling as Runners
 from valsys.inttests.utils import gen_cell_identifier, gen_orch_config, workflow
 from valsys.modeling.model.line_item import LineItem
 
@@ -128,7 +128,7 @@ def run_qa_edit_formula(model_id: str, edit_formula_config):
         new_value=edit_formula_config['newCellValue'])
     Runners.run_recalculate_model(model.uid)
 
-    #TODO
+    # TODO
     # obtain implied premium value
     # recalc
     # obtain implied premium value (different to above)

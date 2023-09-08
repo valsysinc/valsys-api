@@ -21,13 +21,15 @@ def runner(nm: str):
 
     return real_decorator
 
-def assert_contains(mstr:List[Any], tsts:List[Any], desc=''):
+
+def assert_contains(mstr: List[Any], tsts: List[Any], desc=''):
     for t in tsts:
         try:
             assert t in mstr
         except AssertionError:
             logger.warning(f'{desc}: expected {t} to be in {mstr}')
             raise
+
 
 def assert_equal(v1, v2, desc=''):
     try:
@@ -59,3 +61,11 @@ def assert_gt(v1, v2, desc=''):
     except AssertionError as err:
         logger.warning(f"{desc} expected {v1} > {v2}; err={str(err)}")
         raise
+
+
+def modelids_to_csv(model_ids: List[str], prefix='', suffix='') -> str:
+    ms = []
+    for m in model_ids:
+        ms.append("\"" + m + "\"")
+
+    return prefix + ",".join(ms) + suffix

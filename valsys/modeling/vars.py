@@ -26,6 +26,8 @@ class Headers:
     OUTPUT_VARIABLES = 'outputVariables'
     MODELS = 'models'
 
+    QUERY = 'query'
+
 
 class Resp:
     DATA = 'data'

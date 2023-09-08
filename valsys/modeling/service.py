@@ -39,6 +39,7 @@ from valsys.modeling.models import (
     Permissions,
     SpawnedModelInfo,
 )
+from valsys.modeling.model.vsl import VSLQueryResponse
 from valsys.modeling.utils import (
     check_success,
     facts_list,
@@ -476,12 +477,12 @@ def remove_module(model_id: str, module_id: str):
 def rename_module(model_id: str, module_id: str,
                   new_module_name: str) -> Module:
     """Rename the module.
-    
+
     Args:
         model_id: the ID of the model
         module_id: the ID of the module to be renamed
         new_module_name: the new name of the module.
-    
+
     Returns:
         The new renamed module object.
     """
@@ -507,7 +508,7 @@ def reorder_module(model_id: str, module_id: str, line_item_id: str,
         module_id: the ID of the module
         line_item_id: the ID of the line item to be reordered
         order: the new order of the line item in the module
-    
+
     Returns:
         The new reordered module object.
     """
@@ -737,10 +738,10 @@ def delete_column(model_id: str, module_id: str, period: float):
 
 def copy_model(model_id: str) -> Model:
     """Copy the model.
-    
+
     Args:
         model_id: The modelID to be copied
-    
+
     Returns:
         The new model.
     """
@@ -754,11 +755,11 @@ def copy_model(model_id: str) -> Model:
 
 def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
     """Create a group of models.
-    
+
     Args:
         model_ids: List of model ids going into the group
         group_name: The name of the group
-    
+
     Returns:
         The newly created model group object.
     """
@@ -782,14 +783,14 @@ def create_group(model_ids: List[str], group_name: str) -> GroupOfModels:
 
 def delete_group(group_id: str):
     """delete the specified group.
-    
+
     Args:
         group_id: The ID of the group to be deleted.
 
     Returns:
         True if the group has been deleted sucessfully, and an
         exception is raised if not.
-        
+
     """
     client = new_client()
     url = VSURL.USERS_GROUP
@@ -804,17 +805,17 @@ def execute_simulation(group_id: str, model_ids: List[str],
                                         str]], output_variables: List[str],
                        tag: str) -> SimulationResponse:
     """Execute a simulation for a model group.
-    
+
     Args:
         group_id: The ID of the model group
         model_ids: The IDs of the models
         edits: List of edits to make to the target line item
         output_variables: List of names of the line items to output
         tag: Tag on the target line items
-    
+
     Returns:
         The new simulation object.
-    
+
 
     # TODO review model_ids as a required input: shouldnt be needed.
     """

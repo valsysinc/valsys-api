@@ -271,6 +271,21 @@
   
   
     <li class="md-nav__item">
+      <a href="dataModels/" class="md-nav__link">
+        Data models
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="exposedFunctions/" class="md-nav__link">
         Exposed modeling functions
       </a>
@@ -286,8 +301,8 @@
   
   
     <li class="md-nav__item">
-      <a href="modelSpawn/" class="md-nav__link">
-        Model spawning
+      <a href="vsl/" class="md-nav__link">
+        VSL functions
       </a>
     </li>
   
@@ -391,37 +406,30 @@
 
 <h1 id="getting-started">Getting started</h1>
 <h2 id="create-a-python-virtual-environment">Create a python virtual environment</h2>
-<p>We recommended that you install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. This requires you to have a system-wide installation of <code>python</code> (below we assume that your version of <code>python</code> is version <code>3.6</code> or later.). Other environment management systems are available.</p>
-<p>To create a python virtual environment in the current directory, execute
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python -m venv .venv
-</code></pre></div>
-The activation of the virtual environment is slightly different on windows and mac:</p>
-<ul>
-<li>If on windows, use
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>.venv\Scripts\activate.ps1
-</code></pre></div></li>
-<li>If on linux/mac, use
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>source .venv/bin/activate
-</code></pre></div></li>
-</ul>
+<p>We recommended that you install the <code>valsys</code> library into a python virtual (local) environment, rather than into the global python environment. Below we assume that your version of <code>python</code> is version <code>3.8.16</code>. </p>
+<p><code>pyenv</code> or <code>virtualenv</code> work well; other environment management systems are available.</p>
 <h2 id="installing-the-valsys-package">Installing the <code>valsys</code> package</h2>
-<p>Now that you have an active virtual environment, install the <code>valsys</code> python package via
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">valsysinc</span><span class="o">/</span><span class="n">valsys</span><span class="o">-</span><span class="n">api</span>
+<p>Now that you have an active virtual environment, install the <code>valsys</code> python package into your environment via
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">valsysinc</span><span class="o">/</span><span class="n">valsys</span><span class="o">-</span><span class="n">api</span>
 </code></pre></div>
 Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>) will also need to be installed into the environment</p>
 <h2 id="environment-setup">Environment setup</h2>
-<p>To effectively use the library certain environment variables are required. These can be set in two ways: first via <code>login</code> process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).</p>
+<p>To effectively use the library certain environment variables are required. 
+To do anything, put the following into the command line
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span> <span class="nv">VALSYS_API_BUILD</span><span class="o">=</span><span class="nb">local</span>
+</code></pre></div></p>
+<p>More environment variables are required; these can be set in two ways: first via <code>login</code> process which guides you through the process, secondly via directly setting environment variables (if you are unsure as to which applies to your situation, contact valsys support).</p>
 <h3 id="login">Login</h3>
 <p>Once the library has been installed, the first task is to login. From a python script (e.g., in the repl, or a jupyter notebook), execute
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">valsys.admin</span> <span class="kn">import</span> <span class="n">login</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">login</span><span class="p">()</span>
-</code></pre></div></p>
-<p>Alternatively, you could execute the following on a command line
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python main.py --login
-</code></pre></div></p>
-<p>Either way, you will be prompted to enter the following information:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">valsys.admin</span> <span class="kn">import</span> <span class="n">login</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="n">login</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+It is useful to put the above into a local script called <code>login.py</code> or something of that nature.</p>
+<p>This will only need to be executed when you change your password (nothing bad will happen if you keep running - it will just wear thin).</p>
+<p>You will be prompted to enter the following information:</p>
 <ul>
-<li><strong>Valsys host</strong>: the base part of the valsys url (if unsure, contact valsys support)</li>
+<li><strong>Valsys host</strong>: the base part of the Valsys url (if unsure, contact valsys support)</li>
 <li><strong>Valsys protocol</strong>: whether using <code>http</code> or <code>https</code>. </li>
 <li><strong>Valsys username</strong>: this is the username used to login to the valsys system </li>
 <li><strong>Valsys password</strong>: this is the password used to login to the valsys system</li>
@@ -455,13 +463,13 @@ Any other packages you require (e.g., <code>spark</code>, or <code>numpy</code>)
       
       
         
-        <a href="exposedFunctions/" class="md-footer__link md-footer__link--next" aria-label="Next: Exposed modeling functions" rel="next">
+        <a href="dataModels/" class="md-footer__link md-footer__link--next" aria-label="Next: Data models" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Exposed modeling functions
+              Data models
             </div>
           </div>
           <div class="md-footer__button md-icon">

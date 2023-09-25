@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from valsys.config.config import API_PASSWORD, API_USERNAME
 from valsys.modeling.client.exceptions import (
@@ -660,7 +660,7 @@ def edit_format(case_id: str, model_id: str, facts: List[Fact]):
                       facts=facts)
 
 
-def edit_formula(case_id: str, model_id: str, facts: List[Fact]) -> List[Fact]:
+def edit_formula(case_id: str, model_id: str, facts: List[Dict[str, Any]]) -> List[Fact]:
     """Edit the formula on the supplied facts.
 
     Args:

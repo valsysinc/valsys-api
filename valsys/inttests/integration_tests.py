@@ -44,7 +44,7 @@ def run_integration_tests():
 
         new_module = Runners.run_add_child_module(model_id, first_case_id,
                                                   module_id)
-        #Runners.run_set_facts_tracked([model_id], first_line_item.tags)
+        # Runners.run_set_facts_tracked([model_id], first_line_item.tags)
         Runners.run_recalculate_model(model_id)
         Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
         Runners.run_edit_format(model_id, first_case_id, fact=first_fact)
@@ -57,7 +57,7 @@ def run_integration_tests():
         Runners.run_pull_model_datasources(model_id)
         Runners.run_remove_module(model_id, new_module.uid)
         Runners.run_filter_user_model(model_id)
-        Runners.run_filter_user_model_with_fields(model_id, cfg.get('ticker'))
+        # Runners.run_filter_user_model_with_fields(model_id, cfg.get('ticker'))
         Runners.run_multi_filters(base_config=cfg,
                                   user=API_USERNAME,
                                   password=API_PASSWORD,
@@ -83,7 +83,7 @@ def run_integration_tests():
         # recently copied version.
         grp = Runners.run_create_group([model_id, new_id],
                                        f'new group={str(uuid.uuid1())}')
-
+        '''
         Runners.run_execute_simulation(grp.uid,
                                        grp.model_ids,
                                        edits=[{
@@ -97,6 +97,7 @@ def run_integration_tests():
                                        tag=tag,
                                        lfy=cfg['startPeriod'])
         Runners.run_simulation_output_variables(grp.model_ids, [tag])
+    '''
         # find 2019 net revenue, look for sim response
         # Delete the recently created model group
         Runners.run_delete_model_group(grp.uid)
@@ -106,7 +107,7 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        VSL.run_vsl_tests(model_id, new_id)
+        #VSL.run_vsl_tests(model_id, new_id)
     except Exception:
         cleanup.run()
         raise

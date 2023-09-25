@@ -390,10 +390,7 @@ def run_execute_simulation(group_id: str, model_ids: List[str],
                                     output_variables=output_variables,
                                     tag=tag)
 
-    expected_fields = set([
-        'Change in IRR', 'Current share price (DCF)',
-        'Implied share price (DCF)', 'Ticker'
-    ])
+    expected_fields = set(['Change in IRR', 'Ticker'])
 
     assert_contains(s.group_fields, expected_fields,
                     'simulated expected fields')

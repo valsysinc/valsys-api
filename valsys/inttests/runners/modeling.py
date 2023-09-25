@@ -29,7 +29,6 @@ def run_spawn_model(model_config: OrchestratorModelConfig):
     """
     # Spawn the model and obtain the new modelID
     spawned_model_id = Modeling.spawn_model(model_config)
-    print(model_config)
     assert isinstance(spawned_model_id, list)
     return spawned_model_id
 

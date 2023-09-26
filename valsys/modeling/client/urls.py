@@ -41,7 +41,7 @@ class VSURL:
 
     VERSIONING_FACTS_TRACKED = f"{BASE_URL}/{MODELING}/versioning/tracked-items"
 
-    VSL_QUERY = f"{BASE_URL}/{MODELING}/dsl/query"
+    VSL_QUERY = f"{BASE_URL}/{MODELING}/vsl/query"
 
     SCK_MODELING_CREATE = f"{BASE_SCK}/{MODELING}/create/"
     SCK_ORCHESTRATOR = f"{BASE_ORCH}/orchestrator/connect/"

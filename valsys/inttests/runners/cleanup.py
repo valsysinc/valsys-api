@@ -12,8 +12,8 @@ class TestsCleanUp:
     def register(self, f, *args, **kwargs):
         self.funcs.append((f, [args, kwargs]))
 
-    def mark_model_for_deletion(self, model_id):
-        self.to_delete(model_id)
+    def mark_model_for_deletion(self, model_id: str):
+        self.to_delete.append(model_id)
 
     def run(self):
         logger.info('running cleanup funcs')

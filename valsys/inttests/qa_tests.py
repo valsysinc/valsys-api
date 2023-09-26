@@ -6,7 +6,7 @@ from valsys.inttests.utils import gen_cell_identifier, gen_orch_config, workflow
 from valsys.modeling.model.line_item import LineItem
 
 from valsys.utils.time import yesterday
-from valsys.inttests.client_recalc_tests import ClientRecalcTest
+from valsys.inttests.runners.cleanup import TestsCleanUp
 
 
 def qa_script():
@@ -220,31 +220,35 @@ def run_qa_rename_line_item(model_id: str, config):
 
 @workflow('qa tests')
 def run_qa_script():
-    client_recalc_test = ClientRecalcTest()
-    qa_flow = qa_script()
+    cleanup = TestsCleanUp()
 
-    # Import the class for the model seed configuration data
-    user, password = API_USERNAME, API_PASSWORD
+    try:
+        qa_flow = qa_script()
 
-    # Define the model seed configuration data
-    model_seed_config = gen_orch_config(qa_flow.get('modelConfig'), user,
-                                        password)
+        # Import the class for the model seed configuration data
+        user, password = API_USERNAME, API_PASSWORD
 
-    # Spawn the model and obtain the modelID
-    mid = Runners.run_spawn_single_model(model_seed_config)
-    model = Runners.run_pull_model(mid)
+        # Define the model seed configuration data
+        model_seed_config = gen_orch_config(qa_flow.get('modelConfig'), user,
+                                            password)
 
-    steps = {
-        'edit_formula': run_qa_edit_formula,
-        'edit_line_item': run_qa_add_line_item,
-        'add_module': run_qa_add_module,
-        'rename_line_item': run_qa_rename_line_item,
-    }
+        # Spawn the model and obtain the modelID
+        mid = Runners.run_spawn_single_model(model_seed_config)
+        cleanup.register(Runners.run_delete_models, [mid])
+        model = Runners.run_pull_model(mid)
 
-    client_recalc_test.setup()
+        steps = {
+            'edit_formula': run_qa_edit_formula,
+            'edit_line_item': run_qa_add_line_item,
+            'add_module': run_qa_add_module,
+            'rename_line_item': run_qa_rename_line_item,
+        }
 
-    for step_config in qa_flow['steps']:
-        steps[step_config.get('type')](model.uid, step_config)
+        for step_config in qa_flow['steps']:
+            steps[step_config.get('type')](model.uid, step_config)
 
-    # client_recalc_test.post_assertions()
-    client_recalc_test.cleanup()
+    except Exception:
+        cleanup.run()
+        raise
+
+    cleanup.run()

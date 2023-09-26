@@ -13,9 +13,15 @@ class TestsCleanUp:
         self.funcs.append((f, [args, kwargs]))
 
     def mark_model_for_deletion(self, model_id: str):
+        """Provide the modelID to be deleted
+        when the final clean up is `run`
+        """
         self.to_delete.append(model_id)
 
     def run(self):
+        """Run the clean up;
+        Note that any models marked for deletion
+        are deleted at this point."""
         logger.info('running cleanup funcs')
         for func, params in self.funcs:
             func(*params[0], **params[1])

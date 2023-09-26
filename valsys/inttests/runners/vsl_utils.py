@@ -47,5 +47,5 @@ def wait_check_facts_tracked(model_id: str, line_item_id: str):
         if attempt_number > max_tries:
             raise Exception(
                 f'facts tracked not changed after {attempt_number} attempts')
-        time.sleep(1)
+        time.sleep(1.5)
     return

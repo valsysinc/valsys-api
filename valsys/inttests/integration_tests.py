@@ -6,6 +6,7 @@ from valsys.inttests.runners import vsl as VSL
 from valsys.inttests.utils import gen_orch_config, workflow
 from valsys.utils.time import yesterday
 from valsys.inttests.runners.cleanup import TestsCleanUp
+from valsys.inttests.runners.vsl_utils import pluck_tags
 
 
 def integration_test_config():
@@ -44,7 +45,8 @@ def run_integration_tests():
 
         new_module = Runners.run_add_child_module(model_id, first_case_id,
                                                   module_id)
-        # Runners.run_set_facts_tracked([model_id], first_line_item.tags)
+        _, li = pluck_tags(model)
+        Runners.run_set_facts_tracked([model_id], li.tags)
         Runners.run_recalculate_model(model_id)
         Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
         Runners.run_edit_format(model_id, first_case_id, fact=first_fact)

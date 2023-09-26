@@ -3,6 +3,8 @@ from valsys.modeling.utils import check_success
 from valsys.modeling.client.service import new_client
 from valsys.modeling.client.urls import VSURL
 from valsys.modeling.vars import Resp, Headers
+from valsys.modeling.client.exceptions import ModelingServicePostException
+from valsys.modeling.vars import Resp, Vars
 
 
 def execute_vsl_query(query: str) -> VSLQueryResponse:
@@ -19,8 +21,10 @@ def execute_vsl_query(query: str) -> VSLQueryResponse:
     payload = {
         Headers.QUERY: query,
     }
+
     resp = client.post(url, data=payload)
-    check_success(resp, 'VSL query')
+    if resp.get(Resp.STATUS) != Vars.SUCCESS:
+        raise ModelingServicePostException(payload, client.status_code, url)
     return VSLQueryResponse.from_json(resp.get(Resp.DATA))
 
 
@@ -39,5 +43,6 @@ def execute_vsl_query_selectors(query: str) -> VSLSelectorsResponse:
         Headers.QUERY: query,
     }
     resp = client.post(url, data=payload)
-    check_success(resp, 'VSL query selectors')
+    if resp.get(Resp.STATUS) != Vars.SUCCESS:
+        raise ModelingServicePostException(payload, client.status_code, url)
     return VSLSelectorsResponse.from_json(resp.get(Resp.DATA))

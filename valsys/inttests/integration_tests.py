@@ -14,9 +14,9 @@ def integration_test_config():
     return {
         'companyName': 'Apple',
         # 'ticker': 'PEP',
-        'templateName': 'AE Template V1',
+        # 'templateName': 'AE Template V1',
         'ticker': 'AAP US',
-        # 'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
+        'templateId': '9a514349-474f-48f3-8527-6f15ad5991c6',
         'numForecastYears': 3,
         'numHistoricalYears': 2,
         'industry': 'RETAIL-EATING \u0026 DRINKING PLACES',
@@ -36,6 +36,8 @@ def run_integration_tests():
         model_id = spawned_models[0].model_id
         cleanup.mark_model_for_deletion(model_id)
         model = Runners.run_pull_model(model_id)
+        #new_id = Runners.run_copy_model(model_id)
+
         first_case_id = model.first_case_id
         first_case = model.pull_case_by_id(first_case_id)
         first_module = model.first_case.first_module
@@ -109,7 +111,7 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        #VSL.run_vsl_tests(model_id, new_id)
+        VSL.run_vsl_tests(model_id, new_id)
     except Exception:
         cleanup.run()
         raise

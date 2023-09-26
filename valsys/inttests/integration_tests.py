@@ -34,7 +34,7 @@ def run_integration_tests():
             gen_orch_config(cfg=cfg, user=API_USERNAME, password=API_PASSWORD))
 
         model_id = spawned_models[0].model_id
-        cleanup.register(Runners.run_delete_models, [model_id])
+        cleanup.mark_model_for_deletion(model_id)
         model = Runners.run_pull_model(model_id)
         first_case_id = model.first_case_id
         first_case = model.pull_case_by_id(first_case_id)
@@ -80,7 +80,7 @@ def run_integration_tests():
                                    first_line_item.order + 4)
         Runners.run_recalculate_model(model_id)
         new_id = Runners.run_copy_model(model_id)
-        cleanup.register(Runners.run_delete_models, [new_id])
+        cleanup.mark_model_for_deletion(new_id)
         # Create a group constructed from the initially spawned model, and its
         # recently copied version.
         grp = Runners.run_create_group([model_id, new_id],

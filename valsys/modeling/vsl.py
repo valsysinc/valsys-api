@@ -7,6 +7,19 @@ from valsys.modeling.client.exceptions import ModelingServicePostException
 from valsys.modeling.vars import Resp, Vars
 
 
+def execute_vsl(query):
+    client = new_client()
+    url = VSURL.VSL_QUERY
+    payload = {
+        Headers.QUERY: query,
+    }
+
+    resp = client.post(url, data=payload)
+    if resp.get(Resp.STATUS) != Vars.SUCCESS:
+        raise ModelingServicePostException(payload, client.status_code, url)
+    return resp
+
+
 def execute_vsl_query(query: str) -> VSLQueryResponse:
     """ Execute a VSL query
 
@@ -16,20 +29,12 @@ def execute_vsl_query(query: str) -> VSLQueryResponse:
         Returns:
             The `VSLQueryResponse` object response
     """
-    client = new_client()
-    url = VSURL.VSL_QUERY
-    payload = {
-        Headers.QUERY: query,
-    }
-
-    resp = client.post(url, data=payload)
-    if resp.get(Resp.STATUS) != Vars.SUCCESS:
-        raise ModelingServicePostException(payload, client.status_code, url)
+    resp = execute_vsl(query)
     return VSLQueryResponse.from_json(resp.get(Resp.DATA))
 
 
 def execute_vsl_query_selectors(query: str) -> VSLSelectorsResponse:
-    """ Execute a VSL query
+    """ Execute a VSL query to return selectors
 
         Args:
             query: the VSL query string to be executed
@@ -37,12 +42,5 @@ def execute_vsl_query_selectors(query: str) -> VSLSelectorsResponse:
         Returns:
             The `VSLSelectorsResponse` object response
     """
-    client = new_client()
-    url = VSURL.VSL_QUERY
-    payload = {
-        Headers.QUERY: query,
-    }
-    resp = client.post(url, data=payload)
-    if resp.get(Resp.STATUS) != Vars.SUCCESS:
-        raise ModelingServicePostException(payload, client.status_code, url)
+    resp = execute_vsl(query)
     return VSLSelectorsResponse.from_json(resp.get(Resp.DATA))

@@ -183,7 +183,7 @@ def run_simple_selector():
     query = f'''
     var analyst = Selector(label="Analyst", source="models", field="created_by");
 
-    ReturnSelectors(analyst)
+    ReturnAllSelectors();
     '''
     r = vsl.execute_vsl_query_selectors(query)
     assert_equal(len(r.selectors), 1, 'number of selectors')
@@ -199,7 +199,7 @@ def run_chaining_selectors():
     var ticker = Selector(label="Ticker", source="models", field="ticker", given=title);
     var analyst = Selector(label="Analyst", source="models", field="created_by", given=ticker);
 
-    ReturnSelectors(title, ticker, analyst)
+    ReturnAllSelectors(title, ticker, analyst)
     '''
     r = vsl.execute_vsl_query_selectors(query)
 
@@ -220,7 +220,7 @@ def run_chaining_selectors():
 def run_dashboard_selector():
     query = '''
     var ticker = Selector(label="Ticker", source="models", field="ticker", dashboardSelector=TRUE, widgetSelector=FALSE)
-    ReturnSelectors(ticker)
+    ReturnAllSelectors(ticker)
     '''
     r = vsl.execute_vsl_query_selectors(query)
     assert_equal(len(r.selectors), 1)
@@ -231,7 +231,7 @@ def run_dashboard_selector():
 def run_dashboard_widget_selector():
     query = '''
     var ticker = Selector(label="Ticker", source="models", field="ticker", dashboardSelector=TRUE, widgetSelector=TRUE)
-    ReturnSelectors(ticker)
+    ReturnAllSelectors(ticker)
     '''
     r = vsl.execute_vsl_query_selectors(query)
 
@@ -327,7 +327,7 @@ def run_selector_with_line_item_tags():
     query = f'''
     var lineItem = Selector(label="Tag", source="line_items", field="tag")
 
-    ReturnSelectors(lineItem)
+    ReturnAllSelectors(lineItem)
     '''
     r = vsl.execute_vsl_query_selectors(query)
     assert_equal(len(r.selectors), 1, 'number of selectors')

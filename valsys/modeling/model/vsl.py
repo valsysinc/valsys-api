@@ -100,7 +100,7 @@ class VSLSelector:
 
     class fields:
         LABEL = 'label'
-        OPTIONS = 'options'
+        OPTIONS = 'available_options'
         STYPE = 'type'
         DEPENDENT_SELECTORS = 'dependant_selectors'
 
@@ -108,9 +108,10 @@ class VSLSelector:
     def from_json(cls, j: Dict[str, Any]):
         return cls(
             label=j.get(cls.fields.LABEL),
-            options=[str(s) for s in j.get(cls.fields.OPTIONS)],
+            options=[{'label': s.get('label'), 'value': s.get(
+                'value')} for s in j.get(cls.fields.OPTIONS)],
             stype=j.get(cls.fields.STYPE),
-            dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS)
+            dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS, [])
         )
 
 

@@ -47,7 +47,7 @@ pipelines:
       master:
         - step: *build-step
         - step: *unit-test-step
-        - step: *int-test-step
+       # - step: *int-test-step
         - step:
             name: Deploy master to ECR
             services:

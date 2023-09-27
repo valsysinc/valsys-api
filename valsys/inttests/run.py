@@ -1,7 +1,7 @@
 import sys
 
 from valsys.config.config import log_modeling_service_info
-from valsys.inttests.integration_tests import run_integration_tests, run_spawn
+from valsys.inttests.integration_tests import run_integration_tests, run_spawn, run_just_vsl
 from valsys.inttests.qa_tests import run_qa_script
 from valsys.inttests.utils import run_each_allow_fail
 from valsys.utils import loggerIT as logger
@@ -21,9 +21,11 @@ def run_workflows(opts):
         workflow_funcs.append(run_qa_script)
     if 's1' in opts:
         workflow_funcs.append(run_spawn)
+    if 'vsl' in opts:
+        workflow_funcs.append(run_just_vsl)
 
     if len(workflow_funcs) == 0:
-        workflow_funcs = [run_integration_tests, run_qa_script]
+        workflow_funcs = [run_integration_tests, run_just_vsl, run_qa_script]
 
     fails = run_each_allow_fail(workflow_funcs)
     logger.info(MSG_TESTS_FINISHED)

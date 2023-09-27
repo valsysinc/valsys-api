@@ -111,7 +111,6 @@ def run_integration_tests():
         # TODO: test that deleting a nonsense group ID causes an err;
         # for this to work, need to wait for updated users service.
 
-        VSL.run_vsl_tests(model_id, new_id)
     except Exception:
         cleanup.run()
         raise
@@ -142,3 +141,27 @@ def run_spawn():
     Runners.run_edit_formula(model_id, first_case_id, fact=first_fact)
     Runners.run_recalculate_model(model_id)
     print(model_id, cfg.get('ticker'))
+
+
+@workflow('just VSL')
+def run_just_vsl():
+    '''
+    Self contained function to run all setup and VSL tests.
+    '''
+    cfg = integration_test_config()
+    cleanup = TestsCleanUp()
+    try:
+        spawned_models = Runners.run_spawn_model(
+            gen_orch_config(cfg=cfg, user=API_USERNAME, password=API_PASSWORD))
+
+        model_id = spawned_models[0].model_id
+        cleanup.mark_model_for_deletion(model_id)
+        new_id = Runners.run_copy_model(model_id)
+        cleanup.mark_model_for_deletion(new_id)
+        VSL.run_vsl_tests(model_id, new_id)
+    except Exception:
+        cleanup.run()
+        raise
+
+    # Delete the models created for testing purposes.
+    cleanup.run()

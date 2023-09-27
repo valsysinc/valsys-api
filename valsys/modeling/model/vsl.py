@@ -43,7 +43,7 @@ class VSLDataSet:
     def from_json(cls, j: Dict[str, Any]):
         return cls(
             label=j.get(cls.fields.LABEL),
-            data=[DataPoint.from_json(p) for p in j.get(cls.fields.DATA)]
+            data=[DataPoint.from_json(p) for p in j.get(cls.fields.DATA, [])]
         )
 
 
@@ -86,7 +86,7 @@ class VSLChartData:
         return cls(
             labels=data.get(cls.fields.LABELS),
             data_sets=[VSLDataSet.from_json(d)
-                       for d in data.get(cls.fields.DATASETS)],
+                       for d in data.get(cls.fields.DATASETS, [])],
             opts=data.get(cls.fields.OPTS)
         )
 
@@ -109,7 +109,7 @@ class VSLSelector:
         return cls(
             label=j.get(cls.fields.LABEL),
             options=[{'label': s.get('label'), 'value': s.get(
-                'value')} for s in j.get(cls.fields.OPTIONS)],
+                'value')} for s in j.get(cls.fields.OPTIONS, [])],
             stype=j.get(cls.fields.STYPE),
             dependant_selectors=j.get(cls.fields.DEPENDENT_SELECTORS, [])
         )
@@ -150,5 +150,5 @@ class VSLSelectorsResponse:
     def from_json(cls, data: Dict[str, Any]):
         return cls(
             selectors=[VSLSelector.from_json(s)
-                       for s in data.get(cls.fields.SELECTORS)]
+                       for s in data.get(cls.fields.SELECTORS, [])]
         )

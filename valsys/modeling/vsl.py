@@ -30,6 +30,7 @@ def execute_vsl_query(query: str) -> VSLQueryResponse:
             The `VSLQueryResponse` object response
     """
     resp = execute_vsl(query)
+    print(resp)
     return VSLQueryResponse.from_json(resp.get(Resp.DATA))
 
 

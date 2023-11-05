@@ -41,7 +41,7 @@ class Fact:
         value = data.get(cls.fields.VALUE, "").strip()
 
         is_numeric = 'numeric' in fmt.lower()
-        if is_numeric and value == '':
+        if is_numeric and value == '' or value == '-':
             value = 0
         elif is_numeric and value != '':
             value = float(value)

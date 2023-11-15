@@ -43,6 +43,8 @@ class Fact:
         is_numeric = 'numeric' in fmt.lower()
         if is_numeric and value == '':
             value = 0
+        elif is_numeric and value == '-':
+            is_numeric=False
         elif is_numeric and value != '':
             value = float(value)
 

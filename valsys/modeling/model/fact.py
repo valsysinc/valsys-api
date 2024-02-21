@@ -48,7 +48,6 @@ class Fact:
             is_numeric=True
         except ValueError:
             is_numeric=False
-            continue
 
 
         return cls(uid=data[cls.fields.UID],
